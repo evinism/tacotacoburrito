@@ -116,22 +116,6 @@ export const defaultPresetStore: PresetStore = {
       beats: [[strong(), off(), weak(), strong(), off(), weak(), off()]],
       bpm: 360,
     },
-    "Karsilamas (9/8)": {
-      beats: [
-        [
-          strong(),
-          off(),
-          weak(),
-          off(),
-          strong(),
-          off(),
-          weak(),
-          off(),
-          weak(),
-        ],
-      ],
-      bpm: 280,
-    },
     "Kopanitsa (11/16)": {
       beats: [
         [
@@ -232,6 +216,22 @@ export const defaultPresetStore: PresetStore = {
         ],
       ],
       bpm: 350,
+    },
+    "Karsilamas (9/8)": {
+      beats: [
+        [
+          strong(),
+          off(),
+          weak(),
+          off(),
+          strong(),
+          off(),
+          weak(),
+          off(),
+          weak(),
+        ],
+      ],
+      bpm: 280,
     },
   },
 };
