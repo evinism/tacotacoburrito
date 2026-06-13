@@ -29,6 +29,16 @@ export class Metronome {
   _schedulerId: NodeJS.Timeout | null = null;
   _gainNode: GainNode;
 
+  // Whether the user has asked the metronome to play. Our own source of truth,
+  // set synchronously in play()/stop(), rather than the async
+  // audioContext.state which lags behind suspend()/resume().
+  _isPlaying: boolean = false;
+
+  // Beats scheduled within the look-ahead horizon that haven't finished yet.
+  // Keeping references lets stop() cancel in-flight clicks without tearing down
+  // the whole audio context.
+  _scheduledSources: Set<AudioBufferSourceNode> = new Set();
+
   // Source of truth for what beats have played is the audioContext,
   // which is outside of the scheduler loop (and we probably shouldn't
   // poll it) so we need to keep track of what beats have played ourselves
@@ -86,24 +96,27 @@ export class Metronome {
   }
 
   isPlaying() {
-    return this.audioContext.state === "running";
+    return this._isPlaying;
   }
 
   play() {
-    if (this.isPlaying()) {
+    if (this._isPlaying) {
       return;
     }
+    this._isPlaying = true;
 
-    // Close old context before creating a new one to avoid memory leak
-    if (this.audioContext.state !== "closed") {
-      this.audioContext.close();
+    // A closed context can't be resumed or reused. This happens when cleanup()
+    // ran but this instance was kept and replayed — e.g. React StrictMode's
+    // mount→unmount→remount in dev, or Fast Refresh. Rebuild it in that case;
+    // a normal stop() only suspends, so the common path reuses one context.
+    if (this.audioContext.state === "closed") {
+      const { audioContext, gainNode } = this.makeAudioContext(this.spec);
+      this.audioContext = audioContext;
+      this._gainNode = gainNode;
     }
 
-    // Create a fresh context with no scheduled beats
-    const { audioContext, gainNode } = this.makeAudioContext(this.spec);
-    this.audioContext = audioContext;
-    this._gainNode = gainNode;
-
+    // The context sits suspended while idle, so resume it. resume() must run
+    // inside a user gesture, which play() always is (button click / spacebar).
     this.audioContext.resume();
 
     this._latestScheduledBeatTime =
@@ -120,9 +133,10 @@ export class Metronome {
   }
 
   stop() {
-    if (!this.isPlaying()) {
+    if (!this._isPlaying) {
       return;
     }
+    this._isPlaying = false;
     if (this._schedulerId) {
       clearInterval(this._schedulerId);
       this._schedulerId = null;
@@ -133,16 +147,22 @@ export class Metronome {
     }
     // unset which beat is hit
     this._notifyBeatHit(-1);
-    // Close the context to clear all scheduled beats
-    this.audioContext.close();
+    // Cancel beats already scheduled within the look-ahead horizon so they
+    // don't sound after stop. Closing the context used to do this for us, but
+    // we now keep the context around to reuse it.
+    this._clearScheduledSources();
+    // Suspend rather than close so the same context can be resumed on replay.
+    this.audioContext.suspend();
   }
 
   cleanup() {
-    // Stop if playing (clears intervals/timeouts and closes context)
-    if (this.isPlaying()) {
+    // Stop if playing (clears intervals/timeouts, cancels scheduled clicks).
+    if (this._isPlaying) {
       this.stop();
     }
-    // Ensure context is closed even if not playing
+    // Make sure nothing is left scheduled, then permanently close the context —
+    // this instance is being thrown away (component unmount).
+    this._clearScheduledSources();
     if (this.audioContext.state !== "closed") {
       this.audioContext.close();
     }
@@ -213,6 +233,30 @@ export class Metronome {
     source.buffer = buffer;
     source.connect(this._gainNode);
     source.start(time);
+
+    // Track the source so stop() can cancel it if it's still pending, and
+    // release it once it finishes playing on its own.
+    this._scheduledSources.add(source);
+    source.onended = () => {
+      this._scheduledSources.delete(source);
+      source.disconnect();
+    };
+  };
+
+  _clearScheduledSources = () => {
+    // Snapshot then clear: stopping a source fires onended, which would mutate
+    // the set while we iterate it.
+    const sources = [...this._scheduledSources];
+    this._scheduledSources.clear();
+    for (const source of sources) {
+      source.onended = null;
+      try {
+        source.stop();
+      } catch {
+        // Source may have already finished; nothing to cancel.
+      }
+      source.disconnect();
+    }
   };
 
   _notifyBeatHit = (beatNumber: number) => {
