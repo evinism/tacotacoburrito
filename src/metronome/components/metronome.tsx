@@ -36,9 +36,10 @@ const toBeat = (strength: BeatStrength, duration: number = 1): Beat => {
   };
 };
 
+const strong = toBeat("strong");
 const weak = toBeat("weak");
 
-const defaultBeats: Measures = [[weak, weak, weak, weak]];
+const defaultBeats: Measures = [[strong, weak, weak, weak]];
 
 const ttConfig = {
   enterDelay: 500,
@@ -70,8 +71,8 @@ const copyToClipboard = async (text: string): Promise<boolean> => {
 };
 
 const MetronomeComponent = () => {
-  const [beats, setBeats] = useState<Measures>(defaultBeats);
-  const [bpm, setBpm] = useState<number>(120);
+  const [beats, setBeats] = usePersistentState<Measures>("beats", defaultBeats);
+  const [bpm, setBpm] = usePersistentState<number>("bpm", 120);
   const [volume, setVolume] = usePersistentState<number>("volume", 1);
   const [soundPack, setSoundPack] = useState<SoundPackId>("default");
   const [beatAccentChangeDirection, setBeatAccentChangeDirection] =
