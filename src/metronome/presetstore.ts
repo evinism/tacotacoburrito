@@ -29,10 +29,6 @@ export const defaultPresetStore: PresetStore = {
       beats: [[strong(), weak(), weak(), strong(), weak(), weak()]],
       bpm: 180,
     },
-    test: {
-      beats: [[strong(1), weak(1), strong(1 / 3), weak(1 / 3), weak(1 / 3)]],
-      bpm: 120,
-    },
   },
   Greek: {
     "Syrtos (4/4)": {
