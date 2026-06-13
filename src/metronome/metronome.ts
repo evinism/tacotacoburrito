@@ -1,7 +1,7 @@
 import { SoundPackId, soundPacks, GeneratorParameters } from "./soundpacks";
 import { multiLength, multiIndex } from "./util";
 import { BeatStrength, Measures } from "./types";
-import { Listener, Emitter, BeatNotifier } from "./emitter";
+import { Listener, Emitter, BeatNotifier, PlayingNotifier } from "./emitter";
 
 export type Rhythm = {
   beats: Measures;
@@ -44,13 +44,12 @@ export class Metronome {
   // poll it) so we need to keep track of what beats have played ourselves
   _beatNotifierId: NodeJS.Timeout | null = null;
   _latestNotifiedBeat: number = -1;
-  _beatNotifier: BeatNotifier = new Emitter<number>();
+  _beatNotifier: BeatNotifier = new Emitter();
+  _playingNotifier: PlayingNotifier = new Emitter();
 
   constructor(spec: MetronomeSpec) {
     this.spec = spec;
-    const { audioContext, gainNode } = this.makeAudioContext(spec);
-    this.audioContext = audioContext;
-    this._gainNode = gainNode;
+    this.ensureAudioContext();
   }
 
   makeAudioContext(spec: MetronomeSpec) {
@@ -62,6 +61,18 @@ export class Metronome {
     gainNode.connect(audioContext.destination);
     audioContext.suspend();
     return { audioContext, gainNode };
+  }
+
+  ensureAudioContext() {
+    // Ensure we have a valid audio context, ready to resume. Rebuild it when
+    // missing (first construction) or closed — the latter happens when a prior
+    // cleanup() ran but this instance was reused (React StrictMode's
+    // mount→unmount→remount in dev, or Fast Refresh).
+    if (!this.audioContext || this.audioContext.state === "closed") {
+      const { audioContext, gainNode } = this.makeAudioContext(this.spec);
+      this.audioContext = audioContext;
+      this._gainNode = gainNode;
+    }
   }
 
   updateSpec(spec: MetronomeSpec) {
@@ -104,16 +115,7 @@ export class Metronome {
       return;
     }
     this._isPlaying = true;
-
-    // A closed context can't be resumed or reused. This happens when cleanup()
-    // ran but this instance was kept and replayed — e.g. React StrictMode's
-    // mount→unmount→remount in dev, or Fast Refresh. Rebuild it in that case;
-    // a normal stop() only suspends, so the common path reuses one context.
-    if (this.audioContext.state === "closed") {
-      const { audioContext, gainNode } = this.makeAudioContext(this.spec);
-      this.audioContext = audioContext;
-      this._gainNode = gainNode;
-    }
+    this.ensureAudioContext();
 
     // The context sits suspended while idle, so resume it. resume() must run
     // inside a user gesture, which play() always is (button click / spacebar).
@@ -128,8 +130,15 @@ export class Metronome {
     }
     this._schedulerId = setInterval(
       () => this.handleScheduler(),
-      this._schedulerInterval * 1000
+      this._schedulerInterval * 1000,
     );
+    this._playingNotifier.emit(true);
+    // Notify the first beat immediately. At fast tempos the scheduled
+    // notification can get swallowed by the render cycle, so emit it up front;
+    // the dedup in _notifyBeatHit keeps the scheduler from emitting it again.
+    if (this._shouldNotifyBeatHit()) {
+      this._notifyBeatHit(0);
+    }
   }
 
   stop() {
@@ -145,14 +154,15 @@ export class Metronome {
       clearTimeout(this._beatNotifierId);
       this._beatNotifierId = null;
     }
-    // unset which beat is hit
-    this._notifyBeatHit(-1);
     // Cancel beats already scheduled within the look-ahead horizon so they
     // don't sound after stop. Closing the context used to do this for us, but
     // we now keep the context around to reuse it.
     this._clearScheduledSources();
     // Suspend rather than close so the same context can be resumed on replay.
     this.audioContext.suspend();
+    // unset which beat is hit
+    this._notifyBeatHit(-1);
+    this._playingNotifier.emit(false);
   }
 
   cleanup() {
@@ -204,12 +214,12 @@ export class Metronome {
       const nextBeatIndex = this.nextBeatToScheduleIndex();
       this.scheduleClick(
         multiIndex(this.spec.beats, nextBeatIndex).strength,
-        nextBeatTime
+        nextBeatTime,
       );
       if (this._shouldNotifyBeatHit()) {
         this._beatNotifierId = setTimeout(
           () => this._notifyBeatHit(nextBeatIndex),
-          (nextBeatTime - currentTime) * 1000
+          (nextBeatTime - currentTime) * 1000,
         );
       }
       this._latestScheduledBeatTime = nextBeatTime;
@@ -225,7 +235,7 @@ export class Metronome {
     const buffer = soundPacks[this.spec.sound.soundPack][strength](
       this.audioContext.sampleRate,
       this.audioContext,
-      this.spec.sound.generatorParameters
+      this.spec.sound.generatorParameters,
     );
 
     // Create source from cached buffer
@@ -260,6 +270,13 @@ export class Metronome {
   };
 
   _notifyBeatHit = (beatNumber: number) => {
+    // Don't notify the same beat twice in a row. This lets play() emit the
+    // first beat up front (so it's highlighted immediately, even at fast
+    // tempos) without the scheduler re-emitting that same beat a few
+    // milliseconds later.
+    if (beatNumber === this._latestNotifiedBeat) {
+      return;
+    }
     this._beatNotifier.emit(beatNumber);
     this._latestNotifiedBeat = beatNumber;
   };
@@ -274,5 +291,13 @@ export class Metronome {
 
   unsubscribeFromBeat(callback: Listener<number>) {
     this._beatNotifier.unsubscribe(callback);
+  }
+
+  subscribeToPlaying(callback: Listener<boolean>) {
+    this._playingNotifier.subscribe(callback);
+  }
+
+  unsubscribeFromPlaying(callback: Listener<boolean>) {
+    this._playingNotifier.unsubscribe(callback);
   }
 }
