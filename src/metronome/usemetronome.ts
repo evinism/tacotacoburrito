@@ -5,14 +5,21 @@ const useMetronome = (spec: MetronomeSpec) => {
   const [metronome] = useState<Metronome>(() => new Metronome(spec));
   metronome.updateSpec(spec);
 
-  const [beat, setBeat] = useState<number>(-1);
+  const [beat, setBeat] = useState<number>(metronome.getBeat());
+  const [playing, setPlaying] = useState<boolean>(metronome.isPlaying());
   useEffect(() => {
-    const callback = (beatNumber: number) => {
+    const beatCallback = (beatNumber: number) => {
       setBeat(beatNumber);
     };
-    metronome.subscribeToBeat(callback);
+    metronome.subscribeToBeat(beatCallback);
+    const playingCallback = (playing: boolean) => {
+      setPlaying(playing);
+    };
+    metronome.subscribeToPlaying(playingCallback);
+
     return () => {
-      metronome.unsubscribeFromBeat(callback);
+      metronome.unsubscribeFromBeat(beatCallback);
+      metronome.unsubscribeFromPlaying(playingCallback);
     };
   }, []);
 
@@ -26,6 +33,7 @@ const useMetronome = (spec: MetronomeSpec) => {
   return {
     metronome,
     beat,
+    playing,
   };
 };
 

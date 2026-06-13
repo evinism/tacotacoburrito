@@ -105,7 +105,7 @@ const MetronomeComponent = () => {
     [bpm, beats, volume, soundPack, freqMultiplier]
   );
 
-  const { metronome, beat: currentBeat } = useMetronome(spec);
+  const { metronome, beat: currentBeat, playing } = useMetronome(spec);
 
   // Load rhythm from URL hash on component mount
   useEffect(() => {
@@ -224,7 +224,7 @@ const MetronomeComponent = () => {
       />
       <div className={styles.ButtonGroup}>
         <Button onClick={togglePlaying}>
-          {metronome.isPlaying() ? "Stop" : "Play"}
+          {playing ? "Stop" : "Play"}
         </Button>
         <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
         <div className={styles.Spacer} />
