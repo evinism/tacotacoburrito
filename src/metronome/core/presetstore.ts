@@ -1,4 +1,4 @@
-import { Rhythm } from "./metronome";
+import { Rhythm } from "./engine";
 import { Beat } from "./types";
 
 export type PresetStore = {

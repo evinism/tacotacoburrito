@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MetronomeSpec, Metronome } from "./metronome";
+import { MetronomeSpec, Metronome } from "./core/engine";
 
 const useMetronome = (spec: MetronomeSpec) => {
   const [metronome] = useState<Metronome>(() => new Metronome(spec));

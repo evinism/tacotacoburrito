@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { usePersistentState } from "../../hooks";
-import { MetronomeSpec, Rhythm } from "../metronome";
-import { SoundPackId } from "../soundpacks";
-import { Beat, BeatFillMethod, Measures, BeatStrength } from "../types";
+import { MetronomeSpec, Rhythm } from "../core/engine";
+import { SoundPackId } from "../core/soundpacks";
+import { Beat, BeatFillMethod, Measures, BeatStrength } from "../core/types";
 
 import styles from "../index.module.css";
 

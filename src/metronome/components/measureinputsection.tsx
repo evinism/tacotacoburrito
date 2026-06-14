@@ -1,8 +1,8 @@
 import { Box, Input, InputLabel, Tooltip, FormHelperText } from "@mui/material";
 import { useEffect, useState } from "react";
-import { BeatFillMethod, Measures, BeatStrength } from "../types";
+import { BeatFillMethod, Measures, BeatStrength } from "../core/types";
 import styles from "../index.module.css";
-import { setAtIndex } from "../util";
+import { setAtIndex } from "../core/util";
 import { SmartTapButton } from "./smarttap";
 
 interface MeasureInputSectionProps {
