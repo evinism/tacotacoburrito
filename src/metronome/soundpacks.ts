@@ -6,10 +6,6 @@ export type GeneratorParameters = {
 type FreqSampleFnOptions = {
   duration: number;
   noise: number;
-  attack: number;
-  decay: number;
-  release: number;
-  sustain: number;
 };
 
 const makeFreqSampleFn =
