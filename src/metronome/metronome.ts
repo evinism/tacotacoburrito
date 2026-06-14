@@ -12,7 +12,6 @@ export type MetronomeSpec = Rhythm & {
   sound: {
     volume: number;
     soundPack: SoundPackId;
-    playbackRate: number;
     // Intentionally vague. Params passed to the generator.
     generatorParameters: GeneratorParameters;
   };
@@ -24,6 +23,9 @@ export class Metronome {
   _latestScheduledBeatTime: number;
   _startDelay: number = 0.01;
   _latestScheduledBeatIndex: number = -1;
+  // Duration of the most recently scheduled beat, captured at schedule time so
+  // the next beat's timing survives that beat being edited/deleted afterwards.
+  _latestScheduledBeatDuration: number = 1;
   _schedulerInterval: number = 0.005;
   _schedulerHorizon: number = 0.05;
   _schedulerId: NodeJS.Timeout | null = null;
@@ -42,7 +44,10 @@ export class Metronome {
   // Source of truth for what beats have played is the audioContext,
   // which is outside of the scheduler loop (and we probably shouldn't
   // poll it) so we need to keep track of what beats have played ourselves
-  _beatNotifierId: NodeJS.Timeout | null = null;
+  // All pending beat-notification timeouts. Several beats can be scheduled in a
+  // single look-ahead pass (fast tempos), so we track every timeout — otherwise
+  // stop() can only cancel the last one and earlier notifications fire after stop.
+  _beatNotifierIds: Set<NodeJS.Timeout> = new Set();
   _latestNotifiedBeat: number = -1;
   _beatNotifier: BeatNotifier = new Emitter();
   _playingNotifier: PlayingNotifier = new Emitter();
@@ -50,6 +55,7 @@ export class Metronome {
   constructor(spec: MetronomeSpec) {
     this.spec = spec;
     this.ensureAudioContext();
+    this._warmSoundPackCache();
   }
 
   makeAudioContext(spec: MetronomeSpec) {
@@ -95,7 +101,22 @@ export class Metronome {
     }
     this.spec = spec;
     this._gainNode.gain.value = spec.sound.volume;
+    this._warmSoundPackCache();
   }
+
+  // Generate (and cache) this spec's click buffers up front, so the scheduler
+  // loop only ever hits the memoized cache instead of synthesizing a buffer
+  // mid-schedule — which would risk a timing hitch on the audio path.
+  _warmSoundPackCache = () => {
+    const pack = soundPacks[this.spec.sound.soundPack];
+    for (const strength of ["strong", "weak"] as const) {
+      pack[strength](
+        this.audioContext.sampleRate,
+        this.audioContext,
+        this.spec.sound.generatorParameters,
+      );
+    }
+  };
 
   getBeat() {
     return this._latestNotifiedBeat;
@@ -124,6 +145,7 @@ export class Metronome {
     this._latestScheduledBeatTime =
       this.audioContext.currentTime + this._startDelay - 60 / this.spec.bpm;
     this._latestScheduledBeatIndex = -1;
+    this._latestScheduledBeatDuration = 1;
     this.handleScheduler();
     if (this._schedulerId) {
       clearInterval(this._schedulerId);
@@ -150,10 +172,10 @@ export class Metronome {
       clearInterval(this._schedulerId);
       this._schedulerId = null;
     }
-    if (this._beatNotifierId) {
-      clearTimeout(this._beatNotifierId);
-      this._beatNotifierId = null;
+    for (const id of this._beatNotifierIds) {
+      clearTimeout(id);
     }
+    this._beatNotifierIds.clear();
     // Cancel beats already scheduled within the look-ahead horizon so they
     // don't sound after stop. Closing the context used to do this for us, but
     // we now keep the context around to reuse it.
@@ -179,21 +201,13 @@ export class Metronome {
   }
 
   nextBeatToScheduleTime = () => {
-    // Duration is based on the most recently scheduled beat
-    let duration = 1;
-    const numBeats = multiLength(this.spec.beats);
-    const index = this._latestScheduledBeatIndex;
-    // BUG: If the last beat is deleted while we're on it,
-    // then its (now-deleted) duration won't be respected.
-    // you could fix it by like... making member _latestScheduledBeatDuration.
-    // I do not care enough to fix this.
-    if (index >= 0 && index < numBeats) {
-      const latest = multiIndex(this.spec.beats, index);
-      if (latest && latest.duration !== undefined) {
-        duration = latest.duration;
-      }
-    }
-    return this._latestScheduledBeatTime + (duration * 60) / this.spec.bpm;
+    // Spacing to the next beat is the duration of the most recently scheduled
+    // beat, captured when it was scheduled (in handleScheduler) rather than
+    // re-read here — so it stays correct even if that beat is since deleted.
+    return (
+      this._latestScheduledBeatTime +
+      (this._latestScheduledBeatDuration * 60) / this.spec.bpm
+    );
   };
 
   nextBeatToScheduleIndex = () => {
@@ -212,18 +226,21 @@ export class Metronome {
     while (this.nextBeatToScheduleTime() < horizon) {
       const nextBeatTime = this.nextBeatToScheduleTime();
       const nextBeatIndex = this.nextBeatToScheduleIndex();
-      this.scheduleClick(
-        multiIndex(this.spec.beats, nextBeatIndex).strength,
-        nextBeatTime,
-      );
+      const nextBeat = multiIndex(this.spec.beats, nextBeatIndex);
+      this.scheduleClick(nextBeat.strength, nextBeatTime);
       if (this._shouldNotifyBeatHit()) {
-        this._beatNotifierId = setTimeout(
-          () => this._notifyBeatHit(nextBeatIndex),
+        const id = setTimeout(
+          () => {
+            this._beatNotifierIds.delete(id);
+            this._notifyBeatHit(nextBeatIndex);
+          },
           (nextBeatTime - currentTime) * 1000,
         );
+        this._beatNotifierIds.add(id);
       }
       this._latestScheduledBeatTime = nextBeatTime;
       this._latestScheduledBeatIndex = nextBeatIndex;
+      this._latestScheduledBeatDuration = nextBeat.duration ?? 1;
     }
   }
 

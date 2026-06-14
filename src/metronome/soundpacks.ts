@@ -17,17 +17,19 @@ const makeFreqSampleFn =
   (
     sampleRate: number,
     audioCtx: AudioContext,
-    generatorsParams: GeneratorParameters
+    generatorsParams: GeneratorParameters,
   ): AudioBuffer => {
     const { duration = 0.05, noise = 0 } = options;
     const { freqMultiplier = 1 } = generatorsParams;
 
     const freqs = freqSpec.map((freq) => freq * freqMultiplier);
 
+    // Mono: the gain node feeds the destination directly with no panning, so a
+    // second channel would just duplicate the data (double the memory + sine work).
     const myArrayBuffer = audioCtx.createBuffer(
-      2,
+      1,
       sampleRate * duration,
-      sampleRate
+      sampleRate,
     );
 
     // Fill the buffer with white noise;
@@ -53,7 +55,7 @@ const makeFreqSampleFn =
     }
 
     return myArrayBuffer;
-  };
+  };;
 
 const cluster = (bottom, top, count) => {
   const range = top - bottom;
@@ -76,25 +78,38 @@ export type SoundPack = {
 
 export type SoundPackId = keyof typeof soundPacks;
 
-// Memoize buffer constructors to avoid regenerating buffers on every beat
+// Memoize buffer constructors to avoid regenerating buffers on every beat.
+// Bounded LRU: continuous params (e.g. the freqMultiplier slider) would
+// otherwise mint a new buffer per distinct value and grow the cache forever.
 function memoizeBufferConstructor(
-  constructor: BufferConstructor
+  constructor: BufferConstructor,
+  maxSize = 32,
 ): BufferConstructor {
   const cache = new Map<string, AudioBuffer>();
 
   return (
     sampleRate: number,
     audioCtx: AudioContext,
-    params: GeneratorParameters
+    params: GeneratorParameters,
   ): AudioBuffer => {
     // Key by sample rate and parameters
     const key = `${sampleRate}-${JSON.stringify(params)}`;
 
-    if (!cache.has(key)) {
-      cache.set(key, constructor(sampleRate, audioCtx, params));
+    const existing = cache.get(key);
+    if (existing) {
+      // Refresh recency: re-insert so this key becomes the most recent.
+      cache.delete(key);
+      cache.set(key, existing);
+      return existing;
     }
 
-    return cache.get(key)!;
+    const buffer = constructor(sampleRate, audioCtx, params);
+    cache.set(key, buffer);
+    if (cache.size > maxSize) {
+      // Evict the least-recently-used entry (Map iterates in insertion order).
+      cache.delete(cache.keys().next().value!);
+    }
+    return buffer;
   };
 }
 
