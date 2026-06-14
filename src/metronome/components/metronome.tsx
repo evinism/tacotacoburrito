@@ -15,7 +15,6 @@ import {
   IconButton,
   Divider,
   Tooltip,
-  Snackbar,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
@@ -28,6 +27,7 @@ import { MemoizedTempoSection } from "./temposection";
 import { MemoizedMeasuresSection } from "./measuressection";
 import SettingsPanel from "./settings";
 import MeasureInputSection from "./measureinputsection";
+import { useSnackbar } from "../snackbar";
 
 const toBeat = (strength: BeatStrength, duration: number = 1): Beat => {
   return {
@@ -81,7 +81,7 @@ const MetronomeComponent = () => {
   // Visual Sliders and Modals
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [presetsOpen, setPresetsOpen] = useState<boolean>(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
+  const { showSnackbar } = useSnackbar();
 
   const [freqMultiplier, setFreqMultiplier] = useState<number>(1);
   const [beatFill, setBeatFill] = usePersistentState<BeatFillMethod>(
@@ -115,7 +115,7 @@ const MetronomeComponent = () => {
       if (rhythm) {
         setBpm(rhythm.bpm);
         setBeats(rhythm.beats);
-        setSnackbarMessage("Rhythm loaded from URL");
+        showSnackbar("Rhythm loaded from URL");
       }
     }
   }, []);
@@ -170,7 +170,7 @@ const MetronomeComponent = () => {
                 const url = `${window.location.origin}${window.location.pathname}#rhythm-${base64}`;
                 const success = await copyToClipboard(url);
                 if (success) {
-                  setSnackbarMessage("Rhythm URL copied to clipboard");
+                  showSnackbar("Rhythm URL copied to clipboard");
                 }
               }}
             >
@@ -248,13 +248,6 @@ const MetronomeComponent = () => {
           bpm={bpm}
         />
       )}
-      <Snackbar
-        open={snackbarMessage !== ""}
-        autoHideDuration={2000}
-        onClose={() => setSnackbarMessage("")}
-        message={snackbarMessage}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      />
     </Paper>
   );
 };
