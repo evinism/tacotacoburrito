@@ -16,14 +16,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Layout
 - `src/app/` — App Router shell. `layout.tsx` (metadata, MUI cache provider, GA), `page.tsx` renders `src/metronome`. `globals.css`.
 - `src/metronome/` — the entire app.
-  - `metronome.ts` — **core audio engine** (`Metronome` class). Web Audio `AudioContext` look-ahead scheduler: a `setInterval` loop (`handleScheduler`) schedules clicks ~50ms ahead (`_schedulerHorizon`) for precise timing decoupled from JS timer jitter. Play/stop tear down and recreate the context to flush scheduled beats. Emits "current beat" via `setTimeout` so the UI can highlight (suppressed above 10000 BPM). Note: known unfixed bug commented around `nextBeatToScheduleTime` re: deleting the active last beat.
+  - `metronome.ts` — **core audio engine** (`Metronome` class). Web Audio `AudioContext` look-ahead scheduler: a `setInterval` loop (`handleScheduler`, every `_schedulerInterval` ≈ 5ms) schedules clicks up to `_schedulerHorizon` ≈ 50ms ahead, for precise timing decoupled from JS timer jitter. A single context is reused across play/stop: `play()` resumes it, `stop()` suspends it and cancels in-flight `_scheduledSources` so pending clicks don't sound; the context is only `close()`d in `cleanup()` (unmount). Emits "current beat" via `setTimeout` so the UI can highlight (suppressed at ≥10000 BPM, see `_shouldNotifyBeatHit`).
   - `usemetronome.ts` — `useMetronome(spec)` hook bridging the engine to React (holds a stable instance, calls `updateSpec`, subscribes to beat events, cleans up on unmount).
-  - `emitter.ts` — tiny generic pub/sub `Emitter<T>` used for beat notifications.
+  - `emitter.ts` — tiny generic pub/sub `Emitter<T>` used for beat (`BeatNotifier`) and playing-state (`PlayingNotifier`) notifications.
   - `soundpacks.ts` — generates click `AudioBuffer`s from sine-frequency clusters (memoized per sampleRate+params). Packs: `default`, `inverted`, `dirac`. `freqMultiplier` shifts pitch.
   - `types.ts` — `BeatStrength` (`strong`/`weak`/`off`), `Beat` (`{strength, duration}`), `Measure`/`Measures` (nested arrays), `BeatFillMethod`.
   - `presetstore.ts` — built-in rhythm library (Greek/Balkan/Turkish/etc. odd meters).
   - `util.ts` — math/stats helpers + **multi-array** helpers (`multiLength`, `multiIndex`, `toSplitIndex`) that treat `Measures` (array-of-arrays) as one flat indexable beat sequence.
-  - `smarttap/` — **rhythm inference** from tap timing. `methodone.ts` is a heuristic scorer pipeline: generate candidate cycles → score by timing/strength consistency & subdivision quality → quantize to a beat grid → reduce (halves/thirds) to a minimal pattern, returning `{beats, tempo, confidence}`.
+  - `smarttap/` — **rhythm inference** from tap timing. `methodone.ts` is a heuristic scorer pipeline: generate candidate cycles → score by timing/strength consistency & subdivision quality → quantize to a beat grid → reduce (halves/thirds) to a minimal pattern, returning a `Result<{beats, tempo}>` (i.e. `{value: {beats, tempo}, confidence}` or `undefined`).
   - `components/` — UI. `metronome.tsx` is the top-level component (owns `beats`/`bpm`/`volume`/etc. state, builds the `MetronomeSpec` memo, share/load via base64 URL hash `#rhythm-...`, play/clear). Others: tempo, measures grid (`measurecomponent`/`measuressection`), measure-spec input (`4+3+2`), `smarttap.tsx` (Tap Rhythm; `,`/`.` keys mark strong/weak), settings, presets/keybinds modals, and global keyboard/long-press listeners. Spacebar toggles play.
 
 ## Conventions & gotchas
