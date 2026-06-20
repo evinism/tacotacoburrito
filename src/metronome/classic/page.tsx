@@ -22,7 +22,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import ShareIcon from "@mui/icons-material/Share";
 import PresetModal from "./components/presetmodal";
-import GlobalKeydownListener from "./components/globalkeydownlistener";
+import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 import dynamic from "next/dynamic";
 import { MemoizedTempoSection } from "./components/temposection";
 import { MemoizedMeasuresSection } from "./components/measuressection";

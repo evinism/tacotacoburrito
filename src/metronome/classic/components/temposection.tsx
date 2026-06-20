@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import GlobalKeydownListener from "./globalkeydownlistener";
+import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";

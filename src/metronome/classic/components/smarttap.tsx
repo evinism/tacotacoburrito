@@ -1,6 +1,6 @@
 import { Button, CircularProgress, Tooltip, Typography } from "@mui/material";
 import { BeatStrength } from "@/metronome/core/types";
-import GlobalKeydownListener from "./globalkeydownlistener";
+import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 import { useEffect, useState } from "react";
 import inferRhythm from "@/metronome/core/smarttap/methodone";
 import { Science } from "@mui/icons-material";
