@@ -1,13 +1,13 @@
-import { memo, UIEvent, useRef, useState } from "react";
+import { memo, useState } from "react";
 import { Typography } from "@mui/material";
-import { setAtIndex, toSplitIndex } from "../core/util";
+import { setAtIndex, toSplitIndex } from "../../core/util";
 
 import ScheduleIcon from "@mui/icons-material/Schedule";
 
 import LongPressListener from "./longpresslistener";
 import styles from "../index.module.css";
 
-import { BeatFillMethod, Measure, Measures, BeatStrength } from "../core/types";
+import { BeatFillMethod, Measure, Measures, BeatStrength } from "../../core/types";
 import BeatContextMenu from "./beatmodmenu";
 
 const beatLookupOrder = {

@@ -15,9 +15,9 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import styles from "../index.module.css";
-import { PresetStore, defaultPresetStore } from "../core/presetstore";
-import { usePersistentState } from "../../hooks";
-import { BeatStrength, Measures } from "../core/types";
+import { PresetStore, defaultPresetStore } from "../../core/presetstore";
+import { usePersistentState } from "../../../hooks";
+import { Measures } from "../../core/types";
 import { useState } from "react";
 
 interface PresetModalProps {

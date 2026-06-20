@@ -4,7 +4,7 @@ import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 
 import styles from "./index.module.css";
 import MetronomeComponent from "./components/metronome";
-import { SnackbarProvider } from "./snackbar";
+import { SnackbarProvider } from "../snackbar";
 
 const darkTheme = createTheme({
   palette: {

@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { SoundPackId, soundPacks } from "../core/soundpacks";
+import { SoundPackId, soundPacks } from "../../core/soundpacks";
 import Keybinds from "./keybindsmodal";
 
 import styles from "../index.module.css";
 
 import { Button, Input, Grid, Slider, Select, MenuItem } from "@mui/material";
-import { BeatFillMethod } from "../core/types";
+import { BeatFillMethod } from "../../core/types";
 
 interface SettingsPanelProps {
   settingsOpen: boolean;
@@ -24,7 +24,6 @@ interface SettingsPanelProps {
 
 const SettingsPanel = ({
   settingsOpen,
-  setSettingsOpen,
   volume,
   setVolume,
   beatFill,
@@ -74,7 +73,7 @@ const SettingsPanel = ({
                   max={1}
                   step={0.01}
                   value={volume}
-                  onChange={(event, newValue) => {
+                  onChange={(_, newValue) => {
                     setVolume(newValue as number);
                   }}
                 />

@@ -1,10 +1,10 @@
 import { Button, CircularProgress, Tooltip, Typography } from "@mui/material";
-import { BeatStrength } from "../core/types";
+import { BeatStrength } from "../../core/types";
 import GlobalKeydownListener from "./globalkeydownlistener";
 import { useEffect, useState } from "react";
-import inferRhythm from "../core/smarttap/methodone";
+import inferRhythm from "../../core/smarttap/methodone";
 import { Science } from "@mui/icons-material";
-import { Measures } from "../core/types";
+import { Measures } from "../../core/types";
 
 const SMART_TAP_TIMEOUT = 2000;
 

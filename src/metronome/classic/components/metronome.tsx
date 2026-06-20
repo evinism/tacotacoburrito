@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { usePersistentState } from "../../hooks";
-import { MetronomeSpec, Rhythm } from "../core/engine";
-import { SoundPackId } from "../core/soundpacks";
-import { Beat, BeatFillMethod, Measures, BeatStrength } from "../core/types";
+import { usePersistentState } from "../../../hooks";
+import { MetronomeSpec, Rhythm } from "../../core/engine";
+import { SoundPackId } from "../../core/soundpacks";
+import { Beat, BeatFillMethod, Measures, BeatStrength } from "../../core/types";
 
 import styles from "../index.module.css";
 
@@ -22,12 +22,12 @@ import ShareIcon from "@mui/icons-material/Share";
 import PresetModal from "./presetmodal";
 import GlobalKeydownListener from "./globalkeydownlistener";
 import dynamic from "next/dynamic";
-import useMetronome from "../usemetronome";
+import useMetronome from "../../usemetronome";
 import { MemoizedTempoSection } from "./temposection";
 import { MemoizedMeasuresSection } from "./measuressection";
 import SettingsPanel from "./settings";
 import MeasureInputSection from "./measureinputsection";
-import { useSnackbar } from "../snackbar";
+import { useSnackbar } from "../../snackbar";
 
 const toBeat = (strength: BeatStrength, duration: number = 1): Beat => {
   return {

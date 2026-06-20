@@ -1,7 +1,6 @@
-import { ClickAwayListener, Popover, Slider, Typography } from "@mui/material";
+import { Popover, Slider } from "@mui/material";
 import styles from "../index.module.css";
-import { Beat } from "../core/types";
-import { on } from "events";
+import { Beat } from "../../core/types";
 
 
 const BeatContextMenu = ({
