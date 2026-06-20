@@ -1,9 +1,9 @@
 // First method for inferring rhythm from taps
 // Hodge-podge soup of heuristics, based on tap times rather than beat durations.
 
-import { getMean, getVariance, maxBy, transpose, getMedian } from "../util";
+import { getMean, getVariance, maxBy, transpose, getMedian } from "@/metronome/core/util";
 import { BeatClick, RhythmInferenceMethod } from ".";
-import { Beat, BeatStrength } from "../types";
+import { Beat, BeatStrength } from "@/metronome/core/types";
 
 type Result<T> = {
   value: T;

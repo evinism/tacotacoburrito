@@ -14,10 +14,10 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import styles from "../classic.module.css";
-import { PresetStore, defaultPresetStore } from "../../core/presetstore";
-import { usePersistentState } from "../../../hooks";
-import { Measures } from "../../core/types";
+import styles from "@/metronome/classic/classic.module.css";
+import { PresetStore, defaultPresetStore } from "@/metronome/core/presetstore";
+import { usePersistentState } from "@/hooks";
+import { Measures } from "@/metronome/core/types";
 import { useState } from "react";
 
 interface PresetModalProps {

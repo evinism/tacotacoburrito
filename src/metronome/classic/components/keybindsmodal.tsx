@@ -9,7 +9,7 @@ import {
 
 import SpaceBarIcon from "@mui/icons-material/SpaceBar";
 
-import styles from "../classic.module.css";
+import styles from "@/metronome/classic/classic.module.css";
 
 const K = ({ children }) => (
   <span className={styles.KeyRepresentation}>{children}</span>

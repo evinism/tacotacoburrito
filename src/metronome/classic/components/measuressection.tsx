@@ -1,9 +1,9 @@
 import { memo } from "react";
 import { Typography } from "@mui/material";
-import { usePersistentState } from "../../../hooks";
-import { BeatFillMethod, Measures } from "../../core/types";
+import { usePersistentState } from "@/hooks";
+import { BeatFillMethod, Measures } from "@/metronome/core/types";
 import { MemoizedMeasureComponent } from "./measurecomponent";
-import styles from "../classic.module.css";
+import styles from "@/metronome/classic/classic.module.css";
 
 interface MeasuresSectionProps {
   beats: Measures;

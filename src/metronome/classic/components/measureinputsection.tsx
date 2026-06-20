@@ -1,7 +1,7 @@
 import { Box, Input, InputLabel, Tooltip } from "@mui/material";
 import { useState } from "react";
-import { BeatFillMethod, Measures } from "../../core/types";
-import styles from "../classic.module.css";
+import { BeatFillMethod, Measures } from "@/metronome/core/types";
+import styles from "@/metronome/classic/classic.module.css";
 import { SmartTapButton } from "./smarttap";
 
 interface MeasureInputSectionProps {

@@ -1,6 +1,6 @@
 import { Popover, Slider } from "@mui/material";
-import styles from "../classic.module.css";
-import { Beat } from "../../core/types";
+import styles from "@/metronome/classic/classic.module.css";
+import { Beat } from "@/metronome/core/types";
 
 
 const BeatContextMenu = ({

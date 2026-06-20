@@ -1,4 +1,4 @@
-import { Beat, BeatStrength } from "../types";
+import { Beat, BeatStrength } from "@/metronome/core/types";
 import methodOne from "./methodone";
 
 export type BeatClick = {
