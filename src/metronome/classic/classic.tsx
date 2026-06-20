@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { usePersistentState } from "../../../hooks";
-import { MetronomeSpec, Rhythm } from "../../core/engine";
-import { SoundPackId } from "../../core/soundpacks";
-import { Beat, BeatFillMethod, Measures, BeatStrength } from "../../core/types";
+import { usePersistentState } from "../../hooks";
+import { MetronomeSpec, Rhythm } from "../core/engine";
+import { SoundPackId } from "../core/soundpacks";
+import { Beat, BeatFillMethod, Measures, BeatStrength } from "../core/types";
 
-import styles from "../classic.module.css";
+import styles from "./classic.module.css";
 
 import {
   Button,
@@ -19,15 +19,15 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import ShareIcon from "@mui/icons-material/Share";
-import PresetModal from "./presetmodal";
-import GlobalKeydownListener from "./globalkeydownlistener";
+import PresetModal from "./components/presetmodal";
+import GlobalKeydownListener from "./components/globalkeydownlistener";
 import dynamic from "next/dynamic";
-import useMetronome from "../../usemetronome";
-import { MemoizedTempoSection } from "./temposection";
-import { MemoizedMeasuresSection } from "./measuressection";
-import SettingsPanel from "./settings";
-import MeasureInputSection from "./measureinputsection";
-import { useSnackbar } from "../../snackbar";
+import useMetronome from "../usemetronome";
+import { MemoizedTempoSection } from "./components/temposection";
+import { MemoizedMeasuresSection } from "./components/measuressection";
+import SettingsPanel from "./components/settings";
+import MeasureInputSection from "./components/measureinputsection";
+import { useSnackbar } from "../snackbar";
 
 const toBeat = (strength: BeatStrength, duration: number = 1): Beat => {
   return {
