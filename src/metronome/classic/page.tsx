@@ -140,7 +140,7 @@ const MetronomeComponent = () => {
   };
 
   return (
-    <Paper className={styles.AppInner} elevation={4}>
+    <Paper className={styles.Classic} elevation={4}>
       <div className={styles.TitleLine}>
         <div>
           <Typography variant="h5" className={styles.Title}>
@@ -223,9 +223,7 @@ const MetronomeComponent = () => {
         currentBeat={currentBeat}
       />
       <div className={styles.ButtonGroup}>
-        <Button onClick={togglePlaying}>
-          {playing ? "Stop" : "Play"}
-        </Button>
+        <Button onClick={togglePlaying}>{playing ? "Stop" : "Play"}</Button>
         <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
         <div className={styles.Spacer} />
         <Button onClick={clear}>Clear</Button>

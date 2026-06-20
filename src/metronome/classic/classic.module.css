@@ -24,17 +24,17 @@
   height: 48px;
 }
 
-.AppInner hr {
+.Classic hr {
   margin: 1rem 0;
   opacity: 1;
   transition: 0.2s linear;
 }
 
-.AppInner hr.Invisible {
+.Classic hr.Invisible {
   opacity: 0;
 }
 
-.AppInner {
+.Classic {
   z-index: 1;
   max-width: 600px;
   padding: 2rem;
@@ -233,7 +233,7 @@
 }
 
 
-.AppInner :global(.MuiCircularProgress-circle) {
+.Classic :global(.MuiCircularProgress-circle) {
   transition: none;
 }
 

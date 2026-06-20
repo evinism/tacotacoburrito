@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 
 import { SnackbarProvider } from "../snackbar";
-import styles from "./basic.module.css";
+import styles from "./layout.module.css";
 
 const darkTheme = createTheme({
   palette: {
