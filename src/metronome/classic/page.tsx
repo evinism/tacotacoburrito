@@ -72,12 +72,27 @@ const copyToClipboard = async (text: string): Promise<boolean> => {
 };
 
 const MetronomeComponent = () => {
-  const [beats, setBeats] = usePersistentState<Measures>("beats", defaultBeats);
-  const [bpm, setBpm] = usePersistentState<number>("bpm", 120);
-  const [volume, setVolume] = usePersistentState<number>("volume", 1);
+  const [beats, setBeats] = usePersistentState<Measures>(
+    "classic/beats",
+    defaultBeats,
+    0,
+    "beats"
+  );
+  const [bpm, setBpm] = usePersistentState<number>("classic/bpm", 120, 0, "bpm");
+  const [volume, setVolume] = usePersistentState<number>(
+    "classic/volume",
+    1,
+    0,
+    "volume"
+  );
   const [soundPack, setSoundPack] = useState<SoundPackId>("default");
   const [beatAccentChangeDirection, setBeatAccentChangeDirection] =
-    usePersistentState<"up" | "down">("beatAccentChangeDirection", "up");
+    usePersistentState<"up" | "down">(
+      "classic/beatAccentChangeDirection",
+      "up",
+      0,
+      "beatAccentChangeDirection"
+    );
 
   // Visual Sliders and Modals
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
@@ -86,8 +101,10 @@ const MetronomeComponent = () => {
 
   const [freqMultiplier, setFreqMultiplier] = useState<number>(1);
   const [beatFill, setBeatFill] = usePersistentState<BeatFillMethod>(
-    "beatFillMethod",
-    "copyEnd"
+    "classic/beatFillMethod",
+    "copyEnd",
+    0,
+    "beatFillMethod"
   );
 
   const spec: MetronomeSpec = useMemo(
