@@ -1,0 +1,133 @@
+.SkipMeasure {
+  z-index: 1;
+  max-width: 600px;
+  padding: 2rem;
+  background-color: #444444;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: auto;
+}
+
+.Title {
+  filter: saturate(0.5);
+}
+
+.SubTitle {
+  color: #666666;
+}
+
+.SkipMeasure hr {
+  margin: 1rem 0;
+  opacity: 1;
+}
+
+/*
+  Kinda Special group that replaces the annoyances of grid everywhere
+  Expects a margin-able thing beneath it.
+*/
+.HorizontalGroup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.HorizontalGroup > * {
+  margin: 8px;
+}
+
+.Spacer {
+  flex-grow: 1;
+}
+
+.BPMNumberInput {
+  max-width: 60px;
+}
+
+.ShortNumberInput {
+  max-width: 70px;
+}
+
+.ButtonGroup {
+  display: flex;
+}
+
+/* The measure / beat visualization */
+.MeasureGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.5rem 0 0.5rem 0;
+}
+
+.Measure {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.75rem;
+  border: 1px dotted #666;
+  transition: border-color 0.1s, background-color 0.1s;
+}
+
+.Measure.silent {
+  border-style: dashed;
+  opacity: 0.55;
+}
+
+.Measure.activeMeasure {
+  border-color: #fff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.Beat {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background-color: #777;
+  transition: transform 0.05s, background-color 0.05s;
+}
+
+.Beat.strong {
+  background-color: #aaa;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.Measure.silent .Beat {
+  background-color: transparent;
+  border: 2px solid #777;
+}
+
+.Beat.active {
+  background-color: #fff;
+  transform: scale(1.25);
+}
+
+.Measure.silent .Beat.active {
+  border-color: #fff;
+  background-color: transparent;
+}
+
+.StatusLabel {
+  font-style: italic;
+  color: #888;
+  min-height: 1.25rem;
+}
+
+.Footer {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: flex;
+  filter: saturate(0.5);
+  justify-content: center;
+  width: 100%;
+}
+
+.Footer p {
+  display: block;
+  padding: 1rem 0.5rem;
+}
