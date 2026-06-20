@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { usePersistentState } from "../../hooks";
+import { usePersistentState, useMetronome } from "../../hooks";
 import { MetronomeSpec, Rhythm } from "../core/engine";
 import { SoundPackId } from "../core/soundpacks";
 import { Beat, BeatFillMethod, Measures, BeatStrength } from "../core/types";
@@ -23,7 +23,6 @@ import ShareIcon from "@mui/icons-material/Share";
 import PresetModal from "./components/presetmodal";
 import GlobalKeydownListener from "./components/globalkeydownlistener";
 import dynamic from "next/dynamic";
-import useMetronome from "../usemetronome";
 import { MemoizedTempoSection } from "./components/temposection";
 import { MemoizedMeasuresSection } from "./components/measuressection";
 import SettingsPanel from "./components/settings";
