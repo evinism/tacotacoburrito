@@ -2,7 +2,7 @@ import { useState } from "react";
 import { SoundPackId, soundPacks } from "../../core/soundpacks";
 import Keybinds from "./keybindsmodal";
 
-import styles from "../index.module.css";
+import styles from "../classic.module.css";
 
 import { Button, Input, Grid, Slider, Select, MenuItem } from "@mui/material";
 import { BeatFillMethod } from "../../core/types";

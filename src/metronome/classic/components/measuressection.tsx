@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 import { usePersistentState } from "../../../hooks";
 import { BeatFillMethod, Measures } from "../../core/types";
 import { MemoizedMeasureComponent } from "./measurecomponent";
-import styles from "../index.module.css";
+import styles from "../classic.module.css";
 
 interface MeasuresSectionProps {
   beats: Measures;

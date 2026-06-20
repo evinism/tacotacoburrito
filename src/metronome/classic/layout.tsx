@@ -1,10 +1,10 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 
-import styles from "./index.module.css";
-import MetronomeComponent from "./components/metronome";
 import { SnackbarProvider } from "../snackbar";
+import styles from "./classic.module.css";
 
 const darkTheme = createTheme({
   palette: {
@@ -12,18 +12,19 @@ const darkTheme = createTheme({
   },
 });
 
-const App = () => {
+// The classic frontend's own shell: theme, snackbar, and backdrop. Each
+// frontend owns its layout, so a sibling frontend can ship a different
+// theme/backdrop without touching this one.
+export default function ClassicLayout({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <SnackbarProvider>
         <div className={styles.App}>
           <div className={styles.Background} />
-          <MetronomeComponent />
+          {children}
         </div>
       </SnackbarProvider>
     </ThemeProvider>
   );
-};
-
-export default App;
+}

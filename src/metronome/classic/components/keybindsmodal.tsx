@@ -9,7 +9,7 @@ import {
 
 import SpaceBarIcon from "@mui/icons-material/SpaceBar";
 
-import styles from "../index.module.css";
+import styles from "../classic.module.css";
 
 const K = ({ children }) => (
   <span className={styles.KeyRepresentation}>{children}</span>

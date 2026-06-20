@@ -4,7 +4,7 @@ import GlobalKeydownListener from "./globalkeydownlistener";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
-import styles from "../index.module.css";
+import styles from "../classic.module.css";
 
 import {
   Button,

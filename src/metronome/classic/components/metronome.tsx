@@ -6,7 +6,7 @@ import { MetronomeSpec, Rhythm } from "../../core/engine";
 import { SoundPackId } from "../../core/soundpacks";
 import { Beat, BeatFillMethod, Measures, BeatStrength } from "../../core/types";
 
-import styles from "../index.module.css";
+import styles from "../classic.module.css";
 
 import {
   Button,

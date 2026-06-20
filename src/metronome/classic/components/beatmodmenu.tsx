@@ -1,5 +1,5 @@
 import { Popover, Slider } from "@mui/material";
-import styles from "../index.module.css";
+import styles from "../classic.module.css";
 import { Beat } from "../../core/types";
 
 
