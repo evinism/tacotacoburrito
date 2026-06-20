@@ -1,3 +1,14 @@
+# TacoTacoBurrito
+A simple metronome for not-so-simple times
+
+The primary TacoTacoBurrito interface consists of a fairly well-tuned metronome, a UI for composing complicated beat patterns, and a nice preset store for easy use. TacoTacoBurrito is also easily extensible. Make metronomes that fit whatever your use case is! Have a blast!
+
+### AI Slop
+
+TacoTacoBurrito is well-tuned for AI slop contributions. Ask "Make a new frontend that does (whatever)" and a well-tuned AI agent should be able to slap one together quickly and easily, with no manual intervention. I'm in general gonna be pretty happy to merge AI slop (as long as it doesn't affect core functionality).
+
+## next.js info:
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
