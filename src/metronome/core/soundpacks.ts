@@ -1,6 +1,6 @@
 // Intentionally vague. Params passed to the generator.
 export type GeneratorParameters = {
-  [key: string]: any;
+  [key: string]: number;
 };
 
 type FreqSampleFnOptions = {

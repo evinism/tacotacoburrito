@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 
-export const usePersistentState = <T = any>(
+export const usePersistentState = <T = unknown>(
   key: string,
   initial: T,
   pollInterval: number = 0,
@@ -12,7 +12,7 @@ export const usePersistentState = <T = any>(
 ): [T, (newState: T) => void] => {
   const lsKey = `persistentState/${key}`;
   const legacyKey = migrateFrom ? `persistentState/${migrateFrom}` : undefined;
-  const getStoredOrInitial = () => {
+  const getStoredOrInitial = useCallback((): T => {
     const stored = localStorage.getItem(lsKey);
     if (stored !== null) {
       return JSON.parse(stored);
@@ -25,8 +25,8 @@ export const usePersistentState = <T = any>(
       }
     }
     return initial;
-  };
-  const internalInitial = useMemo(getStoredOrInitial, [lsKey, initial]);
+  }, [lsKey, legacyKey, initial]);
+  const internalInitial = useMemo(() => getStoredOrInitial(), [getStoredOrInitial]);
 
   const [state, setInternalState] = useState<T>(internalInitial);
   useEffect(() => {
@@ -42,7 +42,7 @@ export const usePersistentState = <T = any>(
         clearInterval(intervalId);
       }
     };
-  }, [pollInterval]);
+  }, [pollInterval, getStoredOrInitial]);
   const setState = (newState: T) => {
     setInternalState(newState);
     localStorage.setItem(lsKey, JSON.stringify(newState));

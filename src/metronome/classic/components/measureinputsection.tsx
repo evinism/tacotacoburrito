@@ -31,11 +31,11 @@ const MeasureInputSection = ({
   setBpm,
 }: MeasureInputSectionProps) => {
   // On blur, requested size defaults back to whatever the underlying beats array says.
-  let [measureSpec, setMeasureSpec] = useState<string | void>();
-
-  if (measureSpec === undefined) {
-    measureSpec = renderMeasureSpec(beats);
-  }
+  const [storedMeasureSpec, setMeasureSpec] = useState<string | void>();
+  const measureSpec =
+    storedMeasureSpec === undefined
+      ? renderMeasureSpec(beats)
+      : storedMeasureSpec;
 
   const handleBump = (direction: "up" | "down") => {
     const parsed = parseMeasureSpec(measureSpec || "");

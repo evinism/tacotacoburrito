@@ -92,8 +92,9 @@ const SmartTapButton = ({ setBpm, setBeats }: SmartTapButtonProps) => {
               Repeat the pattern at least twice.
             </Typography>
             <Typography variant="body2">
-              Keyboard users can tap the "," and "." keys to mark strong and
-              weak beats respectively, which can improve accuracy.
+              Keyboard users can tap the &quot;,&quot; and &quot;.&quot; keys to
+              mark strong and weak beats respectively, which can improve
+              accuracy.
             </Typography>
           </>
         }

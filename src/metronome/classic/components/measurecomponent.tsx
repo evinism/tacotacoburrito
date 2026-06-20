@@ -52,7 +52,7 @@ const MeasureComponent = ({
     innerCurrentBeat = beatNum;
   }
 
-  let measure = beats[measureIndex];
+  const measure = beats[measureIndex];
 
   const changeBeatStrength = (index: number, strength: BeatStrength) => {
     const newMeasure: Measure = measure.map((beat, i) =>
@@ -99,20 +99,18 @@ const MeasureComponent = ({
       )}
       <div className={styles.BeatArray}>
         {measure.map((beat, index) => (
-          <>
-            <Beat
-              key={index}
-              index={index}
-              beat={beat}
-              active={index === innerCurrentBeat}
-              rotateBeatStrength={() =>
-                rotateBeatStrength(index, beatAccentChangeDirection)
-              }
-              changeBeatDuration={(duration: number) =>
-                changeBeatDuration(index, duration)
-              }
-            />
-          </>
+          <Beat
+            key={index}
+            index={index}
+            beat={beat}
+            active={index === innerCurrentBeat}
+            rotateBeatStrength={() =>
+              rotateBeatStrength(index, beatAccentChangeDirection)
+            }
+            changeBeatDuration={(duration: number) =>
+              changeBeatDuration(index, duration)
+            }
+          />
         ))}
       </div>
     </>

@@ -8,10 +8,11 @@ import {
 } from "@mui/material";
 
 import SpaceBarIcon from "@mui/icons-material/SpaceBar";
+import { ReactNode } from "react";
 
 import styles from "@/metronome/classic/classic.module.css";
 
-const K = ({ children }) => (
+const K = ({ children }: { children: ReactNode }) => (
   <span className={styles.KeyRepresentation}>{children}</span>
 );
 
@@ -22,14 +23,14 @@ const Keybinds = ({ close }: { close: () => void }) => {
         <Typography variant="h5">Keyboard Shortcuts</Typography>
         <List>
           {[
-            [<SpaceBarIcon />, "Play / Pause"],
+            [<SpaceBarIcon key="space" />, "Play / Pause"],
             ["←", "Decrease Tempo"],
             ["→", "Increase Tempo"],
             ["/", "Tap Tempo"],
             [",", "Tap Rhythm (Strong Beat)"],
             [".", "Tap Rhythm (Weak Beat)"],
           ].map(([key, description]) => (
-            <ListItem className={styles.KBSLine}>
+            <ListItem key={String(description)} className={styles.KBSLine}>
               <K>{key}</K> <span>{description}</span>
             </ListItem>
           ))}

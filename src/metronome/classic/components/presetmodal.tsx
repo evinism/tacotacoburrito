@@ -18,7 +18,7 @@ import styles from "@/metronome/classic/classic.module.css";
 import { PresetStore, defaultPresetStore } from "@/metronome/core/presetstore";
 import { usePersistentState } from "@/hooks";
 import { Measures } from "@/metronome/core/types";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 interface PresetModalProps {
   close: () => void;
@@ -80,10 +80,11 @@ const PresetModal = ({
               return null;
             }
             return (
-              <>
+              <Fragment key={groupName}>
                 <ListSubheader>{groupName}</ListSubheader>
                 {entries.map(([name, spec]) => (
                   <ListItem
+                    key={name}
                     secondaryAction={
                       groupName === "User Presets" && (
                         <IconButton
@@ -117,7 +118,7 @@ const PresetModal = ({
                     </ListItemButton>
                   </ListItem>
                 ))}
-              </>
+              </Fragment>
             );
           })}
         </List>

@@ -31,7 +31,7 @@ const getNormalizedCycles = (candidate: CandidateCycle) => {
 };
 
 // --- Scorers for determining cycles ---
-type TupleBase = [any, ...any];
+type TupleBase = [unknown, ...unknown[]];
 type Scorer<T extends TupleBase> = (...args: T) => number;
 type CycleScorer = Scorer<[CandidateCycle]>;
 type BeatScorer = Scorer<[CandidateCycle, number]>;
@@ -183,7 +183,7 @@ const quantize = (
 
   // Magic Sauce -- should probably in scorer
   const confidence = mean / candidate.cycleTime;
-  let beatArray = Array(beatCount).fill("off");
+  const beatArray = Array(beatCount).fill("off");
   for (let i = 0; i < subdivisions.length; i++) {
     beatArray[subdivisions[i].beatIndex] = candidate.cycles[0][i].strength;
   }
@@ -194,7 +194,7 @@ const quantize = (
 };
 
 function generateCandidateCycles(clicks: BeatClick[]): CandidateCycle[] {
-  let candidateCycles: CandidateCycle[] = [];
+  const candidateCycles: CandidateCycle[] = [];
   // We assume 2 full repeats of the cycle
   // We should probably max out at around 16 beats per cycle
   for (
@@ -238,7 +238,7 @@ const candidateToBeats = (
 
   const bestBeatCount = maxBy(scoredCycles, (cycle) => cycle.score);
 
-  let quantized = quantize(candidate, bestBeatCount.count);
+  const quantized = quantize(candidate, bestBeatCount.count);
   if (quantized === undefined) {
     return undefined;
   }

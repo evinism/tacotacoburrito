@@ -23,7 +23,7 @@ export const useMetronome = (spec: MetronomeSpec) => {
       metronome.unsubscribeFromBeat(beatCallback);
       metronome.unsubscribeFromPlaying(playingCallback);
     };
-  }, []);
+  }, [metronome]);
 
   // Cleanup on unmount
   useEffect(() => {

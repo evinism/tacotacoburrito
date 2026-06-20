@@ -136,6 +136,9 @@ const MetronomeComponent = () => {
         showSnackbar("Rhythm loaded from URL");
       }
     }
+    // Run once on mount: this reads the initial URL hash to seed state, and
+    // must not re-run when the (unmemoized) setters or showSnackbar change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const togglePlaying = () => {

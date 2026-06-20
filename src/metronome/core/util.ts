@@ -20,10 +20,10 @@ export const maxBy = <T>(arr: T[], fn: (t: T) => number): T => {
 };
 
 export const transpose = <T>(matrix: T[][]) => {
-  let transposed = Array(matrix[0].length)
+  const transposed = Array(matrix[0].length)
     .fill(undefined)
     .map(() => []);
-  for (let cycle of matrix) {
+  for (const cycle of matrix) {
     for (let i = 0; i < cycle.length; i++) {
       transposed[i].push(cycle[i]);
     }
