@@ -1,0 +1,65 @@
+.Simple {
+  z-index: 1;
+  max-width: 600px;
+  padding: 2rem;
+  background-color: #444444;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: auto;
+}
+
+.Title {
+  filter: saturate(0.5);
+}
+
+.SubTitle {
+  color: #666666;
+}
+
+.Simple hr {
+  margin: 1rem 0;
+  opacity: 1;
+}
+
+/*
+  Kinda Special group that replaces the annoyances of grid everywhere
+  Expects a margin-able thing beneath it.
+*/
+.HorizontalGroup {
+  display: flex;
+  align-items: center;
+}
+
+.HorizontalGroup > * {
+  margin: 8px;
+}
+
+.Spacer {
+  flex-grow: 1;
+}
+
+.BPMNumberInput {
+  max-width: 60px;
+}
+
+.ButtonGroup {
+  display: flex;
+}
+
+.Footer {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: flex;
+  filter: saturate(0.5);
+  justify-content: center;
+  width: 100%;
+}
+
+.Footer p {
+  display: block;
+  padding: 1rem 0.5rem;
+}

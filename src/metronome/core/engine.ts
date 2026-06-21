@@ -8,14 +8,30 @@ export type Rhythm = {
   bpm: number;
 };
 
-export type MetronomeSpec = Rhythm & {
-  sound: {
-    volume: number;
-    soundPack: SoundPackId;
-    // Intentionally vague. Params passed to the generator.
-    generatorParameters: GeneratorParameters;
-  };
+export type SoundSpec = {
+  volume: number;
+  soundPack: SoundPackId;
+  // Intentionally vague. Params passed to the generator.
+  generatorParameters: GeneratorParameters;
 };
+
+export const DEFAULT_SOUND: SoundSpec = {
+  volume: 1,
+  soundPack: "default",
+  generatorParameters: {},
+};
+
+export type MetronomeSpec = Rhythm & {
+  // Sound is optional; omitted fields fall back to DEFAULT_SOUND. A frontend
+  // that just wants the default click can pass only { bpm, beats }.
+  sound?: Partial<SoundSpec>;
+};
+
+// Resolve a spec's (possibly partial / absent) sound against the defaults.
+const resolveSound = (spec: MetronomeSpec): SoundSpec => ({
+  ...DEFAULT_SOUND,
+  ...spec.sound,
+});
 
 export class Metronome {
   audioContext: AudioContext;
@@ -63,7 +79,7 @@ export class Metronome {
       latencyHint: "interactive",
     });
     const gainNode = audioContext.createGain();
-    gainNode.gain.value = spec.sound.volume;
+    gainNode.gain.value = resolveSound(spec).volume;
     gainNode.connect(audioContext.destination);
     audioContext.suspend();
     return { audioContext, gainNode };
@@ -100,7 +116,7 @@ export class Metronome {
       this._notifyBeatHit(-1);
     }
     this.spec = spec;
-    this._gainNode.gain.value = spec.sound.volume;
+    this._gainNode.gain.value = resolveSound(spec).volume;
     this._warmSoundPackCache();
   }
 
@@ -108,12 +124,13 @@ export class Metronome {
   // loop only ever hits the memoized cache instead of synthesizing a buffer
   // mid-schedule — which would risk a timing hitch on the audio path.
   _warmSoundPackCache = () => {
-    const pack = soundPacks[this.spec.sound.soundPack];
+    const sound = resolveSound(this.spec);
+    const pack = soundPacks[sound.soundPack];
     for (const strength of ["strong", "weak"] as const) {
       pack[strength](
         this.audioContext.sampleRate,
         this.audioContext,
-        this.spec.sound.generatorParameters,
+        sound.generatorParameters,
       );
     }
   };
@@ -249,10 +266,11 @@ export class Metronome {
       return;
     }
     // Get buffer from soundpack (automatically cached via memoization)
-    const buffer = soundPacks[this.spec.sound.soundPack][strength](
+    const sound = resolveSound(this.spec);
+    const buffer = soundPacks[sound.soundPack][strength](
       this.audioContext.sampleRate,
       this.audioContext,
-      this.spec.sound.generatorParameters,
+      sound.generatorParameters,
     );
 
     // Create source from cached buffer

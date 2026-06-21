@@ -1,5 +1,11 @@
-import { memo, useState } from "react";
+import { memo } from "react";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
+import { useTapTempo } from "@/metronome/shared/usetaptempo";
+import {
+  scaleBPM,
+  invScaleBPM,
+  TEMPO_SLIDER_MAX,
+} from "@/metronome/core/tempo";
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -16,21 +22,6 @@ import {
   Tooltip,
 } from "@mui/material";
 
-// 0 - 1000 to exponential 20 - 800
-const MIN_BPM = 40;
-const MAX_BPM = 800;
-// Dr. Shemetov et al. invariants (2024) (remastered) [HD]
-const C = MIN_BPM;
-const a = Math.log(MAX_BPM / MIN_BPM) / 1000;
-
-const scaleBPM = (value: number) => {
-  return C * Math.exp(a * value);
-};
-
-const invScaleBPM = (value: number) => {
-  return Math.log(value / C) / a;
-};
-
 const ttConfig = {
   enterDelay: 500,
 };
@@ -44,26 +35,7 @@ const TempoSection = ({ bpm, setBpm }: TempoSectionProps) => {
   const handleSliderChange = (_: Event, newValue: number | number[]) => {
     setBpm(scaleBPM(newValue as number));
   };
-  const [tapTimeHistory, setTapTimeHistory] = useState<number[]>([]);
-  const handleTapTempoClick = () => {
-    const currentTime = new Date().getTime();
-    let recentTaps = tapTimeHistory.filter(
-      (tapTime) => currentTime - tapTime < 5000
-    );
-    recentTaps.push(currentTime);
-    recentTaps = recentTaps.slice(-6);
-    const tapGaps = [];
-    for (let i = 1; i < recentTaps.length; i++) {
-      tapGaps.push(recentTaps[i] - recentTaps[i - 1]);
-    }
-    if (tapGaps.length > 0) {
-      const averageTimeBetweenTaps =
-        tapGaps.reduce((a, b) => a + b, 0) / tapGaps.length;
-      const newBpm = Math.round(60000 / averageTimeBetweenTaps);
-      setBpm(newBpm);
-    }
-    setTapTimeHistory(recentTaps);
-  };
+  const handleTapTempoClick = useTapTempo(setBpm);
 
   const modTempo = (fraction: number) => () => {
     setBpm(bpm * fraction);
@@ -127,7 +99,7 @@ const TempoSection = ({ bpm, setBpm }: TempoSectionProps) => {
       <Box className={styles.HorizontalGroup}>
         <Slider
           min={0}
-          max={1000}
+          max={TEMPO_SLIDER_MAX}
           value={invScaleBPM(bpm)}
           onChange={handleSliderChange}
           aria-labelledby="input-slider"

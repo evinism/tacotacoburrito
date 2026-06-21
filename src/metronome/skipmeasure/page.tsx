@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import dynamic from "next/dynamic";
 
 import { usePersistentState } from "@/hooks";
 import { useMetronome } from "@/metronome/shared/usemetronome";
+import { useTapTempo } from "@/metronome/shared/usetaptempo";
 import { MetronomeSpec } from "@/metronome/core/engine";
+import { scaleBPM, invScaleBPM, TEMPO_SLIDER_MAX } from "@/metronome/core/tempo";
 import { Beat, Measure, Measures } from "@/metronome/core/types";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
@@ -25,14 +27,6 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-
-// Exponential BPM slider (0 - 1000 -> MIN_BPM - MAX_BPM).
-const MIN_BPM = 40;
-const MAX_BPM = 800;
-const C = MIN_BPM;
-const a = Math.log(MAX_BPM / MIN_BPM) / 1000;
-const scaleBPM = (value: number) => C * Math.exp(a * value);
-const invScaleBPM = (value: number) => Math.log(value / C) / a;
 
 const ttConfig = {
   enterDelay: 500,
@@ -75,18 +69,7 @@ const SkipMeasureMetronome = () => {
     ];
   }, [beatsPerMeasure, playMeasures, silentMeasures]);
 
-  const spec: MetronomeSpec = useMemo(
-    () => ({
-      bpm,
-      beats,
-      sound: {
-        volume: 1,
-        soundPack: "default",
-        generatorParameters: {},
-      },
-    }),
-    [bpm, beats]
-  );
+  const spec: MetronomeSpec = useMemo(() => ({ bpm, beats }), [bpm, beats]);
 
   const { metronome, beat: currentBeat, playing } = useMetronome(spec);
 
@@ -106,25 +89,7 @@ const SkipMeasureMetronome = () => {
     setBpm(scaleBPM(newValue as number));
   };
 
-  const [tapTimeHistory, setTapTimeHistory] = useState<number[]>([]);
-  const handleTapTempoClick = () => {
-    const currentTime = new Date().getTime();
-    let recentTaps = tapTimeHistory.filter(
-      (tapTime) => currentTime - tapTime < 5000
-    );
-    recentTaps.push(currentTime);
-    recentTaps = recentTaps.slice(-6);
-    const tapGaps = [];
-    for (let i = 1; i < recentTaps.length; i++) {
-      tapGaps.push(recentTaps[i] - recentTaps[i - 1]);
-    }
-    if (tapGaps.length > 0) {
-      const averageTimeBetweenTaps =
-        tapGaps.reduce((x, y) => x + y, 0) / tapGaps.length;
-      setBpm(Math.round(60000 / averageTimeBetweenTaps));
-    }
-    setTapTimeHistory(recentTaps);
-  };
+  const handleTapTempoClick = useTapTempo(setBpm);
 
   // currentBeat is a flat index across all measures (all equal length here).
   const activeMeasure = playing
@@ -186,7 +151,7 @@ const SkipMeasureMetronome = () => {
       <Box className={styles.HorizontalGroup}>
         <Slider
           min={0}
-          max={1000}
+          max={TEMPO_SLIDER_MAX}
           value={invScaleBPM(bpm)}
           onChange={handleSliderChange}
           aria-labelledby="input-slider"
