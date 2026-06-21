@@ -18,7 +18,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 The app is built to host **multiple swappable frontends** over one shared engine. Three layers under `src/metronome/`:
 - **`core/`** — the React-free kernel (audio engine, rhythm types, sound synthesis, inference). No DOM beyond Web Audio.
 - **`shared/`** — the React "kit" reused across frontends (engine↔React bridge, snackbar).
-- **`<frontend>/`** — one folder per frontend UI. Currently just `classic/`; a new frontend is a sibling folder + its own App Router route.
+- **`<frontend>/`** — one folder per frontend UI (`classic/`, `simple/`, `skipmeasure/`). A new frontend is a sibling folder + its own App Router route. **When you add one, also register it in `src/metronome/frontends.ts`** — that registry is the single source of truth for the `/metronomes` list page.
 
 Routing and the global shell live in `src/app/`; truly app-generic hooks live at `src/`.
 

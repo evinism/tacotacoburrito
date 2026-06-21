@@ -250,6 +250,9 @@ const MetronomeComponent = () => {
       </div>
       <footer className={styles.Footer}>
         <Typography variant="body2" color="textSecondary" align="center">
+          <a href="/metronomes">Other metronomes</a>
+        </Typography>
+        <Typography variant="body2" color="textSecondary" align="center">
           <a href="https://github.com/evinism/tacotacoburrito">GitHub</a>
         </Typography>
         <Typography variant="body2" color="textSecondary" align="center">
