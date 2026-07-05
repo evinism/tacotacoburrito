@@ -17,7 +17,8 @@
     "@next/third-parties": "^16.2.9",
     "next": "16.2.7",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "unmute-ios-audio": "^3.3.0"
   },
   "devDependencies": {
     "@types/node": "^20",
