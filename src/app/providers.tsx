@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 
 import { SnackbarProvider } from "@/metronome/shared/snackbar";
+import IosSilentModeHint from "@/metronome/shared/iossilentmodehint";
 
 const darkTheme = createTheme({
   palette: {
@@ -18,7 +19,10 @@ export default function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <SnackbarProvider>{children}</SnackbarProvider>
+      <SnackbarProvider>
+        <IosSilentModeHint />
+        {children}
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }
