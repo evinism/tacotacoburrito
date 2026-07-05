@@ -10,8 +10,10 @@ import {
 } from "react";
 import { Snackbar } from "@mui/material";
 
+const DEFAULT_DURATION_MS = 2000;
+
 type SnackbarContextValue = {
-  showSnackbar: (message: string) => void;
+  showSnackbar: (message: string, durationMs?: number) => void;
 };
 
 const SnackbarContext = createContext<SnackbarContextValue | null>(null);
@@ -21,10 +23,15 @@ const SnackbarContext = createContext<SnackbarContextValue | null>(null);
 // useSnackbar() without rendering its own snackbar.
 export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
   const [message, setMessage] = useState("");
+  const [duration, setDuration] = useState(DEFAULT_DURATION_MS);
 
-  const showSnackbar = useCallback((message: string) => {
-    setMessage(message);
-  }, []);
+  const showSnackbar = useCallback(
+    (message: string, durationMs: number = DEFAULT_DURATION_MS) => {
+      setDuration(durationMs);
+      setMessage(message);
+    },
+    []
+  );
 
   const value = useMemo(() => ({ showSnackbar }), [showSnackbar]);
 
@@ -33,7 +40,7 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
       {children}
       <Snackbar
         open={message !== ""}
-        autoHideDuration={2000}
+        autoHideDuration={duration}
         onClose={() => setMessage("")}
         message={message}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
