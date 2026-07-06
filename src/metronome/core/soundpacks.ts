@@ -127,6 +127,19 @@ export type SoundPack = {
   weak: Sound;
 };
 
+// A loader that fetches an audio file and decodes it into a buffer.
+const fileLoader =
+  (url: string): SoundLoader =>
+  async (_sampleRate: number, audioCtx: AudioContext) => {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch sound "${url}": ${response.status}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    return audioCtx.decodeAudioData(arrayBuffer);
+  };
+
+
 export type SoundPackId = keyof typeof soundPacks;
 
 const defaultSoundPack: SoundPack = {
@@ -153,5 +166,9 @@ export const soundPacks = {
       buffer.getChannelData(0)[0] = 0.5;
       return buffer;
     }),
+  },
+  doumbek: {
+    strong: new Sound(fileLoader("/sounds/doumbek/hi.wav")),
+    weak: new Sound(fileLoader("/sounds/doumbek/low.wav")),
   },
 };
