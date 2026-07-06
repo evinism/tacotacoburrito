@@ -1,8 +1,3 @@
-// Intentionally vague. Params passed to the generator.
-export type GeneratorParameters = {
-  [key: string]: number;
-};
-
 type FreqSampleFnOptions = {
   duration: number;
   noise: number;
@@ -10,15 +5,12 @@ type FreqSampleFnOptions = {
 
 const makeFreqSampleFn =
   (freqSpec: number[], options: Partial<FreqSampleFnOptions> = {}) =>
-  (
-    sampleRate: number,
-    audioCtx: AudioContext,
-    generatorsParams: GeneratorParameters,
-  ): AudioBuffer => {
+  (sampleRate: number, audioCtx: AudioContext): AudioBuffer => {
     const { duration = 0.05, noise = 0 } = options;
-    const { freqMultiplier = 1 } = generatorsParams;
 
-    const freqs = freqSpec.map((freq) => freq * freqMultiplier);
+    // Pitch shifting now happens at playback (source.playbackRate), so the
+    // buffer is always synthesized at the pack's base frequencies.
+    const freqs = freqSpec;
 
     // Mono: the gain node feeds the destination directly with no panning, so a
     // second channel would just duplicate the data (double the memory + sine work).
@@ -61,57 +53,85 @@ const cluster = (bottom, top, count) => {
     .map((_, index) => bottom + index * step);
 };
 
-type BufferConstructor = (
+// Produces the click buffer for a Sound. May be synchronous (synthesized packs)
+// or async (sample packs that fetch + decode a file).
+type SoundLoader = (
   sampleRate: number,
   audioCtx: AudioContext,
-  audioGenParams: GeneratorParameters
-) => AudioBuffer;
+) => AudioBuffer | Promise<AudioBuffer>;
+
+// A single click buffer plus its load lifecycle. The instance is the cache: it
+// holds exactly one buffer, (re)built for whatever sample rate it's loaded at.
+export class Sound {
+  private buffer?: AudioBuffer;
+  private loadedSampleRate?: number;
+  private loading = false;
+
+  constructor(private readonly loader: SoundLoader) {}
+
+  isLoaded(): boolean {
+    return this.buffer !== undefined;
+  }
+
+  // Ensure the buffer is available for `sampleRate`, invoking `cb` once it is.
+  // Already-loaded (at this sample rate) resolves synchronously; a synchronous
+  // loader also resolves in this same tick, so synth packs stay fully sync.
+  load(sampleRate: number, audioCtx: AudioContext, cb?: () => void): void {
+    if (this.buffer && this.loadedSampleRate === sampleRate) {
+      cb?.();
+      return;
+    }
+    if (this.loading) {
+      return;
+    }
+
+    const result = this.loader(sampleRate, audioCtx);
+    if (result instanceof Promise) {
+      this.loading = true;
+      result
+        .then((buffer) => {
+          this.buffer = buffer;
+          this.loadedSampleRate = sampleRate;
+          cb?.();
+        })
+        .catch((err) => {
+          console.error("Failed to load sound", err);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    } else {
+      this.buffer = result;
+      this.loadedSampleRate = sampleRate;
+      cb?.();
+    }
+  }
+
+  // Caller must check isLoaded() first — throws if the buffer isn't ready.
+  getBuffer(): AudioBuffer {
+    if (!this.buffer) {
+      throw new Error("Sound.getBuffer() called before the sound was loaded");
+    }
+    return this.buffer;
+  }
+
+  // Release the buffer so its memory can be reclaimed; load() rebuilds on demand.
+  unload(): void {
+    this.buffer = undefined;
+    this.loadedSampleRate = undefined;
+  }
+}
 
 export type SoundPack = {
-  strong: BufferConstructor;
-  weak: BufferConstructor;
+  strong: Sound;
+  weak: Sound;
 };
 
 export type SoundPackId = keyof typeof soundPacks;
 
-// Memoize buffer constructors to avoid regenerating buffers on every beat.
-// Bounded LRU: continuous params (e.g. the freqMultiplier slider) would
-// otherwise mint a new buffer per distinct value and grow the cache forever.
-function memoizeBufferConstructor(
-  constructor: BufferConstructor,
-  maxSize = 32,
-): BufferConstructor {
-  const cache = new Map<string, AudioBuffer>();
-
-  return (
-    sampleRate: number,
-    audioCtx: AudioContext,
-    params: GeneratorParameters,
-  ): AudioBuffer => {
-    // Key by sample rate and parameters
-    const key = `${sampleRate}-${JSON.stringify(params)}`;
-
-    const existing = cache.get(key);
-    if (existing) {
-      // Refresh recency: re-insert so this key becomes the most recent.
-      cache.delete(key);
-      cache.set(key, existing);
-      return existing;
-    }
-
-    const buffer = constructor(sampleRate, audioCtx, params);
-    cache.set(key, buffer);
-    if (cache.size > maxSize) {
-      // Evict the least-recently-used entry (Map iterates in insertion order).
-      cache.delete(cache.keys().next().value!);
-    }
-    return buffer;
-  };
-}
-
-export const defaultSoundPack: SoundPack = {
-  strong: memoizeBufferConstructor(makeFreqSampleFn(cluster(2093, 2113, 6))),
-  weak: memoizeBufferConstructor(makeFreqSampleFn(cluster(1046, 1066, 6))),
+const defaultSoundPack: SoundPack = {
+  strong: new Sound(makeFreqSampleFn(cluster(2093, 2113, 6))),
+  weak: new Sound(makeFreqSampleFn(cluster(1046, 1066, 6))),
 };
 
 // TODO: Make it so we might be able to adjust the base frequency
@@ -123,27 +143,15 @@ export const soundPacks = {
     weak: defaultSoundPack.strong,
   },
   dirac: {
-    strong: memoizeBufferConstructor(
-      (
-        sampleRate: number,
-        audioCtx: AudioContext,
-        _: GeneratorParameters
-      ): AudioBuffer => {
-        const buffer = audioCtx.createBuffer(1, 1, sampleRate);
-        buffer.getChannelData(0)[0] = 1;
-        return buffer;
-      }
-    ),
-    weak: memoizeBufferConstructor(
-      (
-        sampleRate: number,
-        audioCtx: AudioContext,
-        _: GeneratorParameters
-      ): AudioBuffer => {
-        const buffer = audioCtx.createBuffer(1, 1, sampleRate);
-        buffer.getChannelData(0)[0] = 0.5;
-        return buffer;
-      }
-    ),
+    strong: new Sound((sampleRate: number, audioCtx: AudioContext) => {
+      const buffer = audioCtx.createBuffer(1, 1, sampleRate);
+      buffer.getChannelData(0)[0] = 1;
+      return buffer;
+    }),
+    weak: new Sound((sampleRate: number, audioCtx: AudioContext) => {
+      const buffer = audioCtx.createBuffer(1, 1, sampleRate);
+      buffer.getChannelData(0)[0] = 0.5;
+      return buffer;
+    }),
   },
 };

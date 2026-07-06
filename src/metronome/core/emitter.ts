@@ -16,8 +16,10 @@ export class Emitter<T> {
   }
 }
 
-// Convenience type alias for beat / playing notifications
+// Convenience type alias for beat / playing / soundpack-ready notifications
 export type BeatCallback = Listener<number>;
 export type BeatNotifier = Emitter<number>;
 export type PlayingCallback = Listener<boolean>;
 export type PlayingNotifier = Emitter<boolean>;
+export type SoundPackReadyCallback = Listener<boolean>;
+export type SoundPackReadyNotifier = Emitter<boolean>;
