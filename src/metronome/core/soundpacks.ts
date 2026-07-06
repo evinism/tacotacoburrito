@@ -60,49 +60,63 @@ type SoundLoader = (
   audioCtx: AudioContext,
 ) => AudioBuffer | Promise<AudioBuffer>;
 
+// Where a Sound is in its load lifecycle:
+//   unloaded — no buffer yet (initial state, or after unload())
+//   loading  — an async loader is in flight
+//   loaded   — buffer is ready to play at `loadedSampleRate`
+//   error    — the last load attempt failed; load() will retry
+export type SoundStatus = "unloaded" | "loading" | "loaded" | "error";
+
 // A single click buffer plus its load lifecycle. The instance is the cache: it
 // holds exactly one buffer, (re)built for whatever sample rate it's loaded at.
 export class Sound {
   private buffer?: AudioBuffer;
   private loadedSampleRate?: number;
-  private loading = false;
+  private _status: SoundStatus = "unloaded";
 
   constructor(private readonly loader: SoundLoader) {}
 
-  isLoaded(): boolean {
-    return this.buffer !== undefined;
+  status(): SoundStatus {
+    return this._status;
   }
 
-  // Ensure the buffer is available for `sampleRate`, invoking `cb` once it is.
-  // Already-loaded (at this sample rate) resolves synchronously; a synchronous
-  // loader also resolves in this same tick, so synth packs stay fully sync.
+  isLoaded(): boolean {
+    return this._status === "loaded";
+  }
+
+  // Ensure the buffer is available for `sampleRate`, invoking `cb` once the load
+  // settles — whether it succeeds or fails, so callers can react to the new
+  // status either way. Already-loaded (at this sample rate) settles
+  // synchronously; a synchronous loader also settles in this same tick, so synth
+  // packs stay fully sync.
   load(sampleRate: number, audioCtx: AudioContext, cb?: () => void): void {
-    if (this.buffer && this.loadedSampleRate === sampleRate) {
+    if (this._status === "loaded" && this.loadedSampleRate === sampleRate) {
       cb?.();
       return;
     }
-    if (this.loading) {
+    if (this._status === "loading") {
       return;
     }
 
     const result = this.loader(sampleRate, audioCtx);
     if (result instanceof Promise) {
-      this.loading = true;
+      this._status = "loading";
       result
         .then((buffer) => {
           this.buffer = buffer;
           this.loadedSampleRate = sampleRate;
+          this._status = "loaded";
           cb?.();
         })
         .catch((err) => {
+          this._status = "error";
           console.error("Failed to load sound", err);
-        })
-        .finally(() => {
-          this.loading = false;
+          cb?.();
         });
     } else {
       this.buffer = result;
       this.loadedSampleRate = sampleRate;
+      this._status = "loaded";
       cb?.();
     }
   }
@@ -119,6 +133,7 @@ export class Sound {
   unload(): void {
     this.buffer = undefined;
     this.loadedSampleRate = undefined;
+    this._status = "unloaded";
   }
 }
 
@@ -126,6 +141,17 @@ export type SoundPack = {
   strong: Sound;
   weak: Sound;
 };
+
+// Aggregate a whole pack's load lifecycle into one status. A pack is only
+// "loaded" once every Sound in it is; a single failure or in-flight load
+// dominates so callers can gate playback / show a spinner off one value.
+export function soundPackStatus(pack: SoundPack): SoundStatus {
+  const statuses = [pack.strong.status(), pack.weak.status()];
+  if (statuses.includes("error")) return "error";
+  if (statuses.includes("loading")) return "loading";
+  if (statuses.every((s) => s === "loaded")) return "loaded";
+  return "unloaded";
+}
 
 // A loader that fetches an audio file and decodes it into a buffer.
 const fileLoader =

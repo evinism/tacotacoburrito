@@ -1,4 +1,9 @@
-import { SoundPackId, soundPacks } from "./soundpacks";
+import {
+  SoundPackId,
+  SoundStatus,
+  soundPacks,
+  soundPackStatus,
+} from "./soundpacks";
 import { multiLength, multiIndex } from "./util";
 import { BeatStrength, Measures } from "./types";
 import {
@@ -6,7 +11,7 @@ import {
   Emitter,
   BeatNotifier,
   PlayingNotifier,
-  SoundPackReadyNotifier,
+  SoundPackStatusNotifier,
 } from "./emitter";
 
 export type Rhythm = {
@@ -75,10 +80,10 @@ export class Metronome {
   _beatNotifier: BeatNotifier = new Emitter();
   _playingNotifier: PlayingNotifier = new Emitter();
 
-  // Whether the current soundpack's buffers are all loaded, plus subscribers to
-  // that state. Deduped like beat notifications so we only emit on transitions.
-  _soundPackReadyNotifier: SoundPackReadyNotifier = new Emitter();
-  _latestSoundPackReady: boolean = false;
+  // The current soundpack's aggregate load status, plus subscribers to it.
+  // Deduped like beat notifications so we only emit on transitions.
+  _soundPackStatusNotifier: SoundPackStatusNotifier = new Emitter();
+  _latestSoundPackStatus: SoundStatus = "unloaded";
 
   constructor(spec: MetronomeSpec) {
     this.spec = spec;
@@ -139,33 +144,32 @@ export class Metronome {
     const sound = resolveSound(this.spec);
     const pack = soundPacks[sound.soundPack];
     for (const strength of ["strong", "weak"] as const) {
-      // Each load completion re-checks whole-pack readiness rather than tracking
+      // Each load settles by re-evaluating whole-pack status rather than tracking
       // "both done" here, so the strong/weak loads can finish in any order and a
       // pack swap mid-load just re-evaluates against whatever pack is now current.
       pack[strength].load(
         this.audioContext.sampleRate,
         this.audioContext,
-        this._notifySoundPackReady,
+        this._notifySoundPackStatus,
       );
     }
-    // Capture the transition even when nothing loaded synchronously — e.g.
-    // switching to a not-yet-loaded pack must flip ready true → false now.
-    this._notifySoundPackReady();
+    // Capture the transition even when nothing settled synchronously — e.g.
+    // switching to a not-yet-loaded pack must flip loaded → unloaded/loading now.
+    this._notifySoundPackStatus();
   };
 
-  // Whether every Sound in the current pack has its buffer ready to play.
-  soundpackReady(): boolean {
-    const pack = soundPacks[resolveSound(this.spec).soundPack];
-    return pack.strong.isLoaded() && pack.weak.isLoaded();
+  // The aggregate load status of every Sound in the current pack.
+  soundpackStatus(): SoundStatus {
+    return soundPackStatus(soundPacks[resolveSound(this.spec).soundPack]);
   }
 
-  _notifySoundPackReady = () => {
-    const ready = this.soundpackReady();
-    if (ready === this._latestSoundPackReady) {
+  _notifySoundPackStatus = () => {
+    const status = this.soundpackStatus();
+    if (status === this._latestSoundPackStatus) {
       return;
     }
-    this._latestSoundPackReady = ready;
-    this._soundPackReadyNotifier.emit(ready);
+    this._latestSoundPackStatus = status;
+    this._soundPackStatusNotifier.emit(status);
   };
 
   getBeat() {
@@ -373,11 +377,11 @@ export class Metronome {
     this._playingNotifier.unsubscribe(callback);
   }
 
-  subscribeToSoundPackReady(callback: Listener<boolean>) {
-    this._soundPackReadyNotifier.subscribe(callback);
+  subscribeToSoundPackStatus(callback: Listener<SoundStatus>) {
+    this._soundPackStatusNotifier.subscribe(callback);
   }
 
-  unsubscribeFromSoundPackReady(callback: Listener<boolean>) {
-    this._soundPackReadyNotifier.unsubscribe(callback);
+  unsubscribeFromSoundPackStatus(callback: Listener<SoundStatus>) {
+    this._soundPackStatusNotifier.unsubscribe(callback);
   }
 }
