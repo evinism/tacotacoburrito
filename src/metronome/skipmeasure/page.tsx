@@ -202,10 +202,10 @@ const SkipMeasureMetronome = () => {
             type="number"
             size="small"
             id="silent-input"
-            inputProps={{ min: 1, max: 16 }}
+            inputProps={{ min: 0, max: 16 }}
             value={silentMeasures}
             onChange={(event) =>
-              setSilentMeasures(clamp(parseInt(event.target.value), 1, 16))
+              setSilentMeasures(clamp(parseInt(event.target.value), 0, 16))
             }
           />
         </div>
