@@ -114,9 +114,7 @@ const MetronomeComponent = () => {
       sound: {
         volume,
         soundPack,
-        generatorParameters: {
-          freqMultiplier,
-        },
+        freqMultiplier,
       },
     }),
     [bpm, beats, volume, soundPack, freqMultiplier]

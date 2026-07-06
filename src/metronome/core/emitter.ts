@@ -1,3 +1,5 @@
+import type { SoundStatus } from "./soundpacks";
+
 export type Listener<T> = (data: T) => void;
 
 export class Emitter<T> {
@@ -16,8 +18,10 @@ export class Emitter<T> {
   }
 }
 
-// Convenience type alias for beat / playing notifications
+// Convenience type alias for beat / playing / soundpack-status notifications
 export type BeatCallback = Listener<number>;
 export type BeatNotifier = Emitter<number>;
 export type PlayingCallback = Listener<boolean>;
 export type PlayingNotifier = Emitter<boolean>;
+export type SoundPackStatusCallback = Listener<SoundStatus>;
+export type SoundPackStatusNotifier = Emitter<SoundStatus>;

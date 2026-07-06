@@ -1,7 +1,18 @@
-import { SoundPackId, soundPacks, GeneratorParameters } from "./soundpacks";
+import {
+  SoundPackId,
+  SoundStatus,
+  soundPacks,
+  soundPackStatus,
+} from "./soundpacks";
 import { multiLength, multiIndex } from "./util";
 import { BeatStrength, Measures } from "./types";
-import { Listener, Emitter, BeatNotifier, PlayingNotifier } from "./emitter";
+import {
+  Listener,
+  Emitter,
+  BeatNotifier,
+  PlayingNotifier,
+  SoundPackStatusNotifier,
+} from "./emitter";
 
 export type Rhythm = {
   beats: Measures;
@@ -11,14 +22,15 @@ export type Rhythm = {
 export type SoundSpec = {
   volume: number;
   soundPack: SoundPackId;
-  // Intentionally vague. Params passed to the generator.
-  generatorParameters: GeneratorParameters;
+  // Pitch multiplier applied at playback time via the source node's
+  // playbackRate, rather than baked into the synthesized buffer.
+  freqMultiplier: number;
 };
 
 export const DEFAULT_SOUND: SoundSpec = {
   volume: 1,
   soundPack: "default",
-  generatorParameters: {},
+  freqMultiplier: 1,
 };
 
 export type MetronomeSpec = Rhythm & {
@@ -67,6 +79,11 @@ export class Metronome {
   _latestNotifiedBeat: number = -1;
   _beatNotifier: BeatNotifier = new Emitter();
   _playingNotifier: PlayingNotifier = new Emitter();
+
+  // The current soundpack's aggregate load status, plus subscribers to it.
+  // Deduped like beat notifications so we only emit on transitions.
+  _soundPackStatusNotifier: SoundPackStatusNotifier = new Emitter();
+  _latestSoundPackStatus: SoundStatus = "unloaded";
 
   constructor(spec: MetronomeSpec) {
     this.spec = spec;
@@ -120,19 +137,39 @@ export class Metronome {
     this._warmSoundPackCache();
   }
 
-  // Generate (and cache) this spec's click buffers up front, so the scheduler
-  // loop only ever hits the memoized cache instead of synthesizing a buffer
+  // Load this spec's click buffers up front, so the scheduler loop only ever
+  // hits already-loaded Sounds instead of synthesizing/decoding a buffer
   // mid-schedule — which would risk a timing hitch on the audio path.
   _warmSoundPackCache = () => {
     const sound = resolveSound(this.spec);
     const pack = soundPacks[sound.soundPack];
     for (const strength of ["strong", "weak"] as const) {
-      pack[strength](
+      // Each load settles by re-evaluating whole-pack status rather than tracking
+      // "both done" here, so the strong/weak loads can finish in any order and a
+      // pack swap mid-load just re-evaluates against whatever pack is now current.
+      pack[strength].load(
         this.audioContext.sampleRate,
         this.audioContext,
-        sound.generatorParameters,
+        this._notifySoundPackStatus,
       );
     }
+    // Capture the transition even when nothing settled synchronously — e.g.
+    // switching to a not-yet-loaded pack must flip loaded → unloaded/loading now.
+    this._notifySoundPackStatus();
+  };
+
+  // The aggregate load status of every Sound in the current pack.
+  soundpackStatus(): SoundStatus {
+    return soundPackStatus(soundPacks[resolveSound(this.spec).soundPack]);
+  }
+
+  _notifySoundPackStatus = () => {
+    const status = this.soundpackStatus();
+    if (status === this._latestSoundPackStatus) {
+      return;
+    }
+    this._latestSoundPackStatus = status;
+    this._soundPackStatusNotifier.emit(status);
   };
 
   getBeat() {
@@ -265,17 +302,21 @@ export class Metronome {
     if (strength === "off") {
       return;
     }
-    // Get buffer from soundpack (automatically cached via memoization)
     const sound = resolveSound(this.spec);
-    const buffer = soundPacks[sound.soundPack][strength](
-      this.audioContext.sampleRate,
-      this.audioContext,
-      sound.generatorParameters,
-    );
+    const clickSound = soundPacks[sound.soundPack][strength];
+    // Not ready yet (a sample pack still decoding) — skip this click rather than
+    // crash. Warming in _warmSoundPackCache means synth packs are always loaded.
+    if (!clickSound.isLoaded()) {
+      return;
+    }
+    const buffer = clickSound.getBuffer();
 
-    // Create source from cached buffer
+    // Create source from the loaded buffer. Pitch shifting happens here — playing
+    // the buffer faster/slower scales all its frequencies by freqMultiplier —
+    // so the buffer itself stays pack-neutral and shared across pitches.
     const source = this.audioContext.createBufferSource();
     source.buffer = buffer;
+    source.playbackRate.value = sound.freqMultiplier;
     source.connect(this._gainNode);
     source.start(time);
 
@@ -334,5 +375,13 @@ export class Metronome {
 
   unsubscribeFromPlaying(callback: Listener<boolean>) {
     this._playingNotifier.unsubscribe(callback);
+  }
+
+  subscribeToSoundPackStatus(callback: Listener<SoundStatus>) {
+    this._soundPackStatusNotifier.subscribe(callback);
+  }
+
+  unsubscribeFromSoundPackStatus(callback: Listener<SoundStatus>) {
+    this._soundPackStatusNotifier.unsubscribe(callback);
   }
 }
