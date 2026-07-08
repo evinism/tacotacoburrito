@@ -16,6 +16,7 @@ import {
   IconButton,
   Divider,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
 
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -120,7 +121,12 @@ const MetronomeComponent = () => {
     [bpm, beats, volume, soundPack, freqMultiplier]
   );
 
-  const { metronome, beat: currentBeat, playing } = useMetronome(spec);
+  const {
+    metronome,
+    beat: currentBeat,
+    playing,
+    soundPackStatus,
+  } = useMetronome(spec);
 
   // Load rhythm from URL hash on component mount
   useEffect(() => {
@@ -241,7 +247,38 @@ const MetronomeComponent = () => {
         currentBeat={currentBeat}
       />
       <div className={styles.ButtonGroup}>
-        <Button onClick={togglePlaying}>{playing ? "Stop" : "Play"}</Button>
+        <Tooltip
+          title={
+            soundPackStatus === "error"
+              ? "Sound pack failed to load"
+              : soundPackStatus === "loading"
+                ? "Loading sound pack…"
+                : ""
+          }
+          {...ttConfig}
+        >
+          {/* span wrapper so the Tooltip still works while the Button is disabled */}
+          <span>
+            <Button
+              onClick={togglePlaying}
+              color={soundPackStatus === "error" ? "error" : "primary"}
+              disabled={soundPackStatus === "loading"}
+              startIcon={
+                soundPackStatus === "loading" ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : undefined
+              }
+            >
+              {soundPackStatus === "loading"
+                ? "Loading"
+                : soundPackStatus === "error"
+                  ? "Error"
+                  : playing
+                    ? "Stop"
+                    : "Play"}
+            </Button>
+          </span>
+        </Tooltip>
         <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
         <div className={styles.Spacer} />
         <Button onClick={clear}>Clear</Button>
