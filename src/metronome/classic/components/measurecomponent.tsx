@@ -97,7 +97,11 @@ const MeasureComponent = ({
           Measure {measureIndex + 1}
         </Typography>
       )}
-      <div className={styles.BeatArray}>
+      <div
+        className={styles.BeatArray}
+        role="group"
+        aria-label={`Measure ${measureIndex + 1}`}
+      >
         {measure.map((beat, index) => (
           <Beat
             key={index}
@@ -136,6 +140,12 @@ const Beat = ({
   const handleLongClick = (target: HTMLElement) => {
     setAnchorEl(target);
   };
+
+  const hasCustomDuration = Boolean(beat.duration) && beat.duration !== 1;
+  const beatLabel =
+    `Beat ${index + 1}: ${beat.strength}` +
+    (hasCustomDuration ? `, duration ${beat.duration}×` : "");
+
   return (
     <>
       {
@@ -153,6 +163,27 @@ const Beat = ({
         onClick={rotateBeatStrength}
       >
         <div
+          role="button"
+          tabIndex={0}
+          aria-label={beatLabel}
+          aria-haspopup="dialog"
+          onKeyDown={(e) => {
+            if (e.key !== "Enter") {
+              return;
+            }
+            // Enter rotates the accent; Shift+Enter opens the duration menu
+            // (the keyboard equivalent of long-press). Space is deliberately
+            // NOT an activator, unlike a standard ARIA button: it's the
+            // app-wide play/stop key, and clicking a cell focuses it — space
+            // must still toggle playback afterwards. Screen readers activate
+            // via synthesized clicks, which LongPressListener handles.
+            e.preventDefault();
+            if (e.shiftKey) {
+              setAnchorEl(e.currentTarget);
+            } else {
+              rotateBeatStrength();
+            }
+          }}
           className={
             styles.BeatIcon +
             " " +
@@ -166,7 +197,7 @@ const Beat = ({
           }
         >
           {index + 1}
-          {beat.duration && beat.duration !== 1 && (
+          {hasCustomDuration && (
             <ScheduleIcon className={styles.BeatTimeModIndicator} />
           )}
         </div>

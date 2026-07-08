@@ -114,6 +114,15 @@ const LongPressListener = ({
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerAbort}
       onPointerCancel={handlePointerAbort}
+      onClick={(e) => {
+        // Assistive-tech activation (screen readers, etc.) arrives as a bare
+        // click with detail 0 and no pointer events before it. Pointer-driven
+        // clicks (detail ≥ 1) were already handled in pointerup — ignore them
+        // here so they don't fire twice.
+        if (e.detail === 0) {
+          onClick(e.currentTarget);
+        }
+      }}
       onContextMenu={(e) => {
         if (suppressContextMenuRef.current) {
           e.preventDefault();

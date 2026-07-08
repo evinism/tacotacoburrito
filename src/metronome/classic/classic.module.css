@@ -127,6 +127,13 @@
   content: '';
 }
 
+/* Keyboard-focus ring only (:focus-visible): pointer presses already get the
+   hold animation, so a persistent ring after every click would be noise. */
+.BeatIcon:focus-visible {
+  outline: 2px solid #90caf9;
+  outline-offset: 2px;
+}
+
 .BeatIcon.inactive {
   color: gray;
 }

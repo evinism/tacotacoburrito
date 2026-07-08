@@ -29,6 +29,8 @@ const Keybinds = ({ close }: { close: () => void }) => {
             ["/", "Tap Tempo"],
             [",", "Tap Rhythm (Strong Beat)"],
             [".", "Tap Rhythm (Weak Beat)"],
+            ["⏎", "Change Accent (focused beat)"],
+            ["⇧⏎", "Beat Duration Menu (focused beat)"],
           ].map(([key, description]) => (
             <ListItem key={String(description)} className={styles.KBSLine}>
               <K>{key}</K> <span>{description}</span>
