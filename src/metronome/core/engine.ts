@@ -46,9 +46,11 @@ const resolveSound = (spec: MetronomeSpec): SoundSpec => ({
 });
 
 export class Metronome {
-  audioContext: AudioContext;
+  // Definitely assigned in the constructor via ensureAudioContext(), which
+  // TypeScript can't trace — hence the assertions.
+  audioContext!: AudioContext;
   spec: MetronomeSpec;
-  _latestScheduledBeatTime: number;
+  _latestScheduledBeatTime: number = 0;
   _startDelay: number = 0.01;
   _latestScheduledBeatIndex: number = -1;
   // Duration of the most recently scheduled beat, captured at schedule time so
@@ -57,7 +59,7 @@ export class Metronome {
   _schedulerInterval: number = 0.005;
   _schedulerHorizon: number = 0.05;
   _schedulerId: NodeJS.Timeout | null = null;
-  _gainNode: GainNode;
+  _gainNode!: GainNode;
 
   // Whether the user has asked the metronome to play. Our own source of truth,
   // set synchronously in play()/stop(), rather than the async

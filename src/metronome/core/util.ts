@@ -22,13 +22,13 @@ export const maxBy = <T>(arr: T[], fn: (t: T) => number): T => {
 export const transpose = <T>(matrix: T[][]) => {
   const transposed = Array(matrix[0].length)
     .fill(undefined)
-    .map(() => []);
+    .map((): T[] => []);
   for (const cycle of matrix) {
     for (let i = 0; i < cycle.length; i++) {
       transposed[i].push(cycle[i]);
     }
   }
-  return transposed as T[][];
+  return transposed;
 };
 
 export const getMedian = (array: number[]) => {
