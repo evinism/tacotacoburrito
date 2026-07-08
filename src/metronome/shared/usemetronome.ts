@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MetronomeSpec, Metronome } from "@/metronome/core/engine";
+import { SoundStatus } from "@/metronome/core/soundpacks";
 
 // Bridges the (framework-agnostic) engine to React: holds a stable Metronome
 // instance, pushes spec updates into it, and surfaces beat/playing state.
@@ -9,6 +10,9 @@ export const useMetronome = (spec: MetronomeSpec) => {
 
   const [beat, setBeat] = useState<number>(metronome.getBeat());
   const [playing, setPlaying] = useState<boolean>(metronome.isPlaying());
+  const [soundPackStatus, setSoundPackStatus] = useState<SoundStatus>(
+    metronome.soundpackStatus()
+  );
   useEffect(() => {
     const beatCallback = (beatNumber: number) => {
       setBeat(beatNumber);
@@ -18,10 +22,15 @@ export const useMetronome = (spec: MetronomeSpec) => {
       setPlaying(playing);
     };
     metronome.subscribeToPlaying(playingCallback);
+    const soundPackStatusCallback = (status: SoundStatus) => {
+      setSoundPackStatus(status);
+    };
+    metronome.subscribeToSoundPackStatus(soundPackStatusCallback);
 
     return () => {
       metronome.unsubscribeFromBeat(beatCallback);
       metronome.unsubscribeFromPlaying(playingCallback);
+      metronome.unsubscribeFromSoundPackStatus(soundPackStatusCallback);
     };
   }, [metronome]);
 
@@ -36,6 +45,7 @@ export const useMetronome = (spec: MetronomeSpec) => {
     metronome,
     beat,
     playing,
+    soundPackStatus,
   };
 };
 
