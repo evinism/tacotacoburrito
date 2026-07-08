@@ -51,7 +51,7 @@ const MeasuresSection = ({
         }
         sx={{ fontSize: 16 }}
       >
-        Tap to change beat accents
+        Tap to change accents · hold to tweak duration
       </Typography>
     </div>
   );

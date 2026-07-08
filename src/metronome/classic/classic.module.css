@@ -78,6 +78,36 @@
   height: 3rem;
   position: relative;
   user-select: none;
+  /* Keep the OS out of the hold gesture: no iOS text callout, and
+     touch-action lets scrolls pan away (pointercancel aborts the hold). */
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+/* Hold-to-edit feedback: the cell depresses while the long-press timer runs,
+   then glows just as the duration popover is about to open. data-held is set
+   by LongPressListener, which also supplies --long-press-delay so the
+   animation always spans exactly the hold delay. */
+[data-held] .BeatIcon {
+  animation: BeatHoldProgress var(--long-press-delay, 500ms) ease-out forwards;
+}
+
+@keyframes BeatHoldProgress {
+  from {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+  50% {
+    transform: scale(0.92);
+    box-shadow: none;
+  }
+  to {
+    transform: scale(0.92);
+  }
 }
 
 .BeatIcon .BeatTimeModIndicator {
