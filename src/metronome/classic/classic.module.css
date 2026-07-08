@@ -153,17 +153,24 @@
   border-style: solid;
 }
 
+@media  (max-width: 410px) {
+  .ClickInstructions.ClickInstructions {
+    height: 2.5rem;
+  }
+}
+
 .ClickInstructions {
   font-style: italic;
   color: #666;
   height: 1.25rem;
   padding-left: 0.25rem;
   opacity: 1;
-  transition: opacity 0.2s ease-out;
+  transition: opacity 0.2s ease-out, height 0.2s ease-out;
 }
 
 .ClickInstructions.IsIrrelevant {
   opacity: 0;
+  height: 1.25rem;
 }
 
 .MeasureLabel {
