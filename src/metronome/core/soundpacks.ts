@@ -43,9 +43,9 @@ const makeFreqSampleFn =
     }
 
     return myArrayBuffer;
-  };;
+  };
 
-const cluster = (bottom, top, count) => {
+const cluster = (bottom: number, top: number, count: number) => {
   const range = top - bottom;
   const step = range / count;
   return Array(count)

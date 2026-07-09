@@ -101,25 +101,25 @@ const beatSubdivisionScorer = (candidate: CandidateCycle, sub: number) => {
   return quantize(candidate, sub)?.confidence || 0.01;
 };
 
-const keepSubdivisionsSmallScorer = (_: CandidateCycle, beatCount) => {
+const keepSubdivisionsSmallScorer = (_: CandidateCycle, beatCount: number) => {
   return 1 / beatCount;
 };
 
-const noExcessiveTempoScorer = (candidate: CandidateCycle, beatCount) => {
+const noExcessiveTempoScorer = (candidate: CandidateCycle, beatCount: number) => {
   const tempo = (60 / candidate.cycleTime) * 1000 * beatCount;
   return 1 / (tempo / 1000);
 };
 
 const beatsProbablyShouldntStartWithOff = (
   candidate: CandidateCycle,
-  beatCount
+  beatCount: number
 ) => {
   return quantize(candidate, beatCount)?.value[0] === "off" ? 0 : 1;
 };
 
 const beatsShouldntHaveFewerHitsThanCycle = (
   candidate: CandidateCycle,
-  beatCount
+  beatCount: number
 ) => {
   const quantized = quantize(candidate, beatCount);
   if (quantized === undefined) {
@@ -131,7 +131,7 @@ const beatsShouldntHaveFewerHitsThanCycle = (
     : 0;
 };
 
-const biasAgainstOneBeat = (candidate: CandidateCycle, beatCount) => {
+const biasAgainstOneBeat = (candidate: CandidateCycle, beatCount: number) => {
   return beatCount === 1 ? 0 : 1;
 };
 
@@ -226,7 +226,7 @@ function generateCandidateCycles(clicks: BeatClick[]): CandidateCycle[] {
 
 const candidateToBeats = (
   candidate: CandidateCycle
-): Result<{ bpmMultiplier: number; beats: Beat[] }> => {
+): Result<{ bpmMultiplier: number; beats: Beat[] }> | undefined => {
   const candidateBeatCounts = [];
   for (let i = candidate.beatsPerCycle; i < MAX_BEATS_PER_MEASURE; i++) {
     candidateBeatCounts.push(i);
@@ -343,7 +343,7 @@ const tryReduceHalfTime = (
       return undefined;
     }
   }
-  const newBeats = [];
+  const newBeats: BeatStrength[] = [];
   for (let i = 0; i < beats.length; i += 2) {
     newBeats.push(beats[i]);
   }

@@ -1,6 +1,11 @@
 import { Box, Input, InputLabel, Tooltip } from "@mui/material";
 import { useState } from "react";
-import { BeatFillMethod, Measures } from "@/metronome/core/types";
+import {
+  Beat,
+  BeatFillMethod,
+  BeatStrength,
+  Measures,
+} from "@/metronome/core/types";
 import styles from "@/metronome/classic/classic.module.css";
 import { SmartTapButton } from "./smarttap";
 
@@ -23,6 +28,8 @@ const parseMeasureSpec = (size: string) => {
 
 const renderMeasureSpec = (beats: Measures) =>
   beats.map((beat) => beat.length).join("+");
+
+const toBeat = (strength: BeatStrength): Beat => ({ strength, duration: 1 });
 
 const MeasureInputSection = ({
   beats,
@@ -64,21 +71,25 @@ const MeasureInputSection = ({
       let measure = beats[i];
       if (!measure) {
         const prevMeasure = beats[beats.length - 1];
-        const lastOfPrevMeasure = prevMeasure[prevMeasure.length - 1] || "off";
-        const fill = beatFill === "copyEnd" ? lastOfPrevMeasure : beatFill;
+        const lastOfPrevMeasure =
+          prevMeasure[prevMeasure.length - 1] ?? toBeat("off");
+        const fill =
+          beatFill === "copyEnd" ? lastOfPrevMeasure : toBeat(beatFill);
         measure = Array(measureLengths[i]).fill(fill);
       } else {
         measure = measure.slice(0, measureLengths[i]);
         const fill =
-          beatFill === "copyEnd" ? measure[measure.length - 1] : beatFill;
+          beatFill === "copyEnd"
+            ? (measure[measure.length - 1] ?? toBeat("off"))
+            : toBeat(beatFill);
         measure = [
           ...measure,
           ...Array(measureLengths[i] - measure.length).fill(fill),
         ];
       }
       newBeats[i] = measure;
-      setBeats(newBeats);
     }
+    setBeats(newBeats);
   };
   return (
     <Box className={styles.HorizontalGroup}>

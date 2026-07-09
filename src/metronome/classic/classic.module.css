@@ -78,6 +78,36 @@
   height: 3rem;
   position: relative;
   user-select: none;
+  /* Keep the OS out of the hold gesture: no iOS text callout, and
+     touch-action lets scrolls pan away (pointercancel aborts the hold). */
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+/* Hold-to-edit feedback: the cell depresses while the long-press timer runs,
+   then glows just as the duration popover is about to open. data-held is set
+   by LongPressListener, which also supplies --long-press-delay so the
+   animation always spans exactly the hold delay. */
+[data-held] .BeatIcon {
+  animation: BeatHoldProgress var(--long-press-delay, 500ms) ease-out forwards;
+}
+
+@keyframes BeatHoldProgress {
+  from {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+  50% {
+    transform: scale(0.92);
+    box-shadow: none;
+  }
+  to {
+    transform: scale(0.92);
+  }
 }
 
 .BeatIcon .BeatTimeModIndicator {
@@ -95,6 +125,13 @@
 .BeatArray > br{
   width: 100%;
   content: '';
+}
+
+/* Keyboard-focus ring only (:focus-visible): pointer presses already get the
+   hold animation, so a persistent ring after every click would be noise. */
+.BeatIcon:focus-visible {
+  outline: 2px solid #90caf9;
+  outline-offset: 2px;
 }
 
 .BeatIcon.inactive {
@@ -116,17 +153,24 @@
   border-style: solid;
 }
 
+@media  (max-width: 410px) {
+  .ClickInstructions.ClickInstructions {
+    height: 2.5rem;
+  }
+}
+
 .ClickInstructions {
   font-style: italic;
   color: #666;
   height: 1.25rem;
   padding-left: 0.25rem;
   opacity: 1;
-  transition: opacity 0.2s ease-out;
+  transition: opacity 0.2s ease-out, height 0.2s ease-out;
 }
 
 .ClickInstructions.IsIrrelevant {
   opacity: 0;
+  height: 1.25rem;
 }
 
 .MeasureLabel {
