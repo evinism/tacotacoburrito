@@ -13,19 +13,27 @@ export const usePersistentState = <T = unknown>(
   const lsKey = `persistentState/${key}`;
   const legacyKey = migrateFrom ? `persistentState/${migrateFrom}` : undefined;
   const getStoredOrInitial = useCallback((): T => {
-    const stored = localStorage.getItem(lsKey);
-    if (stored !== null) {
-      return JSON.parse(stored);
-    }
-    if (legacyKey) {
-      const legacy = localStorage.getItem(legacyKey);
-      if (legacy !== null) {
-        localStorage.setItem(lsKey, legacy);
-        return JSON.parse(legacy);
+    // A corrupt entry must not take down the whole frontend on every load —
+    // fall back to the default instead of letting JSON.parse throw mid-render.
+    try {
+      const stored = localStorage.getItem(lsKey);
+      if (stored !== null) {
+        return JSON.parse(stored);
       }
+      if (legacyKey) {
+        const legacy = localStorage.getItem(legacyKey);
+        if (legacy !== null) {
+          // Parse before copying, so a corrupt legacy value isn't migrated.
+          const parsed = JSON.parse(legacy);
+          localStorage.setItem(lsKey, legacy);
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.error(`Corrupt persisted state for "${key}"; using default`, error);
     }
     return initial;
-  }, [lsKey, legacyKey, initial]);
+  }, [lsKey, legacyKey, key, initial]);
   const internalInitial = useMemo(() => getStoredOrInitial(), [getStoredOrInitial]);
 
   const [state, setInternalState] = useState<T>(internalInitial);
@@ -43,10 +51,15 @@ export const usePersistentState = <T = unknown>(
       }
     };
   }, [pollInterval, getStoredOrInitial]);
-  const setState = (newState: T) => {
-    setInternalState(newState);
-    localStorage.setItem(lsKey, JSON.stringify(newState));
-  };
+  // Stable identity: this setter is passed into memo()ed sections (tempo,
+  // measures grid), and a fresh function each render would defeat them.
+  const setState = useCallback(
+    (newState: T) => {
+      setInternalState(newState);
+      localStorage.setItem(lsKey, JSON.stringify(newState));
+    },
+    [lsKey]
+  );
 
   return [state, setState];
 };

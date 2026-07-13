@@ -138,6 +138,13 @@ const MetronomeComponent = () => {
         setBpm(rhythm.bpm);
         setBeats(rhythm.beats);
         showSnackbar("Rhythm loaded from URL");
+        // Drop the hash once imported — otherwise a reload after editing
+        // silently reverts to the shared rhythm.
+        history.replaceState(
+          null,
+          "",
+          window.location.pathname + window.location.search
+        );
       }
     }
     // Run once on mount: this reads the initial URL hash to seed state, and
@@ -155,9 +162,10 @@ const MetronomeComponent = () => {
 
   const clear = () => {
     if (window.confirm("Are you sure you want to clear all beat emphases?")) {
+      // Only the emphases — custom durations survive a clear.
       setBeats(
         beats.map((subBeats) =>
-          Array(subBeats.length).fill({ strength: "off" })
+          subBeats.map((beat): Beat => ({ ...beat, strength: "off" }))
         )
       );
     }
