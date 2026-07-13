@@ -130,6 +130,14 @@ const PresetModal = ({
               if (!name) {
                 return;
               }
+              if (
+                name in userPresetStore &&
+                !window.confirm(
+                  `A preset named "${name}" already exists. Overwrite it?`
+                )
+              ) {
+                return;
+              }
               setUserPresetStore({
                 ...userPresetStore,
                 [name]: {

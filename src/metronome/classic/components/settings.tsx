@@ -173,7 +173,7 @@ const SettingsPanel = ({
                   onClick={() => {
                     if (
                       window.confirm(
-                        "Are you sure you want to clear all locally stored settings? This will reset volume, beat fill method, and other preferences."
+                        "Are you sure you want to clear all locally stored data? This will reset volume, beat fill method, and other preferences — and permanently delete your saved user presets."
                       )
                     ) {
                       localStorage.clear();
