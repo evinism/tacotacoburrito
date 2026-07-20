@@ -75,7 +75,7 @@ export const defaultPresetStore: PresetStore = {
       ],
       bpm: 160,
     },
-    "Hasapiko (9/4)": {
+    "Haptaliko (9/4)": {
       beats: [
         [
           strong(),
@@ -173,6 +173,26 @@ export const defaultPresetStore: PresetStore = {
       ],
       bpm: 320,
     },
+    "Sedi Donka (25/16)": {
+      beats: [
+        [strong(), off(), off(), weak(), off(), weak(), off()],
+        [strong(), off(), off(), weak(), off(), weak(), off()],
+        [
+          weak(),
+          off(),
+          weak(),
+          off(),
+          strong(),
+          off(),
+          off(),
+          weak(),
+          off(),
+          weak(),
+          off(),
+        ],
+      ],
+      bpm: 450,
+    },
   },
   Turkish: {
     "Aksak Semai (10/8)": {
@@ -232,6 +252,28 @@ export const defaultPresetStore: PresetStore = {
         ],
       ],
       bpm: 280,
+    },
+  },
+  Special: {
+    "5-5 extra": {
+      beats: [
+        [
+          strong(),
+          off(),
+          weak(),
+          off(),
+          weak(),
+          strong(),
+          off(),
+          weak(),
+          off(),
+          weak(),
+          weak(),
+          off(),
+          weak(),
+        ],
+      ],
+      bpm: 350,
     },
   },
 };
