@@ -43,8 +43,8 @@ const toBeat = (voice: Voice | "off", duration: number = 1): Beat => {
   };
 };
 
-const strong = toBeat("v1");
-const weak = toBeat("v2");
+const strong = toBeat("strong");
+const weak = toBeat("weak");
 
 const defaultBeats: Measures = [[strong, weak, weak, weak]];
 

@@ -7,8 +7,8 @@ import { Rhythm } from "./engine";
 
 const STRENGTH_TO_VOICES: Record<string, string[]> = {
   off: [],
-  strong: ["v1"],
-  weak: ["v2"],
+  strong: ["strong"],
+  weak: ["weak"],
 };
 
 export function migrateBeat(beat: unknown): Beat {
@@ -33,16 +33,16 @@ export function migrateRhythm(rhythm: { beats: unknown; bpm: number }): Rhythm {
   return { beats: migrateMeasures(rhythm.beats), bpm: rhythm.bpm };
 }
 
-const STRENGTH_FILL_METHOD_MAP: Record<string, BeatFillMethod> = {
-  strong: "v1",
-  weak: "v2",
-};
-
-const VALID_FILL_METHODS: BeatFillMethod[] = ["v1", "v2", "v3", "off", "copyEnd"];
+// Old persisted "strong"/"weak"/"off"/"copyEnd" are already valid
+// BeatFillMethod values — just validate against the enum.
+const VALID_FILL_METHODS: BeatFillMethod[] = [
+  "strong",
+  "weak",
+  "off",
+  "copyEnd",
+];
 
 export function migrateBeatFillMethod(value: unknown): BeatFillMethod {
-  const mapped = STRENGTH_FILL_METHOD_MAP[String(value)];
-  if (mapped) return mapped;
   if (VALID_FILL_METHODS.includes(value as BeatFillMethod)) {
     return value as BeatFillMethod;
   }

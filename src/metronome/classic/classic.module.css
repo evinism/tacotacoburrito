@@ -134,15 +134,6 @@
   outline-offset: 2px;
 }
 
-/* Between weak and off in emphasis: thinner border, dimmer accent color.
-   Declared before .inactive/.active so their color/border-color wins when
-   combined with this class, matching how strong/weak behave. */
-.BeatIcon.third {
-  border-width: 0.1rem;
-  border-style: dotted;
-  border-color: #90caf9;
-}
-
 .BeatIcon.inactive {
   color: gray;
 }

@@ -5,7 +5,7 @@ import {
   soundPackStatus,
 } from "./soundpacks";
 import { multiLength, multiIndex } from "./util";
-import { Beat, Measures, VOICES } from "./types";
+import { Beat, Measures } from "./types";
 import {
   Listener,
   Emitter,
@@ -145,11 +145,13 @@ export class Metronome {
   _warmSoundPackCache = () => {
     const sound = resolveSound(this.spec);
     const pack = soundPacks[sound.soundPack];
-    for (const voice of VOICES) {
+    for (const clickSound of Object.values(pack)) {
       // Each load settles by re-evaluating whole-pack status rather than tracking
-      // "both done" here, so the voice loads can finish in any order and a
+      // "both done" here, so the sounds can finish loading in any order and a
       // pack swap mid-load just re-evaluates against whatever pack is now current.
-      pack[voice].load(
+      // Aliased sounds (e.g. drums' strong === kick) get warmed twice — harmless,
+      // load() is idempotent.
+      clickSound.load(
         this.audioContext.sampleRate,
         this.audioContext,
         this._notifySoundPackStatus,
@@ -306,9 +308,13 @@ export class Metronome {
     const pack = soundPacks[sound.soundPack];
     for (const voice of beat.voices) {
       const clickSound = pack[voice];
-      // Not ready yet (a sample pack still decoding) — skip this click rather than
-      // crash. Warming in _warmSoundPackCache means synth packs are always loaded.
-      if (!clickSound.isLoaded()) {
+      // Missing (a rhythm naming a sound this pack doesn't have) or not ready
+      // yet (a sample pack still decoding) — skip this click rather than
+      // crash. Both are deliberately silent: cross-pack rhythms degrade
+      // instead of erroring, and accent rhythms never hit the missing case
+      // since strong/weak are universal. Warming in _warmSoundPackCache means
+      // synth packs are always loaded.
+      if (!clickSound || !clickSound.isLoaded()) {
         continue;
       }
       const buffer = clickSound.getBuffer();

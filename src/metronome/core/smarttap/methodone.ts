@@ -226,7 +226,7 @@ function generateCandidateCycles(clicks: BeatClick[]): CandidateCycle[] {
 
 // Tap intensity -> core voices, at the one place output Beats get built.
 const tapStrengthToVoices = (strength: TapStrength): Beat["voices"] =>
-  strength === "strong" ? ["v1"] : strength === "weak" ? ["v2"] : [];
+  strength === "strong" ? ["strong"] : strength === "weak" ? ["weak"] : [];
 
 const candidateToBeats = (
   candidate: CandidateCycle

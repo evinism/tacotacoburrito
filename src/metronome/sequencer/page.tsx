@@ -8,7 +8,7 @@ import { useMetronome } from "@/metronome/shared/usemetronome";
 import { useTapTempo } from "@/metronome/shared/usetaptempo";
 import { MetronomeSpec } from "@/metronome/core/engine";
 import { scaleBPM, invScaleBPM, TEMPO_SLIDER_MAX } from "@/metronome/core/tempo";
-import { Measure, Measures, Voice, VOICES } from "@/metronome/core/types";
+import { Measure, Measures } from "@/metronome/core/types";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
 import styles from "./sequencer.module.css";
@@ -40,32 +40,33 @@ const DEFAULT_STEPS = 8;
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
-const VOICE_LABELS: Record<Voice, string> = {
-  v1: "Kick",
-  v2: "Snare",
-  v3: "Hihat",
-};
+// Sequencer-local track list — not core metadata. Adding a row is one entry
+// here plus one sound in the `drums` pack (see core/soundpacks.ts).
+const TRACKS = [
+  { voice: "kick", label: "Kick" },
+  { voice: "snare", label: "Snare" },
+  { voice: "hihat", label: "Hihat" },
+] as const;
 
 // The grid is the persisted state; Measures is only a projection derived at
 // the engine boundary (see the `beats` memo below).
-type Grid = Record<Voice, boolean[]>;
+type Grid = Record<string, boolean[]>;
 
-const emptyGrid = (steps: number): Grid => ({
-  v1: Array(steps).fill(false),
-  v2: Array(steps).fill(false),
-  v3: Array(steps).fill(false),
-});
+const emptyGrid = (steps: number): Grid =>
+  Object.fromEntries(TRACKS.map(({ voice }) => [voice, Array(steps).fill(false)]));
 
 // Resize every row to `steps`, preserving existing cells (truncate or pad with
 // false). Applied defensively on every render so a `grid`/`steps` mismatch
 // (e.g. independently-migrated localStorage values) can't desync the UI.
 const resizeGrid = (grid: Grid, steps: number): Grid => {
   const resizeRow = (row: boolean[]): boolean[] => {
-    const next = row.slice(0, steps);
+    const next = (row ?? []).slice(0, steps);
     while (next.length < steps) next.push(false);
     return next;
   };
-  return { v1: resizeRow(grid.v1), v2: resizeRow(grid.v2), v3: resizeRow(grid.v3) };
+  return Object.fromEntries(
+    TRACKS.map(({ voice }) => [voice, resizeRow(grid[voice])])
+  );
 };
 
 const SequencerMetronome = () => {
@@ -83,7 +84,9 @@ const SequencerMetronome = () => {
 
   const beats: Measures = useMemo(() => {
     const measure: Measure = Array.from({ length: steps }, (_, i) => ({
-      voices: VOICES.filter((voice) => effectiveGrid[voice][i]),
+      voices: TRACKS.filter(({ voice }) => effectiveGrid[voice][i]).map(
+        ({ voice }) => voice
+      ),
       duration: 1,
     }));
     return [measure];
@@ -125,7 +128,7 @@ const SequencerMetronome = () => {
     setGrid(resizeGrid(effectiveGrid, clamped));
   };
 
-  const toggleCell = (voice: Voice, index: number) => {
+  const toggleCell = (voice: string, index: number) => {
     const row = effectiveGrid[voice].slice();
     row[index] = !row[index];
     setGrid({ ...effectiveGrid, [voice]: row });
@@ -220,17 +223,17 @@ const SequencerMetronome = () => {
       </Box>
 
       <div className={styles.Grid}>
-        {VOICES.map((voice) => (
+        {TRACKS.map(({ voice, label }) => (
           <div key={voice} className={styles.Row}>
             <Typography variant="body2" className={styles.RowLabel}>
-              {VOICE_LABELS[voice]}
+              {label}
             </Typography>
             <div className={styles.Cells}>
               {effectiveGrid[voice].map((on, index) => (
                 <button
                   key={index}
                   type="button"
-                  aria-label={`${VOICE_LABELS[voice]} step ${index + 1}`}
+                  aria-label={`${label} step ${index + 1}`}
                   aria-pressed={on}
                   onClick={() => toggleCell(voice, index)}
                   className={[

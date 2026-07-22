@@ -35,8 +35,8 @@ const ttConfig = {
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
-const strong: Beat = { voices: ["v1"], duration: 1 };
-const weak: Beat = { voices: ["v2"], duration: 1 };
+const strong: Beat = { voices: ["strong"], duration: 1 };
+const weak: Beat = { voices: ["weak"], duration: 1 };
 const off: Beat = { voices: [], duration: 1 };
 
 // One audible measure (accent on beat 1) followed by all-silent measures.

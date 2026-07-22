@@ -1,5 +1,6 @@
-export type Voice = "v1" | "v2" | "v3";
-export const VOICES: Voice[] = ["v1", "v2", "v3"];
+// A sound name resolved against the current pack (see soundpacks.ts) — not a
+// fixed universal slot.
+export type Voice = string;
 
 export type Beat = {
   voices: Voice[];
@@ -8,4 +9,4 @@ export type Beat = {
 
 export type Measure = Beat[];
 export type Measures = Measure[];
-export type BeatFillMethod = Voice | "off" | "copyEnd";
+export type BeatFillMethod = "strong" | "weak" | "off" | "copyEnd";

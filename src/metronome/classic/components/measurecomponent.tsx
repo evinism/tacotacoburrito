@@ -8,37 +8,34 @@ import LongPressListener from "./longpresslistener";
 import styles from "@/metronome/classic/classic.module.css";
 
 import type { Beat as BeatT } from "@/metronome/core/types";
-import { BeatFillMethod, Measure, Measures, Voice } from "@/metronome/core/types";
+import { BeatFillMethod, Measure, Measures } from "@/metronome/core/types";
 import BeatContextMenu from "./beatmodmenu";
 
 // Classic is single-voice: a beat's accent is its sole voice, or "off" for
-// none. Accent hierarchy is v1 (Strong) > v2 (Weak) > v3 (Third) > off.
-type Accent = Voice | "off";
+// none. Accent hierarchy is strong > weak > off.
+type Accent = "strong" | "weak" | "off";
 
 const beatLookupOrder: Record<"up" | "down", Record<Accent, Accent>> = {
   up: {
-    off: "v3",
-    v3: "v2",
-    v2: "v1",
-    v1: "off",
+    off: "weak",
+    weak: "strong",
+    strong: "off",
   },
   down: {
-    v1: "v2",
-    v2: "v3",
-    v3: "off",
-    off: "v1",
+    strong: "weak",
+    weak: "off",
+    off: "strong",
   },
 };
 
 const accentLabels: Record<Accent, string> = {
-  v1: "Strong",
-  v2: "Weak",
-  v3: "Third",
+  strong: "Strong",
+  weak: "Weak",
   off: "off",
 };
 
 const accentOf = (beat: BeatT): Accent =>
-  (beat.voices[0] as Voice | undefined) ?? "off";
+  (beat.voices[0] as Accent | undefined) ?? "off";
 
 interface MeasureComponentProps {
   beats: Measures;
@@ -208,9 +205,8 @@ const Beat = ({
             (active ? styles.active : styles.inactive) +
             " " +
             {
-              v1: styles.strong,
-              v2: styles.weak,
-              v3: styles.third,
+              strong: styles.strong,
+              weak: styles.weak,
               off: styles.off,
             }[accent]
           }

@@ -1,5 +1,3 @@
-import { Voice, VOICES } from "./types";
-
 type FreqSampleFnOptions = {
   duration: number;
   noise: number;
@@ -139,13 +137,18 @@ export class Sound {
   }
 }
 
-export type SoundPack = Record<Voice, Sound>;
+// Every pack must provide `strong`/`weak` (possibly aliasing its own sounds)
+// so any pack works in accent-based frontends; other keys are pack-specific
+// sound names (e.g. drums' `kick`/`snare`/`hihat`).
+export type SoundPack = { strong: Sound; weak: Sound } & Record<string, Sound>;
 
 // Aggregate a whole pack's load lifecycle into one status. A pack is only
 // "loaded" once every Sound in it is; a single failure or in-flight load
 // dominates so callers can gate playback / show a spinner off one value.
+// Aliased sounds (e.g. drums' strong === kick) get visited twice here — that's
+// harmless since `status()` is a cheap read and `load()` is idempotent.
 export function soundPackStatus(pack: SoundPack): SoundStatus {
-  const statuses = VOICES.map((voice) => pack[voice].status());
+  const statuses = Object.values(pack).map((sound) => sound.status());
   if (statuses.includes("error")) return "error";
   if (statuses.includes("loading")) return "loading";
   if (statuses.every((s) => s === "loaded")) return "loaded";
@@ -237,49 +240,38 @@ const fileLoader =
 export type SoundPackId = keyof typeof soundPacks;
 
 const defaultSoundPack: SoundPack = {
-  v1: new Sound(makeFreqSampleFn(cluster(2093, 2113, 6))),
-  v2: new Sound(makeFreqSampleFn(cluster(1046, 1066, 6))),
-  v3: new Sound(makeFreqSampleFn(cluster(1568, 1588, 6))),
+  strong: new Sound(makeFreqSampleFn(cluster(2093, 2113, 6))),
+  weak: new Sound(makeFreqSampleFn(cluster(1046, 1066, 6))),
 };
-
-const doumbekLow = new Sound(fileLoader("/sounds/doumbek/low.wav"));
 
 // TODO: Make it so we might be able to adjust the base frequency
 // within a sound pack, rather than having to make a new sound pack
-export const soundPacks = {
+export const soundPacks: Record<string, SoundPack> = {
   default: defaultSoundPack,
   inverted: {
-    v1: defaultSoundPack.v2,
-    v2: defaultSoundPack.v1,
-    v3: defaultSoundPack.v3,
+    strong: defaultSoundPack.weak,
+    weak: defaultSoundPack.strong,
   },
   dirac: {
-    v1: new Sound((sampleRate: number, audioCtx: AudioContext) => {
+    strong: new Sound((sampleRate: number, audioCtx: AudioContext) => {
       const buffer = audioCtx.createBuffer(1, 1, sampleRate);
       buffer.getChannelData(0)[0] = 1;
       return buffer;
     }),
-    v2: new Sound((sampleRate: number, audioCtx: AudioContext) => {
+    weak: new Sound((sampleRate: number, audioCtx: AudioContext) => {
       const buffer = audioCtx.createBuffer(1, 1, sampleRate);
       buffer.getChannelData(0)[0] = 0.5;
       return buffer;
     }),
-    v3: new Sound((sampleRate: number, audioCtx: AudioContext) => {
-      const buffer = audioCtx.createBuffer(1, 1, sampleRate);
-      buffer.getChannelData(0)[0] = 0.75;
-      return buffer;
-    }),
   },
   doumbek: {
-    v1: new Sound(fileLoader("/sounds/doumbek/hi.wav")),
-    v2: doumbekLow,
-    // Only hi/low samples exist — v3 reuses the low sample rather than a
-    // third asset.
-    v3: doumbekLow,
+    strong: new Sound(fileLoader("/sounds/doumbek/hi.wav")),
+    weak: new Sound(fileLoader("/sounds/doumbek/low.wav")),
   },
-  drums: {
-    v1: new Sound(makeKick()),
-    v2: new Sound(makeSnare()),
-    v3: new Sound(makeHihat()),
-  },
+  drums: (() => {
+    const kick = new Sound(makeKick());
+    const snare = new Sound(makeSnare());
+    const hihat = new Sound(makeHihat());
+    return { kick, snare, hihat, strong: kick, weak: snare };
+  })(),
 };
