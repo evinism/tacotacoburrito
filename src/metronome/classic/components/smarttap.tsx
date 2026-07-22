@@ -1,5 +1,5 @@
 import { Button, CircularProgress, Tooltip, Typography } from "@mui/material";
-import { BeatStrength } from "@/metronome/core/types";
+import { TapStrength } from "@/metronome/core/smarttap";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 import { useEffect, useState } from "react";
 import inferRhythm from "@/metronome/core/smarttap/methodone";
@@ -14,12 +14,12 @@ interface SmartTapButtonProps {
 }
 
 const SmartTapButton = ({ setBpm, setBeats }: SmartTapButtonProps) => {
-  const [taps, setTaps] = useState<{ strength: BeatStrength; time: number }[]>(
+  const [taps, setTaps] = useState<{ strength: TapStrength; time: number }[]>(
     []
   );
   const [ttOpen, setTTOpen] = useState<boolean>(false);
 
-  const handleSmartTap = (strength: BeatStrength) => () => {
+  const handleSmartTap = (strength: TapStrength) => () => {
     const now = new Date().getTime();
     let newTaps = taps.slice();
     if (

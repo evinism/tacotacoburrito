@@ -29,7 +29,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
 // A tempo-only metronome: a single steady click repeating at the chosen BPM.
-const beats: Measures = [[{ strength: "strong", duration: 1 }]];
+const beats: Measures = [[{ voices: ["v1"], duration: 1 }]];
 
 const ttConfig = {
   enterDelay: 500,

@@ -1,3 +1,5 @@
+import { Voice, VOICES } from "./types";
+
 type FreqSampleFnOptions = {
   duration: number;
   noise: number;
@@ -137,21 +139,87 @@ export class Sound {
   }
 }
 
-export type SoundPack = {
-  strong: Sound;
-  weak: Sound;
-};
+export type SoundPack = Record<Voice, Sound>;
 
 // Aggregate a whole pack's load lifecycle into one status. A pack is only
 // "loaded" once every Sound in it is; a single failure or in-flight load
 // dominates so callers can gate playback / show a spinner off one value.
 export function soundPackStatus(pack: SoundPack): SoundStatus {
-  const statuses = [pack.strong.status(), pack.weak.status()];
+  const statuses = VOICES.map((voice) => pack[voice].status());
   if (statuses.includes("error")) return "error";
   if (statuses.includes("loading")) return "loading";
   if (statuses.every((s) => s === "loaded")) return "loaded";
   return "unloaded";
 }
+
+// Cheap exponential-decay envelope shared by the drum loaders below.
+const expDecay = (i: number, sampleRate: number, timeConstant: number) =>
+  Math.exp(-i / (sampleRate * timeConstant));
+
+// Kick: a sine sweeping from `startFreq` down to `endFreq`, phase-accumulated
+// sample-by-sample so the sweep stays click-free (a fixed-freq buffer can't
+// express this, hence a bespoke loader instead of extending makeFreqSampleFn).
+const makeKick =
+  (
+    duration = 0.2,
+    startFreq = 150,
+    endFreq = 50,
+    decayTimeConstant = 0.05,
+  ): SoundLoader =>
+  (sampleRate: number, audioCtx: AudioContext): AudioBuffer => {
+    const buffer = audioCtx.createBuffer(1, sampleRate * duration, sampleRate);
+    const data = buffer.getChannelData(0);
+    const freqRatio = endFreq / startFreq;
+    let phase = 0;
+    for (let i = 0; i < data.length; i++) {
+      const t = i / data.length;
+      // Exponential sweep: frequency at time t is startFreq * ratio^t.
+      const freq = startFreq * Math.pow(freqRatio, t);
+      phase += (2 * Math.PI * freq) / sampleRate;
+      data[i] = Math.sin(phase) * expDecay(i, sampleRate, decayTimeConstant);
+    }
+    return buffer;
+  };
+
+// Snare: white noise plus a ~200 Hz tone, each with its own decay, mixed down
+// so the combined peak stays at/under 1.
+const makeSnare =
+  (
+    duration = 0.15,
+    toneFreq = 200,
+    noiseDecay = 0.06,
+    toneDecay = 0.03,
+  ): SoundLoader =>
+  (sampleRate: number, audioCtx: AudioContext): AudioBuffer => {
+    const buffer = audioCtx.createBuffer(1, sampleRate * duration, sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      const noise = (Math.random() * 2 - 1) * expDecay(i, sampleRate, noiseDecay);
+      const tone =
+        Math.sin((2 * Math.PI * toneFreq * i) / sampleRate) *
+        expDecay(i, sampleRate, toneDecay);
+      data[i] = noise * 0.7 + tone * 0.3;
+    }
+    return buffer;
+  };
+
+// Hihat: very short, very fast-decaying noise burst. A real bandpass/highpass
+// filter is overkill for a one-shot buffer, so a cheap first-difference
+// (x[i] - x[i-1]) biases the noise's energy upward instead.
+const makeHihat =
+  (duration = 0.05, decayTimeConstant = 0.012): SoundLoader =>
+  (sampleRate: number, audioCtx: AudioContext): AudioBuffer => {
+    const buffer = audioCtx.createBuffer(1, sampleRate * duration, sampleRate);
+    const data = buffer.getChannelData(0);
+    let prev = 0;
+    for (let i = 0; i < data.length; i++) {
+      const noise = Math.random() * 2 - 1;
+      const highPassed = (noise - prev) * 0.5;
+      prev = noise;
+      data[i] = highPassed * expDecay(i, sampleRate, decayTimeConstant);
+    }
+    return buffer;
+  };
 
 // A loader that fetches an audio file and decodes it into a buffer.
 const fileLoader =
@@ -169,32 +237,49 @@ const fileLoader =
 export type SoundPackId = keyof typeof soundPacks;
 
 const defaultSoundPack: SoundPack = {
-  strong: new Sound(makeFreqSampleFn(cluster(2093, 2113, 6))),
-  weak: new Sound(makeFreqSampleFn(cluster(1046, 1066, 6))),
+  v1: new Sound(makeFreqSampleFn(cluster(2093, 2113, 6))),
+  v2: new Sound(makeFreqSampleFn(cluster(1046, 1066, 6))),
+  v3: new Sound(makeFreqSampleFn(cluster(1568, 1588, 6))),
 };
+
+const doumbekLow = new Sound(fileLoader("/sounds/doumbek/low.wav"));
 
 // TODO: Make it so we might be able to adjust the base frequency
 // within a sound pack, rather than having to make a new sound pack
 export const soundPacks = {
   default: defaultSoundPack,
   inverted: {
-    strong: defaultSoundPack.weak,
-    weak: defaultSoundPack.strong,
+    v1: defaultSoundPack.v2,
+    v2: defaultSoundPack.v1,
+    v3: defaultSoundPack.v3,
   },
   dirac: {
-    strong: new Sound((sampleRate: number, audioCtx: AudioContext) => {
+    v1: new Sound((sampleRate: number, audioCtx: AudioContext) => {
       const buffer = audioCtx.createBuffer(1, 1, sampleRate);
       buffer.getChannelData(0)[0] = 1;
       return buffer;
     }),
-    weak: new Sound((sampleRate: number, audioCtx: AudioContext) => {
+    v2: new Sound((sampleRate: number, audioCtx: AudioContext) => {
       const buffer = audioCtx.createBuffer(1, 1, sampleRate);
       buffer.getChannelData(0)[0] = 0.5;
       return buffer;
     }),
+    v3: new Sound((sampleRate: number, audioCtx: AudioContext) => {
+      const buffer = audioCtx.createBuffer(1, 1, sampleRate);
+      buffer.getChannelData(0)[0] = 0.75;
+      return buffer;
+    }),
   },
   doumbek: {
-    strong: new Sound(fileLoader("/sounds/doumbek/hi.wav")),
-    weak: new Sound(fileLoader("/sounds/doumbek/low.wav")),
+    v1: new Sound(fileLoader("/sounds/doumbek/hi.wav")),
+    v2: doumbekLow,
+    // Only hi/low samples exist — v3 reuses the low sample rather than a
+    // third asset.
+    v3: doumbekLow,
+  },
+  drums: {
+    v1: new Sound(makeKick()),
+    v2: new Sound(makeSnare()),
+    v3: new Sound(makeHihat()),
   },
 };

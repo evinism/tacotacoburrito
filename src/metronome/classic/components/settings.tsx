@@ -89,8 +89,9 @@ const SettingsPanel = ({
                     setBeatFill(event.target.value as BeatFillMethod)
                   }
                 >
-                  <MenuItem value="strong">Strong</MenuItem>
-                  <MenuItem value="weak">Weak</MenuItem>
+                  <MenuItem value="v1">Strong</MenuItem>
+                  <MenuItem value="v2">Weak</MenuItem>
+                  <MenuItem value="v3">Third</MenuItem>
                   <MenuItem value="off">Off</MenuItem>
                   <MenuItem value="copyEnd">Copy End</MenuItem>
                 </Select>

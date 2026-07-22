@@ -7,21 +7,38 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import LongPressListener from "./longpresslistener";
 import styles from "@/metronome/classic/classic.module.css";
 
-import { BeatFillMethod, Measure, Measures, BeatStrength } from "@/metronome/core/types";
+import type { Beat as BeatT } from "@/metronome/core/types";
+import { BeatFillMethod, Measure, Measures, Voice } from "@/metronome/core/types";
 import BeatContextMenu from "./beatmodmenu";
 
-const beatLookupOrder = {
+// Classic is single-voice: a beat's accent is its sole voice, or "off" for
+// none. Accent hierarchy is v1 (Strong) > v2 (Weak) > v3 (Third) > off.
+type Accent = Voice | "off";
+
+const beatLookupOrder: Record<"up" | "down", Record<Accent, Accent>> = {
   up: {
-    strong: "off",
-    weak: "strong",
-    off: "weak",
+    off: "v3",
+    v3: "v2",
+    v2: "v1",
+    v1: "off",
   },
   down: {
-    strong: "weak",
-    weak: "off",
-    off: "strong",
+    v1: "v2",
+    v2: "v3",
+    v3: "off",
+    off: "v1",
   },
 };
+
+const accentLabels: Record<Accent, string> = {
+  v1: "Strong",
+  v2: "Weak",
+  v3: "Third",
+  off: "off",
+};
+
+const accentOf = (beat: BeatT): Accent =>
+  (beat.voices[0] as Voice | undefined) ?? "off";
 
 interface MeasureComponentProps {
   beats: Measures;
@@ -54,11 +71,11 @@ const MeasureComponent = ({
 
   const measure = beats[measureIndex];
 
-  const changeBeatStrength = (index: number, strength: BeatStrength) => {
+  const changeBeatAccent = (index: number, accent: Accent) => {
     const newMeasure: Measure = measure.map((beat, i) =>
       i === index
         ? {
-            strength,
+            voices: accent === "off" ? [] : [accent],
             duration: beat.duration,
           }
         : beat
@@ -67,9 +84,9 @@ const MeasureComponent = ({
   };
   const rotateBeatStrength = (index: number, direction: "up" | "down") => {
     onBeatAccentChange?.();
-    changeBeatStrength(
+    changeBeatAccent(
       index,
-      beatLookupOrder[direction][measure[index].strength] as BeatStrength
+      beatLookupOrder[direction][accentOf(measure[index])]
     );
   };
 
@@ -77,7 +94,7 @@ const MeasureComponent = ({
     const newMeasure: Measure = measure.map((beat, i) =>
       i === index
         ? {
-            strength: beat.strength,
+            voices: beat.voices,
             duration,
           }
         : beat
@@ -129,7 +146,7 @@ const Beat = ({
   beat,
 }: {
   active: boolean;
-  beat: { strength: BeatStrength; duration: number };
+  beat: BeatT;
   rotateBeatStrength: () => void;
   changeBeatDuration: (duration: number) => void;
   index: number;
@@ -141,9 +158,10 @@ const Beat = ({
     setAnchorEl(target);
   };
 
+  const accent = accentOf(beat);
   const hasCustomDuration = Boolean(beat.duration) && beat.duration !== 1;
   const beatLabel =
-    `Beat ${index + 1}: ${beat.strength}` +
+    `Beat ${index + 1}: ${accentLabels[accent]}` +
     (hasCustomDuration ? `, duration ${beat.duration}×` : "");
 
   return (
@@ -190,10 +208,11 @@ const Beat = ({
             (active ? styles.active : styles.inactive) +
             " " +
             {
-              strong: styles.strong,
-              weak: styles.weak,
+              v1: styles.strong,
+              v2: styles.weak,
+              v3: styles.third,
               off: styles.off,
-            }[beat.strength]
+            }[accent]
           }
         >
           {index + 1}
