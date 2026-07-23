@@ -69,6 +69,26 @@
   gap: 0.75rem;
 }
 
+.LabelRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.LabelCell {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+}
+
+.LabelCell.active {
+  color: #fff;
+}
+
 .RowLabel {
   width: 4rem;
   flex-shrink: 0;

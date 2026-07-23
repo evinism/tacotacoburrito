@@ -18,11 +18,13 @@ import {
   Button,
   CircularProgress,
   Divider,
+  FormControlLabel,
   IconButton,
   Input,
   InputLabel,
   Paper,
   Slider,
+  Switch,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -34,11 +36,22 @@ const ttConfig = {
 };
 
 const MIN_STEPS = 1;
-const MAX_STEPS = 32;
+// Generous enough that toggling eighth-note mode on can double a full-length
+// quarter-note pattern without truncating it.
+const MAX_STEPS = 64;
 const DEFAULT_STEPS = 8;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
+
+// When showEighths is on, each pair of columns is one quarter note: the first
+// gets its quarter-note count, the second is labeled "&".
+const stepLabel = (index: number, showEighths: boolean): string =>
+  showEighths
+    ? index % 2 === 0
+      ? String(index / 2 + 1)
+      : "&"
+    : String(index + 1);
 
 // Sequencer-local track list — not core metadata. Adding a row is one entry
 // here plus one sound in the `drums` pack (see core/soundpacks.ts).
@@ -69,6 +82,19 @@ const resizeGrid = (grid: Grid, steps: number): Grid => {
   );
 };
 
+// Re-grid between quarter- and eighth-note resolution. Doubling interleaves
+// empty offbeat columns; halving drops them, so anything written on an "&" is
+// lost — the same trade as shortening the pattern.
+const changeResolution = (grid: Grid, doubling: boolean): Grid =>
+  Object.fromEntries(
+    TRACKS.map(({ voice }) => [
+      voice,
+      doubling
+        ? grid[voice].flatMap((on) => [on, false])
+        : grid[voice].filter((_, index) => index % 2 === 0),
+    ])
+  );
+
 const SequencerMetronome = () => {
   const [bpm, setBpm] = usePersistentState<number>("sequencer/bpm", 120);
   const [steps, setSteps] = usePersistentState<number>(
@@ -79,6 +105,10 @@ const SequencerMetronome = () => {
     "sequencer/grid",
     emptyGrid(DEFAULT_STEPS)
   );
+  const [showEighths, setShowEighths] = usePersistentState<boolean>(
+    "sequencer/showEighths",
+    false
+  );
 
   const effectiveGrid = useMemo(() => resizeGrid(grid, steps), [grid, steps]);
 
@@ -87,10 +117,12 @@ const SequencerMetronome = () => {
       voices: TRACKS.filter(({ voice }) => effectiveGrid[voice][i]).map(
         ({ voice }) => voice
       ),
-      duration: 1,
+      // BPM always counts quarter notes, so in eighth-note mode each column is
+      // half a beat rather than the tempo doubling underneath the user.
+      duration: showEighths ? 0.5 : 1,
     }));
     return [measure];
-  }, [effectiveGrid, steps]);
+  }, [effectiveGrid, steps, showEighths]);
 
   const spec: MetronomeSpec = useMemo(
     () => ({ bpm, beats, sound: { soundPack: "drums" } }),
@@ -126,6 +158,17 @@ const SequencerMetronome = () => {
     const clamped = clamp(newSteps, MIN_STEPS, MAX_STEPS);
     setSteps(clamped);
     setGrid(resizeGrid(effectiveGrid, clamped));
+  };
+
+  const handleShowEighthsChange = (next: boolean) => {
+    const newSteps = clamp(
+      next ? steps * 2 : Math.ceil(steps / 2),
+      MIN_STEPS,
+      MAX_STEPS
+    );
+    setShowEighths(next);
+    setSteps(newSteps);
+    setGrid(resizeGrid(changeResolution(effectiveGrid, next), newSteps));
   };
 
   const toggleCell = (voice: string, index: number) => {
@@ -218,11 +261,37 @@ const SequencerMetronome = () => {
             }
           />
         </div>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showEighths}
+              onChange={(event) => handleShowEighthsChange(event.target.checked)}
+            />
+          }
+          label="Show eighth notes"
+        />
         <div className={styles.Spacer} />
         <Button onClick={clearGrid}>Clear</Button>
       </Box>
 
       <div className={styles.Grid}>
+        <div className={styles.LabelRow}>
+          <div className={styles.RowLabel} />
+          <div className={styles.Cells}>
+            {Array.from({ length: steps }, (_, index) => (
+              <Typography
+                key={index}
+                variant="caption"
+                className={[
+                  styles.LabelCell,
+                  index === activeStep ? styles.active : "",
+                ].join(" ")}
+              >
+                {stepLabel(index, showEighths)}
+              </Typography>
+            ))}
+          </div>
+        </div>
         {TRACKS.map(({ voice, label }) => (
           <div key={voice} className={styles.Row}>
             <Typography variant="body2" className={styles.RowLabel}>
