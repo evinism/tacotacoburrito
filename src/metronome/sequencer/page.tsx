@@ -11,7 +11,11 @@ import { scaleBPM, invScaleBPM, TEMPO_SLIDER_MAX } from "@/metronome/core/tempo"
 import { Measure, Measures } from "@/metronome/core/types";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
-import PatternList, { PatternState, usePatterns } from "./patterns";
+import PatternList, {
+  LibraryList,
+  PatternState,
+  usePatterns,
+} from "./patterns";
 import styles from "./sequencer.module.css";
 
 import {
@@ -385,6 +389,10 @@ const SequencerMetronome = () => {
         onRename={rename}
         onRemove={remove}
       />
+
+      <Divider />
+
+      <LibraryList onLoad={loadPattern} />
 
       <Typography variant="body2" className={styles.BackLink}>
         <a href="/metronomes">Other metronomes</a>

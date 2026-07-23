@@ -13,6 +13,7 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 import { usePersistentState } from "@/hooks";
 
+import { LIBRARY_PATTERNS } from "./library";
 import styles from "./sequencer.module.css";
 
 // The full sequencer state a pattern round-trips. Structurally compatible with
@@ -209,5 +210,45 @@ const PatternRows = ({
     </Box>
   );
 };
+
+// Built-in patterns: loadable, but with no rename/overwrite/delete affordances,
+// since the library ships with the app rather than living in localStorage.
+export const LibraryList = ({
+  onLoad,
+}: {
+  onLoad: (pattern: PatternState) => void;
+}) => (
+  <>
+    <Box className={styles.PatternsHeader}>
+      <Typography variant="h6" className={styles.PatternsTitle}>
+        Pattern Library
+      </Typography>
+    </Box>
+    {LIBRARY_PATTERNS.length === 0 ? (
+      <Typography variant="body2" className={styles.PatternsEmpty}>
+        The built-in library is empty for now.
+      </Typography>
+    ) : (
+      <Box className={styles.Patterns}>
+        {LIBRARY_PATTERNS.map((pattern) => (
+          <div key={pattern.name} className={styles.PatternRow}>
+            <Typography variant="body2" className={styles.PatternName}>
+              {pattern.name}
+            </Typography>
+            <Tooltip title="Load this pattern" enterDelay={500}>
+              <IconButton
+                size="small"
+                aria-label={`Load ${pattern.name}`}
+                onClick={() => onLoad(pattern)}
+              >
+                <Typography variant="button">Load</Typography>
+              </IconButton>
+            </Tooltip>
+          </div>
+        ))}
+      </Box>
+    )}
+  </>
+);
 
 export default PatternList;
