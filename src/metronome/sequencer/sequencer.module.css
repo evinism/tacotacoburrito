@@ -125,6 +125,49 @@
   background-color: #fff;
 }
 
+/* Saved pattern list */
+.PatternsHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.PatternsTitle {
+  filter: saturate(0.5);
+}
+
+.PatternsEmpty {
+  color: #999;
+  padding: 0.25rem 0 0.5rem;
+}
+
+.Patterns {
+  display: flex;
+  flex-direction: column;
+}
+
+.PatternRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.PatternRow + .PatternRow {
+  border-top: 1px solid #555;
+}
+
+.PatternName {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.PatternDate {
+  color: #999;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .BackLink {
   text-align: center;
   margin-top: 0.5rem;

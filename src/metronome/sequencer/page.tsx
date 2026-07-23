@@ -11,6 +11,7 @@ import { scaleBPM, invScaleBPM, TEMPO_SLIDER_MAX } from "@/metronome/core/tempo"
 import { Measure, Measures } from "@/metronome/core/types";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
+import PatternList, { PatternState, usePatterns } from "./patterns";
 import styles from "./sequencer.module.css";
 
 import {
@@ -179,6 +180,24 @@ const SequencerMetronome = () => {
 
   const clearGrid = () => {
     setGrid(emptyGrid(steps));
+  };
+
+  const { patterns, saveNew, overwrite, rename, remove } = usePatterns();
+
+  const currentPattern: PatternState = {
+    bpm,
+    steps,
+    showEighths,
+    grid: effectiveGrid,
+  };
+
+  const loadPattern = (pattern: PatternState) => {
+    setBpm(pattern.bpm);
+    setSteps(pattern.steps);
+    setShowEighths(pattern.showEighths);
+    // Resize defensively — a pattern saved before a shape change could carry a
+    // grid that disagrees with its own step count.
+    setGrid(resizeGrid(pattern.grid, pattern.steps));
   };
 
   const activeStep = playing ? currentBeat % steps : -1;
@@ -353,7 +372,20 @@ const SequencerMetronome = () => {
           </span>
         </Tooltip>
         <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
+        <div className={styles.Spacer} />
+        <Button onClick={() => saveNew(currentPattern)}>Save as New</Button>
       </div>
+
+      <Divider />
+
+      <PatternList
+        patterns={patterns}
+        onLoad={loadPattern}
+        onOverwrite={(id) => overwrite(id, currentPattern)}
+        onRename={rename}
+        onRemove={remove}
+      />
+
       <Typography variant="body2" className={styles.BackLink}>
         <a href="/metronomes">Other metronomes</a>
       </Typography>
