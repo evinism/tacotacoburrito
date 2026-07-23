@@ -5,7 +5,12 @@ import { usePersistentState } from "@/hooks";
 import { useMetronome } from "@/metronome/shared/usemetronome";
 import { MetronomeSpec, Rhythm } from "@/metronome/core/engine";
 import { SoundPackId } from "@/metronome/core/soundpacks";
-import { Beat, BeatFillMethod, Measures, BeatStrength } from "@/metronome/core/types";
+import { Beat, BeatFillMethod, Measures, Voice } from "@/metronome/core/types";
+import {
+  migrateMeasures,
+  migrateRhythm,
+  migrateBeatFillMethod,
+} from "@/metronome/core/migrate";
 
 import styles from "./classic.module.css";
 
@@ -31,9 +36,9 @@ import SettingsPanel from "./components/settings";
 import MeasureInputSection from "./components/measureinputsection";
 import { useSnackbar } from "@/metronome/shared/snackbar";
 
-const toBeat = (strength: BeatStrength, duration: number = 1): Beat => {
+const toBeat = (voice: Voice | "off", duration: number = 1): Beat => {
   return {
-    strength,
+    voices: voice === "off" ? [] : [voice],
     duration,
   };
 };
@@ -55,7 +60,8 @@ const serializeRhythm = (rhythm: Rhythm): string => {
 const deserializeRhythm = (base64: string): Rhythm | null => {
   try {
     const json = atob(base64);
-    return JSON.parse(json) as Rhythm;
+    // Old share links may carry the pre-voices { strength, duration } shape.
+    return migrateRhythm(JSON.parse(json));
   } catch (error) {
     console.error("Failed to deserialize rhythm:", error);
     return null;
@@ -73,12 +79,15 @@ const copyToClipboard = async (text: string): Promise<boolean> => {
 };
 
 const MetronomeComponent = () => {
-  const [beats, setBeats] = usePersistentState<Measures>(
+  const [rawBeats, setBeats] = usePersistentState<Measures>(
     "classic/beats",
     defaultBeats,
     0,
     "beats"
   );
+  // Migrators are idempotent, so re-running on every read is harmless and
+  // lets old localStorage ({ strength, duration }) keep working.
+  const beats = useMemo(() => migrateMeasures(rawBeats), [rawBeats]);
   const [bpm, setBpm] = usePersistentState<number>("classic/bpm", 120, 0, "bpm");
   const [volume, setVolume] = usePersistentState<number>(
     "classic/volume",
@@ -101,12 +110,14 @@ const MetronomeComponent = () => {
   const { showSnackbar } = useSnackbar();
 
   const [freqMultiplier, setFreqMultiplier] = useState<number>(1);
-  const [beatFill, setBeatFill] = usePersistentState<BeatFillMethod>(
+  const [rawBeatFill, setBeatFill] = usePersistentState<BeatFillMethod>(
     "classic/beatFillMethod",
     "copyEnd",
     0,
     "beatFillMethod"
   );
+  // Old stores contain "strong"/"weak" — migrate at point of use.
+  const beatFill = migrateBeatFillMethod(rawBeatFill);
 
   const spec: MetronomeSpec = useMemo(
     () => ({
@@ -165,7 +176,7 @@ const MetronomeComponent = () => {
       // Only the emphases — custom durations survive a clear.
       setBeats(
         beats.map((subBeats) =>
-          subBeats.map((beat): Beat => ({ ...beat, strength: "off" }))
+          subBeats.map((beat): Beat => ({ ...beat, voices: [] }))
         )
       );
     }

@@ -30,4 +30,10 @@ export const frontends: FrontendInfo[] = [
     description:
       "Plays a few measures then goes silent for a few, for practicing internal timekeeping.",
   },
+  {
+    name: "Sequencer",
+    path: "/sequencer",
+    description:
+      "A 3-row drum step sequencer — kick, snare, and hihat, with a movable playhead.",
+  },
 ];

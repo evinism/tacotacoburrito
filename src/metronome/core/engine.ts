@@ -5,7 +5,7 @@ import {
   soundPackStatus,
 } from "./soundpacks";
 import { multiLength, multiIndex } from "./util";
-import { BeatStrength, Measures } from "./types";
+import { Beat, Measures } from "./types";
 import {
   Listener,
   Emitter,
@@ -145,11 +145,13 @@ export class Metronome {
   _warmSoundPackCache = () => {
     const sound = resolveSound(this.spec);
     const pack = soundPacks[sound.soundPack];
-    for (const strength of ["strong", "weak"] as const) {
+    for (const clickSound of Object.values(pack)) {
       // Each load settles by re-evaluating whole-pack status rather than tracking
-      // "both done" here, so the strong/weak loads can finish in any order and a
+      // "both done" here, so the sounds can finish loading in any order and a
       // pack swap mid-load just re-evaluates against whatever pack is now current.
-      pack[strength].load(
+      // Aliased sounds (e.g. drums' strong === kick) get warmed twice — harmless,
+      // load() is idempotent.
+      clickSound.load(
         this.audioContext.sampleRate,
         this.audioContext,
         this._notifySoundPackStatus,
@@ -283,7 +285,7 @@ export class Metronome {
       const nextBeatTime = this.nextBeatToScheduleTime();
       const nextBeatIndex = this.nextBeatToScheduleIndex();
       const nextBeat = multiIndex(this.spec.beats, nextBeatIndex);
-      this.scheduleClick(nextBeat.strength, nextBeatTime);
+      this.scheduleBeat(nextBeat, nextBeatTime);
       if (this._shouldNotifyBeatHit()) {
         const id = setTimeout(
           () => {
@@ -300,35 +302,40 @@ export class Metronome {
     }
   }
 
-  scheduleClick = (strength: BeatStrength, time: number) => {
-    if (strength === "off") {
-      return;
-    }
+  scheduleBeat = (beat: Beat, time: number) => {
+    // Empty voices = a silent beat; nothing to schedule.
     const sound = resolveSound(this.spec);
-    const clickSound = soundPacks[sound.soundPack][strength];
-    // Not ready yet (a sample pack still decoding) — skip this click rather than
-    // crash. Warming in _warmSoundPackCache means synth packs are always loaded.
-    if (!clickSound.isLoaded()) {
-      return;
+    const pack = soundPacks[sound.soundPack];
+    for (const voice of beat.voices) {
+      const clickSound = pack[voice];
+      // Missing (a rhythm naming a sound this pack doesn't have) or not ready
+      // yet (a sample pack still decoding) — skip this click rather than
+      // crash. Both are deliberately silent: cross-pack rhythms degrade
+      // instead of erroring, and accent rhythms never hit the missing case
+      // since strong/weak are universal. Warming in _warmSoundPackCache means
+      // synth packs are always loaded.
+      if (!clickSound || !clickSound.isLoaded()) {
+        continue;
+      }
+      const buffer = clickSound.getBuffer();
+
+      // Create source from the loaded buffer. Pitch shifting happens here — playing
+      // the buffer faster/slower scales all its frequencies by freqMultiplier —
+      // so the buffer itself stays pack-neutral and shared across pitches.
+      const source = this.audioContext.createBufferSource();
+      source.buffer = buffer;
+      source.playbackRate.value = sound.freqMultiplier;
+      source.connect(this._gainNode);
+      source.start(time);
+
+      // Track the source so stop() can cancel it if it's still pending, and
+      // release it once it finishes playing on its own.
+      this._scheduledSources.add(source);
+      source.onended = () => {
+        this._scheduledSources.delete(source);
+        source.disconnect();
+      };
     }
-    const buffer = clickSound.getBuffer();
-
-    // Create source from the loaded buffer. Pitch shifting happens here — playing
-    // the buffer faster/slower scales all its frequencies by freqMultiplier —
-    // so the buffer itself stays pack-neutral and shared across pitches.
-    const source = this.audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.playbackRate.value = sound.freqMultiplier;
-    source.connect(this._gainNode);
-    source.start(time);
-
-    // Track the source so stop() can cancel it if it's still pending, and
-    // release it once it finishes playing on its own.
-    this._scheduledSources.add(source);
-    source.onended = () => {
-      this._scheduledSources.delete(source);
-      source.disconnect();
-    };
   };
 
   _clearScheduledSources = () => {

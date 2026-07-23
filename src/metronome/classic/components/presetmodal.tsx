@@ -18,6 +18,7 @@ import styles from "@/metronome/classic/classic.module.css";
 import { PresetStore, defaultPresetStore } from "@/metronome/core/presetstore";
 import { usePersistentState } from "@/hooks";
 import { Measures } from "@/metronome/core/types";
+import { migrateRhythm } from "@/metronome/core/migrate";
 import { Fragment, useState } from "react";
 
 interface PresetModalProps {
@@ -39,8 +40,16 @@ const PresetModal = ({
   const [userPresetStore, setUserPresetStore] = usePersistentState<
     PresetStore[string]
   >("userPresets", {});
+  // User presets are persisted Rhythms possibly in the old { strength } shape;
+  // built-ins from presetstore.ts are already new-shape. Migrate on read.
+  const migratedUserPresetStore = Object.fromEntries(
+    Object.entries(userPresetStore).map(([name, rhythm]) => [
+      name,
+      migrateRhythm(rhythm),
+    ])
+  );
   const presetStore = Object.assign(
-    { "User Presets": userPresetStore },
+    { "User Presets": migratedUserPresetStore },
     defaultPresetStore
   );
 

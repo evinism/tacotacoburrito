@@ -2,8 +2,8 @@
 // Hodge-podge soup of heuristics, based on tap times rather than beat durations.
 
 import { getMean, getVariance, maxBy, transpose, getMedian } from "@/metronome/core/util";
-import { BeatClick, RhythmInferenceMethod } from ".";
-import { Beat, BeatStrength } from "@/metronome/core/types";
+import { BeatClick, RhythmInferenceMethod, TapStrength } from ".";
+import { Beat } from "@/metronome/core/types";
 
 type Result<T> = {
   value: T;
@@ -165,7 +165,7 @@ const getClosestSubdivision = (frac: number, subdivision: number) => {
 const quantize = (
   candidate: CandidateCycle,
   beatCount: number
-): Result<BeatStrength[]> | undefined => {
+): Result<TapStrength[]> | undefined => {
   const normalizedCycles = getNormalizedCycles(candidate);
   const transposed = transpose(normalizedCycles);
   const medianBeatTimes = transposed.map((beat) =>
@@ -224,6 +224,10 @@ function generateCandidateCycles(clicks: BeatClick[]): CandidateCycle[] {
   return candidateCycles;
 }
 
+// Tap intensity -> core voices, at the one place output Beats get built.
+const tapStrengthToVoices = (strength: TapStrength): Beat["voices"] =>
+  strength === "strong" ? ["strong"] : strength === "weak" ? ["weak"] : [];
+
 const candidateToBeats = (
   candidate: CandidateCycle
 ): Result<{ bpmMultiplier: number; beats: Beat[] }> | undefined => {
@@ -247,7 +251,7 @@ const candidateToBeats = (
     value: {
       bpmMultiplier: bestBeatCount.count,
       beats: tryReduce(quantized.value).map((strength) => ({
-        strength,
+        voices: tapStrengthToVoices(strength),
         duration: 1,
       })),
     },
@@ -285,7 +289,7 @@ const inferRhythm: RhythmInferenceMethod = (clicks) => {
 };
 
 // We should generalize this because this is silly.
-const tryReduce = (beats: BeatStrength[]): BeatStrength[] => {
+const tryReduce = (beats: TapStrength[]): TapStrength[] => {
   while (true) {
     const third = tryReduceThirds(beats);
     if (third !== undefined) {
@@ -306,7 +310,7 @@ const tryReduce = (beats: BeatStrength[]): BeatStrength[] => {
   }
 };
 
-const tryReduceThirds = (beats: BeatStrength[]): BeatStrength[] | undefined => {
+const tryReduceThirds = (beats: TapStrength[]): TapStrength[] | undefined => {
   if (beats.length % 3 !== 0) {
     return undefined;
   }
@@ -319,7 +323,7 @@ const tryReduceThirds = (beats: BeatStrength[]): BeatStrength[] | undefined => {
   return beats.slice(0, third);
 };
 
-const tryReduceHalf = (beats: BeatStrength[]): BeatStrength[] | undefined => {
+const tryReduceHalf = (beats: TapStrength[]): TapStrength[] | undefined => {
   if (beats.length % 2 === 1) {
     return undefined;
   }
@@ -333,8 +337,8 @@ const tryReduceHalf = (beats: BeatStrength[]): BeatStrength[] | undefined => {
 };
 
 const tryReduceHalfTime = (
-  beats: BeatStrength[]
-): BeatStrength[] | undefined => {
+  beats: TapStrength[]
+): TapStrength[] | undefined => {
   if (beats.length % 2 === 1) {
     return undefined;
   }
@@ -343,7 +347,7 @@ const tryReduceHalfTime = (
       return undefined;
     }
   }
-  const newBeats: BeatStrength[] = [];
+  const newBeats: TapStrength[] = [];
   for (let i = 0; i < beats.length; i += 2) {
     newBeats.push(beats[i]);
   }

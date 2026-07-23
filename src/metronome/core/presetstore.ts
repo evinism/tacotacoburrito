@@ -9,11 +9,11 @@ export type PresetStore = {
 };
 
 const strong = (duration: number = 1): Beat => ({
-  strength: "strong",
+  voices: ["strong"],
   duration,
 });
-const weak = (duration: number = 1): Beat => ({ strength: "weak", duration });
-const off = (duration: number = 1): Beat => ({ strength: "off", duration });
+const weak = (duration: number = 1): Beat => ({ voices: ["weak"], duration });
+const off = (duration: number = 1): Beat => ({ voices: [], duration });
 
 export const defaultPresetStore: PresetStore = {
   Basic: {
