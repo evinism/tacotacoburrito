@@ -49,6 +49,11 @@ const MIN_STEPS = 1;
 const MAX_STEPS = 64;
 const DEFAULT_STEPS = 8;
 
+// Spacing between the hits of a doublet row (tk/kk). Fixed milliseconds, like
+// a drum machine's flam knob — below ~10ms the hits blend into one thick
+// stroke, above ~40ms they read as separate grace notes.
+const DOUBLET_OFFSET = 0.02;
+
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
@@ -74,27 +79,38 @@ const TRACKS = [
   { voice: "ka1", label: "K" },
   { voice: "te2", label: "t" },
   { voice: "ka2", label: "k" },
+  { voice: "tk", label: "tk" },
+  { voice: "kk", label: "kk" },
 ] as const;
 
 type TrackVoice = (typeof TRACKS)[number]["voice"];
 
-// The packs offered in the dropdown, each with a voicing that maps the five
-// rows onto sounds the pack actually defines. `darbuka` and `drums` have a
+// The packs offered in the dropdown, each with a voicing that maps the rows
+// onto sounds the pack actually defines. `darbuka` and `drums` have a
 // distinct sound per row; the others only satisfy the universal strong/weak
 // contract, so most rows collapse onto one of two timbres there (documented,
 // not a bug). This mapping is why swapping packs can never silence a pattern:
-// every row always resolves to a sound the target pack has.
+// every row always resolves to a sound the target pack has. A row's voicing
+// is a single sound, or an array for a doublet/roll (see DOUBLET_OFFSET).
 interface SoundPackOption {
   id: SoundPackId;
   label: string;
-  voices: Record<TrackVoice, string>;
+  voices: Record<TrackVoice, string | string[]>;
 }
 
 const SOUND_PACKS: SoundPackOption[] = [
   {
     id: "darbuka",
     label: "Darbuka",
-    voices: { doum: "doum", te1: "te1", te2: "te2", ka1: "ka1", ka2: "ka2" },
+    voices: {
+      doum: "doum",
+      te1: "te1",
+      te2: "te2",
+      ka1: "ka1",
+      ka2: "ka2",
+      tk: ["te2", "ka2"],
+      kk: ["ka1", "ka2"],
+    },
   },
   {
     id: "drums",
@@ -105,6 +121,8 @@ const SOUND_PACKS: SoundPackOption[] = [
       te2: "snare",
       ka1: "hihat",
       ka2: "hihat",
+      tk: ["snare", "hihat"],
+      kk: ["hihat", "hihat"],
     },
   },
   {
@@ -116,6 +134,8 @@ const SOUND_PACKS: SoundPackOption[] = [
       te2: "strong",
       ka1: "strong",
       ka2: "strong",
+      tk: ["strong", "strong"],
+      kk: ["strong", "strong"],
     },
   },
   {
@@ -127,6 +147,8 @@ const SOUND_PACKS: SoundPackOption[] = [
       te2: "strong",
       ka1: "strong",
       ka2: "strong",
+      tk: ["strong", "strong"],
+      kk: ["strong", "strong"],
     },
   },
   {
@@ -138,6 +160,8 @@ const SOUND_PACKS: SoundPackOption[] = [
       te2: "strong",
       ka1: "strong",
       ka2: "strong",
+      tk: ["strong", "strong"],
+      kk: ["strong", "strong"],
     },
   },
 ];
@@ -162,7 +186,7 @@ const LEGACY_ROW: Record<string, string> = { doum: "kick", te1: "snare", ka1: "h
 // Resize every row to `steps`, preserving existing cells (truncate or pad with
 // false). Applied defensively on every render so a `grid`/`steps` mismatch
 // (e.g. independently-migrated localStorage values) can't desync the UI. Also
-// doubles as the old-3-row-to-new-5-row grid migration via LEGACY_ROW.
+// doubles as the legacy 3-row grid migration via LEGACY_ROW.
 const resizeGrid = (grid: Grid, steps: number): Grid => {
   const resizeRow = (row: boolean[]): boolean[] => {
     const next = (row ?? []).slice(0, steps);
@@ -214,16 +238,27 @@ const SequencerMetronome = () => {
   const effectiveGrid = useMemo(() => resizeGrid(grid, steps), [grid, steps]);
 
   const beats: Measures = useMemo(() => {
-    const measure: Measure = Array.from({ length: steps }, (_, i) => ({
+    const measure: Measure = Array.from({ length: steps }, (_, i) => {
       // Translate each on row from its grid identity to the selected pack's
-      // sound name, so a pattern authored on drums still sounds on any pack.
-      voices: TRACKS.filter(({ voice }) => effectiveGrid[voice][i]).map(
-        ({ voice }) => pack.voices[voice]
-      ),
-      // BPM always counts quarter notes, so in eighth-note mode each column is
-      // half a beat rather than the tempo doubling underneath the user.
-      duration: showEighths ? 0.5 : 1,
-    }));
+      // sound name(s), so a pattern authored on drums still sounds on any
+      // pack. A row can voice more than one sound (a doublet/roll), each
+      // fired DOUBLET_OFFSET seconds after the last.
+      const hits = TRACKS.filter(({ voice }) => effectiveGrid[voice][i]).flatMap(
+        ({ voice }) => {
+          const sounds = pack.voices[voice];
+          return (Array.isArray(sounds) ? sounds : [sounds]).map(
+            (sound, j) => ({ sound, offset: j * DOUBLET_OFFSET })
+          );
+        }
+      );
+      return {
+        voices: hits.map((hit) => hit.sound),
+        offsets: hits.map((hit) => hit.offset),
+        // BPM always counts quarter notes, so in eighth-note mode each column
+        // is half a beat rather than the tempo doubling underneath the user.
+        duration: showEighths ? 0.5 : 1,
+      };
+    });
     return [measure];
   }, [effectiveGrid, steps, showEighths, pack]);
 
@@ -310,7 +345,7 @@ const SequencerMetronome = () => {
         Sequencer
       </Typography>
       <Typography variant="body1" className={styles.SubTitle}>
-        a 5-row step sequencer for darbuka strokes
+        a step sequencer for darbuka strokes
       </Typography>
       <Divider />
       <Box className={styles.HorizontalGroup}>

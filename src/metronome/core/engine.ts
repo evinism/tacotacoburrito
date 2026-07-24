@@ -306,7 +306,7 @@ export class Metronome {
     // Empty voices = a silent beat; nothing to schedule.
     const sound = resolveSound(this.spec);
     const pack = soundPacks[sound.soundPack];
-    for (const voice of beat.voices) {
+    for (const [i, voice] of beat.voices.entries()) {
       const clickSound = pack[voice];
       // Missing (a rhythm naming a sound this pack doesn't have) or not ready
       // yet (a sample pack still decoding) — skip this click rather than
@@ -326,7 +326,8 @@ export class Metronome {
       source.buffer = buffer;
       source.playbackRate.value = sound.freqMultiplier;
       source.connect(this._gainNode);
-      source.start(time);
+      const offset = beat.offsets?.[i] ?? 0;
+      source.start(time + offset);
 
       // Track the source so stop() can cancel it if it's still pending, and
       // release it once it finishes playing on its own.
