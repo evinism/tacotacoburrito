@@ -14,8 +14,8 @@ export interface LibraryPattern extends PatternState {
 
     copy(JSON.stringify(
       JSON.parse(localStorage.getItem("persistentState/sequencer/patterns"))
-        .map(({ name, bpm, steps, showEighths, grid }) =>
-          ({ name, bpm, steps, showEighths, grid })),
+        .map(({ name, bpm, steps, showEighths, bars }) =>
+          ({ name, bpm, steps, showEighths, bars })),
       null, 2))
 
   The id/createdAt/updatedAt fields are personal-store bookkeeping and are

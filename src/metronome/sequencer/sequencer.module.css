@@ -50,6 +50,14 @@
   max-width: 70px;
 }
 
+/* Keeps the volume slider from eating the BPM row's flex width. */
+.VolumeGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 140px;
+}
+
 .ButtonGroup {
   display: flex;
 }
@@ -123,6 +131,17 @@
 
 .Cell.on.active {
   background-color: #fff;
+}
+
+/* Multi-bar chrome: slim header above each bar's grid. */
+.BarHeader {
+  display: flex;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.BarTitle {
+  color: #999;
 }
 
 /* Saved pattern list */

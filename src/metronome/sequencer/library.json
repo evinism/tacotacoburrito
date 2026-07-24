@@ -1,0 +1,872 @@
+[
+  {
+    "name": "Syrtos aka Cocek aka Malfoof 3",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...............",
+        "te1": "......x.....x...",
+        "te2": "........x.......",
+        "ka2": "....x.....x...x."
+      }
+    ]
+  },
+  {
+    "name": "Syrtos aka Cocek aka Malfoof 1",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...............",
+        "te1": "......x.....x..."
+      }
+    ]
+  },
+  {
+    "name": "Syrtos aka Cocek aka Malfoof 2",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...............",
+        "te1": "......x.....x...",
+        "ka2": "....x.....x...x."
+      }
+    ]
+  },
+  {
+    "name": "Syrtos aka Cocek aka Malfoof 4",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...............",
+        "te1": "......x.....x...",
+        "te2": "........x.....x.",
+        "ka2": "....x.....x....x"
+      }
+    ]
+  },
+  {
+    "name": "Syrtos aka Cocek aka Malfoof 5",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...............",
+        "te1": "......x.....x...",
+        "ka2": "..x.x...x.x...x."
+      }
+    ]
+  },
+  {
+    "name": "Syrtos aka Cocek aka Malfoof 6",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.........",
+        "te1": "............x..."
+      }
+    ]
+  },
+  {
+    "name": "Syrtos aka Cocek aka Malfoof 8 (Running)",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...........x...",
+        "te1": "......x........."
+      }
+    ]
+  },
+  {
+    "name": "Syrtos aka Cocek aka Malfoof 7",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.........",
+        "te1": "............x..."
+      }
+    ]
+  },
+  {
+    "name": "Syrtos aka Cocek aka Malfoof 9",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...............",
+        "te1": "......x.....x...",
+        "te2": "....x.....x.....",
+        "ka2": "..xx....xx....xx"
+      }
+    ]
+  },
+  {
+    "name": "Syrtos aka Cocek aka Malfoof 10",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...............",
+        "te1": "......x.....x...",
+        "te2": "....x...x.......",
+        "ka2": "..xx......x...x."
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 1",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "..x...x.....x..."
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 2",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "..x...x.....x...",
+        "ka2": "....x.....x...x."
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 3",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "..x...x.....x...",
+        "ka2": "....xx....xx..xx"
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 4",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "..x...x.....x...",
+        "te2": "....x.....x...x.",
+        "ka2": ".....x.....x...x"
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 5 (Baladi)",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.x.....x.......",
+        "te1": "......x.....x..."
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 6 (Saidi)",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.x.......",
+        "te1": "..x.........x..."
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 7 (Running)",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "..x...x.....x...",
+        "te2": "....x.....x...x.",
+        "ka2": ".x.x.x.x.x.x.x.x"
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 8",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "..x...x.....x...",
+        "te2": "....x.....x...x.",
+        "ka2": ".x...x...x.x...x"
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 9",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "..x...x.....x...",
+        "te2": "....xx....xx..xx",
+        "ka2": "....xx....xx..xx"
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 10",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "..x...x.....x...",
+        "te2": "...xx....xx..xx.",
+        "ka2": "...x.x...x.x.x.x"
+      }
+    ]
+  },
+  {
+    "name": "Greek Chiftitelli aka Duyek aka Maksoum 11",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "..x...x.....x...",
+        "te2": "....x.....x...x.",
+        "ka2": ".....x.....x...x",
+        "kk": "...x.....x...x.."
+      }
+    ]
+  },
+  {
+    "name": "2/4 aka Ayoub 1",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "......x.....x..."
+      }
+    ]
+  },
+  {
+    "name": "2/4 aka Ayoub 2",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "............x...",
+        "ka1": "......x.........",
+        "te2": "....x..........."
+      }
+    ]
+  },
+  {
+    "name": "2/4 aka Ayoub 3 (Running)",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "............x...",
+        "ka1": "......x.........",
+        "te2": "....x...........",
+        "ka2": "..x.......x...x."
+      }
+    ]
+  },
+  {
+    "name": "2/4 aka Ayoub 4",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "............x...",
+        "ka1": "......x.........",
+        "te2": "..x.x...........",
+        "ka2": "...x............"
+      }
+    ]
+  },
+  {
+    "name": "2/4 aka Ayoub 5 (Sta dhio)",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "....x.x.....x..."
+      }
+    ]
+  },
+  {
+    "name": "2/4 aka Ayoub 6",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "..x...x.....x...",
+        "ka2": "....x.....x...x."
+      }
+    ]
+  },
+  {
+    "name": "2/4 aka Ayoub 7",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.x.......",
+        "te1": "............x...",
+        "ka1": "....x..........."
+      }
+    ]
+  },
+  {
+    "name": "2/4 aka Ayoub 8",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "............x...",
+        "ka1": "......x.........",
+        "te2": "....x...........",
+        "ka2": "..xx......x...x."
+      }
+    ]
+  },
+  {
+    "name": "Turkish Ciftitelli 1",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.x.....",
+        "te1": "...x..x.....x..."
+      }
+    ]
+  },
+  {
+    "name": "Turkish Ciftitelli 2",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.x.....",
+        "te1": "...x..x.....x...",
+        "ka2": "..x..x........xx"
+      }
+    ]
+  },
+  {
+    "name": "Turkish Ciftitelli 3",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.......",
+        "te1": "...x..x.....x..."
+      }
+    ]
+  },
+  {
+    "name": "Turkish Ciftitelli 4 (Running)",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.x.....",
+        "te1": "......x.....x...",
+        "ka1": "...x............",
+        "te2": "..x.x.........x.",
+        "ka2": ".x...x.x.x.x.x.x"
+      }
+    ]
+  },
+  {
+    "name": "Turkish Ciftitelli 5",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.x.....",
+        "te1": "...x..x.....x...",
+        "te2": "..x..x..........",
+        "tk": ".x..x..x.x.x..xx"
+      }
+    ]
+  },
+  {
+    "name": "Turkish Ciftitelli 6",
+    "bpm": 181.51076698261346,
+    "steps": 16,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.x.....",
+        "te1": "...x..x.....x...",
+        "te2": "..x..x........x.",
+        "ka2": "...........x...x",
+        "kk": ".x..x..x.x......"
+      }
+    ]
+  },
+  {
+    "name": "Zonaradiko or Pravo 1",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...........",
+        "te1": "......x.....",
+        "te2": "..........x.",
+        "ka2": "....x...x..."
+      }
+    ]
+  },
+  {
+    "name": "Zonaradiko or Pravo 2",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...........",
+        "te1": "......x.....",
+        "te2": "........x...",
+        "ka2": "....x.....x."
+      }
+    ]
+  },
+  {
+    "name": "Zonaradiko or Pravo 3",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...........",
+        "te1": "......x.....",
+        "te2": "....x...x...",
+        "ka2": "..........x."
+      }
+    ]
+  },
+  {
+    "name": "Zonaradiko or Pravo 4",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...........",
+        "te1": "....x...x...",
+        "ka1": "......x.....",
+        "ka2": "..x.......x."
+      }
+    ]
+  },
+  {
+    "name": "Zonaradiko or Pravo 5",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...........",
+        "te1": "....x...x...",
+        "ka1": "......x.....",
+        "ka2": "..xx......x."
+      }
+    ]
+  },
+  {
+    "name": "Tasmiko 1",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x...",
+        "te1": "....x.x...x."
+      }
+    ]
+  },
+  {
+    "name": "Tasmiko 2",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x...",
+        "te1": "....x.....x.",
+        "ka1": "......x.....",
+        "ka2": "...x........"
+      }
+    ]
+  },
+  {
+    "name": "Tasmiko 3",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x...",
+        "te1": "....x.x...x.",
+        "te2": "..x.........",
+        "ka2": "...x.x.x...x"
+      }
+    ]
+  },
+  {
+    "name": "Tasmiko 4",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x..x",
+        "te1": "....x.......",
+        "ka1": "......x...x.",
+        "ka2": "...x........"
+      }
+    ]
+  },
+  {
+    "name": "Tasmiko 6",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x...........",
+        "te1": "....x.......",
+        "ka1": "......x.....",
+        "te2": "........x.x.",
+        "ka2": "...x.....x.x"
+      }
+    ]
+  },
+  {
+    "name": "Tasmiko 5",
+    "bpm": 181.51076698261346,
+    "steps": 12,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x...",
+        "te1": "...x......x.",
+        "ka1": "......x....."
+      }
+    ]
+  },
+  {
+    "name": "Kalamatiano 1",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.......",
+        "te1": "..........x...",
+        "ka2": "....x........."
+      }
+    ]
+  },
+  {
+    "name": "Kalamatiano 2",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.......",
+        "te1": "..........x...",
+        "te2": "....x.........",
+        "ka2": "..x.....x...x."
+      }
+    ]
+  },
+  {
+    "name": "Kalamatiano 3",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.......",
+        "te1": "....x.....x...",
+        "te2": "..x.....x...x.",
+        "ka2": "...x.....x...x"
+      }
+    ]
+  },
+  {
+    "name": "Kalamatiano 4",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.......",
+        "te1": "..........x...",
+        "te2": "..x.x.......x.",
+        "ka2": "...x.x..x....x"
+      }
+    ]
+  },
+  {
+    "name": "Kalamatiano 5",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.......",
+        "te1": "..x.....x.x..."
+      }
+    ]
+  },
+  {
+    "name": "Kalamatiano 6",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "......x.......",
+        "te1": "x..x......x...",
+        "te2": "........x...x.",
+        "ka2": ".........x...x"
+      }
+    ]
+  },
+  {
+    "name": "Kalamatiano 7",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "......x.......",
+        "te1": "x..x....x.x...",
+        "ka2": "..x..x........"
+      }
+    ]
+  },
+  {
+    "name": "Kalamatiano 8",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.......",
+        "te1": "....x.....x...",
+        "te2": "..x...........",
+        "ka2": "........xx..xx",
+        "kk": "...x.........."
+      }
+    ]
+  },
+  {
+    "name": "Seven 1",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.............",
+        "te1": "......x...x..."
+      }
+    ]
+  },
+  {
+    "name": "Seven 2",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.....x.......",
+        "te1": "..........x..."
+      }
+    ]
+  },
+  {
+    "name": "Seven 3",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.............",
+        "te1": "......x...x...",
+        "ka2": "..x.x...x...x."
+      }
+    ]
+  },
+  {
+    "name": "Seven 4",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.x...x...x..."
+      }
+    ]
+  },
+  {
+    "name": "Seven 5",
+    "bpm": 181.51076698261346,
+    "steps": 14,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.x...........",
+        "te1": "......x.......",
+        "te2": "..........x...",
+        "ka2": "....x.......x."
+      }
+    ]
+  },
+  {
+    "name": "Kaba Roman 1 (Kalite, kalite)",
+    "bpm": 181.51076698261346,
+    "steps": 18,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.........",
+        "te1": "......x.......x..."
+      }
+    ]
+  },
+  {
+    "name": "Kaba Roman 2",
+    "bpm": 181.51076698261346,
+    "steps": 18,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.........",
+        "te1": "......x.......x...",
+        "ka2": "..x.x.....x.x...x."
+      }
+    ]
+  },
+  {
+    "name": "Kaba Roman 3 (Illede Roman Olsun)",
+    "bpm": 181.51076698261346,
+    "steps": 18,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.........",
+        "ka1": "......x.......x...",
+        "te2": "..x.x.....x.x...x.",
+        "ka2": "...x.......x......"
+      }
+    ]
+  },
+  {
+    "name": "Kaba Roman 4",
+    "bpm": 181.51076698261346,
+    "steps": 18,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.........",
+        "te1": "......x...x...x...",
+        "te2": "................x.",
+        "ka2": "..x.x............x"
+      }
+    ]
+  },
+  {
+    "name": "Kaba Roman 5 (3-2-2-2 variation)",
+    "bpm": 181.51076698261346,
+    "steps": 18,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.................",
+        "te1": "......x...x...x...",
+        "ka2": "..x.x............."
+      }
+    ]
+  },
+  {
+    "name": "Kaba Roman 6",
+    "bpm": 181.51076698261346,
+    "steps": 18,
+    "showEighths": true,
+    "bars": [
+      {
+        "doum": "x.......x.........",
+        "te1": "......x.......x...",
+        "te2": "....x.......x.....",
+        "ka2": "..xx......xx....xx"
+      }
+    ]
+  }
+]

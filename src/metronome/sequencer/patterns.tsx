@@ -23,7 +23,9 @@ export interface PatternState {
   bpm: number;
   steps: number;
   showEighths: boolean;
-  grid: Record<string, boolean[]>;
+  bars: Record<string, boolean[]>[];
+  // Pre-bars patterns stored a single grid; kept so old saves still load.
+  grid?: Record<string, boolean[]>;
 }
 
 export interface SavedPattern extends PatternState {

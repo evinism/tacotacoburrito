@@ -38,6 +38,9 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DeleteIcon from "@mui/icons-material/Delete";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 
 const ttConfig = {
   enterDelay: 500,
@@ -48,6 +51,8 @@ const MIN_STEPS = 1;
 // quarter-note pattern without truncating it.
 const MAX_STEPS = 64;
 const DEFAULT_STEPS = 8;
+// Sanity cap on phrase length, not an engine limit — Measures has no bound.
+const MAX_BARS = 8;
 
 // Spacing between the hits of a doublet row (tk/kk), sampled uniformly per
 // occurrence so repeats don't sound machine-identical. Below ~10ms the hits
@@ -214,15 +219,28 @@ const changeResolution = (grid: Grid, doubling: boolean): Grid =>
     ])
   );
 
+// `usePersistentState`'s migrateFrom copies the legacy JSON verbatim, so a
+// migrated pre-bars value is a bare Grid object, not a Grid[]. Normalize
+// whatever shape localStorage hands back into a bar list.
+const normalizeBars = (value: unknown): Grid[] => {
+  if (Array.isArray(value)) {
+    return value.length > 0 ? (value as Grid[]) : [emptyGrid(DEFAULT_STEPS)];
+  }
+  if (value && typeof value === "object") return [value as Grid];
+  return [emptyGrid(DEFAULT_STEPS)];
+};
+
 const SequencerMetronome = () => {
   const [bpm, setBpm] = usePersistentState<number>("sequencer/bpm", 120);
   const [steps, setSteps] = usePersistentState<number>(
     "sequencer/steps",
     DEFAULT_STEPS
   );
-  const [grid, setGrid] = usePersistentState<Grid>(
-    "sequencer/grid",
-    emptyGrid(DEFAULT_STEPS)
+  const [bars, setBars] = usePersistentState<Grid[]>(
+    "sequencer/bars",
+    [emptyGrid(DEFAULT_STEPS)],
+    0,
+    "sequencer/grid"
   );
   const [showEighths, setShowEighths] = usePersistentState<boolean>(
     "sequencer/showEighths",
@@ -232,49 +250,58 @@ const SequencerMetronome = () => {
     "sequencer/soundPack",
     DEFAULT_PACK.id
   );
+  const [volume, setVolume] = usePersistentState<number>(
+    "sequencer/volume",
+    1
+  );
 
   const pack = packById(packId);
 
-  const effectiveGrid = useMemo(() => resizeGrid(grid, steps), [grid, steps]);
+  const effectiveBars = useMemo(
+    () => normalizeBars(bars).map((bar) => resizeGrid(bar, steps)),
+    [bars, steps]
+  );
 
   const beats: Measures = useMemo(() => {
-    const measure: Measure = Array.from({ length: steps }, (_, i) => {
-      // Translate each on row from its grid identity to the selected pack's
-      // sound name(s), so a pattern authored on drums still sounds on any
-      // pack. A row can voice more than one sound (a doublet/roll): the first
-      // hit lands on the grid, each later one a humanized DOUBLET_OFFSET_RANGE
-      // draw after the previous.
-      const hits = TRACKS.filter(({ voice }) => effectiveGrid[voice][i]).flatMap(
-        ({ voice }) => {
-          const sounds = pack.voices[voice];
-          return (Array.isArray(sounds) ? sounds : [sounds]).map(
-            (sound, j): { sound: string; offset: VoiceOffset } => ({
-              sound,
-              offset:
-                j === 0
-                  ? 0
-                  : [
-                      j * DOUBLET_OFFSET_RANGE[0],
-                      j * DOUBLET_OFFSET_RANGE[1],
-                    ],
-            })
-          );
-        }
-      );
-      return {
-        voices: hits.map((hit) => hit.sound),
-        offsets: hits.map((hit) => hit.offset),
-        // BPM always counts quarter notes, so in eighth-note mode each column
-        // is half a beat rather than the tempo doubling underneath the user.
-        duration: showEighths ? 0.5 : 1,
-      };
+    return effectiveBars.map((bar) => {
+      const measure: Measure = Array.from({ length: steps }, (_, i) => {
+        // Translate each on row from its grid identity to the selected pack's
+        // sound name(s), so a pattern authored on drums still sounds on any
+        // pack. A row can voice more than one sound (a doublet/roll): the first
+        // hit lands on the grid, each later one a humanized DOUBLET_OFFSET_RANGE
+        // draw after the previous.
+        const hits = TRACKS.filter(({ voice }) => bar[voice][i]).flatMap(
+          ({ voice }) => {
+            const sounds = pack.voices[voice];
+            return (Array.isArray(sounds) ? sounds : [sounds]).map(
+              (sound, j): { sound: string; offset: VoiceOffset } => ({
+                sound,
+                offset:
+                  j === 0
+                    ? 0
+                    : [
+                        j * DOUBLET_OFFSET_RANGE[0],
+                        j * DOUBLET_OFFSET_RANGE[1],
+                      ],
+              })
+            );
+          }
+        );
+        return {
+          voices: hits.map((hit) => hit.sound),
+          offsets: hits.map((hit) => hit.offset),
+          // BPM always counts quarter notes, so in eighth-note mode each column
+          // is half a beat rather than the tempo doubling underneath the user.
+          duration: showEighths ? 0.5 : 1,
+        };
+      });
+      return measure;
     });
-    return [measure];
-  }, [effectiveGrid, steps, showEighths, pack]);
+  }, [effectiveBars, steps, showEighths, pack]);
 
   const spec: MetronomeSpec = useMemo(
-    () => ({ bpm, beats, sound: { soundPack: pack.id } }),
-    [bpm, beats, pack]
+    () => ({ bpm, beats, sound: { soundPack: pack.id, volume } }),
+    [bpm, beats, pack, volume]
   );
 
   const {
@@ -305,7 +332,7 @@ const SequencerMetronome = () => {
   const handleStepsChange = (newSteps: number) => {
     const clamped = clamp(newSteps, MIN_STEPS, MAX_STEPS);
     setSteps(clamped);
-    setGrid(resizeGrid(effectiveGrid, clamped));
+    setBars(effectiveBars.map((bar) => resizeGrid(bar, clamped)));
   };
 
   const handleShowEighthsChange = (next: boolean) => {
@@ -316,17 +343,50 @@ const SequencerMetronome = () => {
     );
     setShowEighths(next);
     setSteps(newSteps);
-    setGrid(resizeGrid(changeResolution(effectiveGrid, next), newSteps));
+    setBars(
+      effectiveBars.map((bar) =>
+        resizeGrid(changeResolution(bar, next), newSteps)
+      )
+    );
   };
 
-  const toggleCell = (voice: string, index: number) => {
-    const row = effectiveGrid[voice].slice();
+  const toggleCell = (barIndex: number, voice: string, index: number) => {
+    const row = effectiveBars[barIndex][voice].slice();
     row[index] = !row[index];
-    setGrid({ ...effectiveGrid, [voice]: row });
+    setBars(
+      effectiveBars.map((bar, i) =>
+        i === barIndex ? { ...bar, [voice]: row } : bar
+      )
+    );
   };
 
   const clearGrid = () => {
-    setGrid(emptyGrid(steps));
+    setBars(effectiveBars.map(() => emptyGrid(steps)));
+  };
+
+  const addBar = () => {
+    if (effectiveBars.length >= MAX_BARS) return;
+    setBars([...effectiveBars, emptyGrid(steps)]);
+  };
+
+  const duplicateBar = (barIndex: number) => {
+    if (effectiveBars.length >= MAX_BARS) return;
+    const copy: Grid = Object.fromEntries(
+      Object.entries(effectiveBars[barIndex]).map(([voice, row]) => [
+        voice,
+        row.slice(),
+      ])
+    );
+    setBars([
+      ...effectiveBars.slice(0, barIndex + 1),
+      copy,
+      ...effectiveBars.slice(barIndex + 1),
+    ]);
+  };
+
+  const removeBar = (barIndex: number) => {
+    if (effectiveBars.length <= 1) return;
+    setBars(effectiveBars.filter((_, i) => i !== barIndex));
   };
 
   const { patterns, saveNew, overwrite, rename, remove } = usePatterns();
@@ -335,19 +395,22 @@ const SequencerMetronome = () => {
     bpm,
     steps,
     showEighths,
-    grid: effectiveGrid,
+    bars: effectiveBars,
   };
 
   const loadPattern = (pattern: PatternState) => {
     setBpm(pattern.bpm);
     setSteps(pattern.steps);
     setShowEighths(pattern.showEighths);
-    // Resize defensively — a pattern saved before a shape change could carry a
-    // grid that disagrees with its own step count.
-    setGrid(resizeGrid(pattern.grid, pattern.steps));
+    // Pre-bars patterns stored a single `grid`; fall back to it, then to a
+    // fresh empty bar, before falling into the normal multi-bar path.
+    const loadedBars = pattern.bars ?? (pattern.grid ? [pattern.grid] : [emptyGrid(pattern.steps)]);
+    // Resize defensively — a pattern saved before a shape change could carry
+    // bars that disagree with its own step count.
+    setBars(normalizeBars(loadedBars).map((bar) => resizeGrid(bar, pattern.steps)));
   };
 
-  const activeStep = playing ? currentBeat % steps : -1;
+  const activeFlat = playing ? currentBeat : -1;
 
   return (
     <Paper className={styles.Sequencer} elevation={4}>
@@ -393,6 +456,17 @@ const SequencerMetronome = () => {
         </Tooltip>
         <GlobalKeydownListener onKeyDown={modTempo(1.03)} keyFilter="ArrowRight" />
         <div className={styles.Spacer} />
+        <div className={styles.VolumeGroup}>
+          <VolumeUpIcon fontSize="small" htmlColor="#ccc" />
+          <Slider
+            min={0}
+            max={1}
+            step={0.01}
+            value={volume}
+            onChange={(_, newValue) => setVolume(newValue as number)}
+            aria-label="Volume"
+          />
+        </div>
         <div>
           <Button onClick={handleTapTempoClick}>Tap Tempo</Button>
           <GlobalKeydownListener onKeyDown={handleTapTempoClick} keyFilter="/" />
@@ -455,51 +529,94 @@ const SequencerMetronome = () => {
           </Select>
         </div>
         <div className={styles.Spacer} />
+        <Button onClick={addBar} disabled={effectiveBars.length >= MAX_BARS}>
+          Add Bar
+        </Button>
         <Button onClick={clearGrid}>Clear</Button>
       </Box>
 
-      <div className={styles.Grid}>
-        <div className={styles.LabelRow}>
-          <div className={styles.RowLabel} />
-          <div className={styles.Cells}>
-            {Array.from({ length: steps }, (_, index) => (
-              <Typography
-                key={index}
-                variant="caption"
-                className={[
-                  styles.LabelCell,
-                  index === activeStep ? styles.active : "",
-                ].join(" ")}
-              >
-                {stepLabel(index, showEighths)}
+      {effectiveBars.map((bar, barIndex) => {
+        const activeStep =
+          activeFlat >= barIndex * steps && activeFlat < (barIndex + 1) * steps
+            ? activeFlat - barIndex * steps
+            : -1;
+        return (
+          <div key={barIndex}>
+            <Box className={styles.BarHeader}>
+              <Typography variant="caption" className={styles.BarTitle}>
+                Bar {barIndex + 1}
               </Typography>
-            ))}
-          </div>
-        </div>
-        {TRACKS.map(({ voice, label }) => (
-          <div key={voice} className={styles.Row}>
-            <Typography variant="body2" className={styles.RowLabel}>
-              {label}
-            </Typography>
-            <div className={styles.Cells}>
-              {effectiveGrid[voice].map((on, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  aria-label={`${label} step ${index + 1}`}
-                  aria-pressed={on}
-                  onClick={() => toggleCell(voice, index)}
-                  className={[
-                    styles.Cell,
-                    on ? styles.on : "",
-                    index === activeStep ? styles.active : "",
-                  ].join(" ")}
-                />
+              <div className={styles.Spacer} />
+              <Tooltip title="Duplicate bar" {...ttConfig}>
+                <span>
+                  <IconButton
+                    size="small"
+                    aria-label="Duplicate bar"
+                    disabled={effectiveBars.length >= MAX_BARS}
+                    onClick={() => duplicateBar(barIndex)}
+                  >
+                    <ContentCopyIcon fontSize="small" />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Tooltip title="Remove bar" {...ttConfig}>
+                <span>
+                  <IconButton
+                    size="small"
+                    aria-label="Remove bar"
+                    disabled={effectiveBars.length === 1}
+                    onClick={() => removeBar(barIndex)}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Box>
+            <div className={styles.Grid}>
+              <div className={styles.LabelRow}>
+                <div className={styles.RowLabel} />
+                <div className={styles.Cells}>
+                  {Array.from({ length: steps }, (_, index) => (
+                    <Typography
+                      key={index}
+                      variant="caption"
+                      className={[
+                        styles.LabelCell,
+                        index === activeStep ? styles.active : "",
+                      ].join(" ")}
+                    >
+                      {stepLabel(index, showEighths)}
+                    </Typography>
+                  ))}
+                </div>
+              </div>
+              {TRACKS.map(({ voice, label }) => (
+                <div key={voice} className={styles.Row}>
+                  <Typography variant="body2" className={styles.RowLabel}>
+                    {label}
+                  </Typography>
+                  <div className={styles.Cells}>
+                    {bar[voice].map((on, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        aria-label={`Bar ${barIndex + 1} ${label} step ${index + 1}`}
+                        aria-pressed={on}
+                        onClick={() => toggleCell(barIndex, voice, index)}
+                        className={[
+                          styles.Cell,
+                          on ? styles.on : "",
+                          index === activeStep ? styles.active : "",
+                        ].join(" ")}
+                      />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-        ))}
-      </div>
+        );
+      })}
 
       <Divider />
 
