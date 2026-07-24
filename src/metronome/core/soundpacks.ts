@@ -285,6 +285,15 @@ export const soundPacks: Record<string, SoundPack> = {
     strong: new Sound(fileLoader("/sounds/doumbek/hi.wav")),
     weak: new Sound(fileLoader("/sounds/doumbek/low.wav")),
   },
+  darbuka: (() => {
+    const doum = new Sound(fileLoader("/sounds/darbuka/doum.wav"));
+    const te1 = new Sound(fileLoader("/sounds/darbuka/te1.wav"));
+    const te2 = new Sound(fileLoader("/sounds/darbuka/te2.wav"));
+    const ka1 = new Sound(fileLoader("/sounds/darbuka/ka1.wav"));
+    const ka2 = new Sound(fileLoader("/sounds/darbuka/ka2.wav"));
+    // strong/weak alias the accented bass stroke and the soft off-hand stroke.
+    return { doum, te1, te2, ka1, ka2, strong: doum, weak: ka1 };
+  })(),
   drums: (() => {
     const kick = new Sound(makeKick());
     const snare = new Sound(makeSnare());

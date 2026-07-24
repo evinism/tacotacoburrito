@@ -64,22 +64,26 @@ const stepLabel = (index: number, showEighths: boolean): string =>
 // Sequencer-local track list — not core metadata. These `voice` keys are the
 // grid's ROW IDENTITIES, not pack sound names: they key the persisted grid and
 // stay fixed no matter which sound pack is selected, so switching packs never
-// rewrites a saved pattern. The mapping from a row to a pack's actual sound
-// happens in SOUND_PACKS below.
+// rewrites a saved pattern. They're named after darbuka strokes because
+// darbuka is the default pack; other packs map them to their own sounds via
+// SOUND_PACKS below.
+// Labels use darbuka shorthand: D = doum, T/K = first tek/ka, t/k = second.
 const TRACKS = [
-  { voice: "kick", label: "Kick" },
-  { voice: "snare", label: "Snare" },
-  { voice: "hihat", label: "Hihat" },
+  { voice: "doum", label: "D" },
+  { voice: "te1", label: "T" },
+  { voice: "ka1", label: "K" },
+  { voice: "te2", label: "t" },
+  { voice: "ka2", label: "k" },
 ] as const;
 
 type TrackVoice = (typeof TRACKS)[number]["voice"];
 
-// The packs offered in the dropdown, each with a voicing that maps the three
-// rows onto sounds the pack actually defines. The `drums` kit has a distinct
-// sound per row; the others only satisfy the universal strong/weak contract, so
-// two rows collapse onto one timbre there (documented, not a bug). This mapping
-// is why swapping packs can never silence a pattern: every row always resolves
-// to a sound the target pack has.
+// The packs offered in the dropdown, each with a voicing that maps the five
+// rows onto sounds the pack actually defines. `darbuka` and `drums` have a
+// distinct sound per row; the others only satisfy the universal strong/weak
+// contract, so most rows collapse onto one of two timbres there (documented,
+// not a bug). This mapping is why swapping packs can never silence a pattern:
+// every row always resolves to a sound the target pack has.
 interface SoundPackOption {
   id: SoundPackId;
   label: string;
@@ -88,29 +92,58 @@ interface SoundPackOption {
 
 const SOUND_PACKS: SoundPackOption[] = [
   {
+    id: "darbuka",
+    label: "Darbuka",
+    voices: { doum: "doum", te1: "te1", te2: "te2", ka1: "ka1", ka2: "ka2" },
+  },
+  {
     id: "drums",
     label: "Drum kit",
-    voices: { kick: "kick", snare: "snare", hihat: "hihat" },
+    voices: {
+      doum: "kick",
+      te1: "snare",
+      te2: "snare",
+      ka1: "hihat",
+      ka2: "hihat",
+    },
   },
   {
     id: "default",
     label: "Beeps",
-    voices: { kick: "weak", snare: "strong", hihat: "strong" },
+    voices: {
+      doum: "weak",
+      te1: "strong",
+      te2: "strong",
+      ka1: "strong",
+      ka2: "strong",
+    },
   },
   {
     id: "dirac",
     label: "Clicks",
-    voices: { kick: "weak", snare: "strong", hihat: "strong" },
+    voices: {
+      doum: "weak",
+      te1: "strong",
+      te2: "strong",
+      ka1: "strong",
+      ka2: "strong",
+    },
   },
   {
     id: "doumbek",
     label: "Doumbek",
-    voices: { kick: "weak", snare: "strong", hihat: "strong" },
+    voices: {
+      doum: "weak",
+      te1: "strong",
+      te2: "strong",
+      ka1: "strong",
+      ka2: "strong",
+    },
   },
 ];
 
 const DEFAULT_PACK =
-  SOUND_PACKS.find((pack) => pack.id === "doumbek") ?? SOUND_PACKS[0];
+  SOUND_PACKS.find((pack) => pack.id === "darbuka") ?? SOUND_PACKS[0];
 
 const packById = (id: string): SoundPackOption =>
   SOUND_PACKS.find((pack) => pack.id === id) ?? DEFAULT_PACK;
@@ -122,9 +155,14 @@ type Grid = Record<string, boolean[]>;
 const emptyGrid = (steps: number): Grid =>
   Object.fromEntries(TRACKS.map(({ voice }) => [voice, Array(steps).fill(false)]));
 
+// Rows the deployed 3-row sequencer (and patterns saved under it) persisted
+// under kick/snare/hihat keys — fall back to these when a grid lacks the new key.
+const LEGACY_ROW: Record<string, string> = { doum: "kick", te1: "snare", ka1: "hihat" };
+
 // Resize every row to `steps`, preserving existing cells (truncate or pad with
 // false). Applied defensively on every render so a `grid`/`steps` mismatch
-// (e.g. independently-migrated localStorage values) can't desync the UI.
+// (e.g. independently-migrated localStorage values) can't desync the UI. Also
+// doubles as the old-3-row-to-new-5-row grid migration via LEGACY_ROW.
 const resizeGrid = (grid: Grid, steps: number): Grid => {
   const resizeRow = (row: boolean[]): boolean[] => {
     const next = (row ?? []).slice(0, steps);
@@ -132,7 +170,10 @@ const resizeGrid = (grid: Grid, steps: number): Grid => {
     return next;
   };
   return Object.fromEntries(
-    TRACKS.map(({ voice }) => [voice, resizeRow(grid[voice])])
+    TRACKS.map(({ voice }) => [
+      voice,
+      resizeRow(grid[voice] ?? grid[LEGACY_ROW[voice]]),
+    ])
   );
 };
 
@@ -269,7 +310,7 @@ const SequencerMetronome = () => {
         Sequencer
       </Typography>
       <Typography variant="body1" className={styles.SubTitle}>
-        a 3-row step sequencer for kick, snare, and hihat
+        a 5-row step sequencer for darbuka strokes
       </Typography>
       <Divider />
       <Box className={styles.HorizontalGroup}>
