@@ -73,6 +73,10 @@ export class Sound {
   private buffer?: AudioBuffer;
   private loadedSampleRate?: number;
   private _status: SoundStatus = "unloaded";
+  // Callbacks waiting on the in-flight load to settle. A single Sound is a
+  // shared singleton, so multiple callers (e.g. a dead + a live Metronome
+  // across StrictMode's remount) can each be waiting on the same load.
+  private _pending: Array<() => void> = [];
 
   constructor(private readonly loader: SoundLoader) {}
 
@@ -95,23 +99,29 @@ export class Sound {
       return;
     }
     if (this._status === "loading") {
+      // A load is already in flight — possibly kicked off by a now-dead
+      // Metronome (StrictMode's mount→unmount→remount, Fast Refresh). Queue
+      // this caller so it's still notified when that load settles; dropping it
+      // would leave the live instance stuck showing "loading" forever.
+      if (cb) this._pending.push(cb);
       return;
     }
 
     const result = this.loader(sampleRate, audioCtx);
     if (result instanceof Promise) {
       this._status = "loading";
+      if (cb) this._pending.push(cb);
       result
         .then((buffer) => {
           this.buffer = buffer;
           this.loadedSampleRate = sampleRate;
           this._status = "loaded";
-          cb?.();
+          this._settle();
         })
         .catch((err) => {
           this._status = "error";
           console.error("Failed to load sound", err);
-          cb?.();
+          this._settle();
         });
     } else {
       this.buffer = result;
@@ -119,6 +129,13 @@ export class Sound {
       this._status = "loaded";
       cb?.();
     }
+  }
+
+  // Fire and clear every callback waiting on the just-settled load.
+  private _settle(): void {
+    const pending = this._pending;
+    this._pending = [];
+    for (const cb of pending) cb();
   }
 
   // Caller must check isLoaded() first — throws if the buffer isn't ready.

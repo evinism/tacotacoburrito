@@ -388,6 +388,11 @@ export class Metronome {
 
   subscribeToSoundPackStatus(callback: Listener<SoundStatus>) {
     this._soundPackStatusNotifier.subscribe(callback);
+    // Replay the current status: a cached sample pack can finish loading in
+    // the gap between construction (render) and the subscriber's effect, and
+    // the transition-deduped notifier would otherwise never re-emit it —
+    // leaving the subscriber stuck on the status it read at render time.
+    callback(this.soundpackStatus());
   }
 
   unsubscribeFromSoundPackStatus(callback: Listener<SoundStatus>) {

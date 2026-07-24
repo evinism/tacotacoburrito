@@ -9,6 +9,7 @@ import { useTapTempo } from "@/metronome/shared/usetaptempo";
 import { MetronomeSpec } from "@/metronome/core/engine";
 import { scaleBPM, invScaleBPM, TEMPO_SLIDER_MAX } from "@/metronome/core/tempo";
 import { Measure, Measures } from "@/metronome/core/types";
+import type { SoundPackId } from "@/metronome/core/soundpacks";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
 import PatternList, {
@@ -27,7 +28,9 @@ import {
   IconButton,
   Input,
   InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Slider,
   Switch,
   Tooltip,
@@ -58,13 +61,59 @@ const stepLabel = (index: number, showEighths: boolean): string =>
       : "&"
     : String(index + 1);
 
-// Sequencer-local track list — not core metadata. Adding a row is one entry
-// here plus one sound in the `drums` pack (see core/soundpacks.ts).
+// Sequencer-local track list — not core metadata. These `voice` keys are the
+// grid's ROW IDENTITIES, not pack sound names: they key the persisted grid and
+// stay fixed no matter which sound pack is selected, so switching packs never
+// rewrites a saved pattern. The mapping from a row to a pack's actual sound
+// happens in SOUND_PACKS below.
 const TRACKS = [
   { voice: "kick", label: "Kick" },
   { voice: "snare", label: "Snare" },
   { voice: "hihat", label: "Hihat" },
 ] as const;
+
+type TrackVoice = (typeof TRACKS)[number]["voice"];
+
+// The packs offered in the dropdown, each with a voicing that maps the three
+// rows onto sounds the pack actually defines. The `drums` kit has a distinct
+// sound per row; the others only satisfy the universal strong/weak contract, so
+// two rows collapse onto one timbre there (documented, not a bug). This mapping
+// is why swapping packs can never silence a pattern: every row always resolves
+// to a sound the target pack has.
+interface SoundPackOption {
+  id: SoundPackId;
+  label: string;
+  voices: Record<TrackVoice, string>;
+}
+
+const SOUND_PACKS: SoundPackOption[] = [
+  {
+    id: "drums",
+    label: "Drum kit",
+    voices: { kick: "kick", snare: "snare", hihat: "hihat" },
+  },
+  {
+    id: "default",
+    label: "Beeps",
+    voices: { kick: "weak", snare: "strong", hihat: "strong" },
+  },
+  {
+    id: "dirac",
+    label: "Clicks",
+    voices: { kick: "weak", snare: "strong", hihat: "strong" },
+  },
+  {
+    id: "doumbek",
+    label: "Doumbek",
+    voices: { kick: "weak", snare: "strong", hihat: "strong" },
+  },
+];
+
+const DEFAULT_PACK =
+  SOUND_PACKS.find((pack) => pack.id === "doumbek") ?? SOUND_PACKS[0];
+
+const packById = (id: string): SoundPackOption =>
+  SOUND_PACKS.find((pack) => pack.id === id) ?? DEFAULT_PACK;
 
 // The grid is the persisted state; Measures is only a projection derived at
 // the engine boundary (see the `beats` memo below).
@@ -114,24 +163,32 @@ const SequencerMetronome = () => {
     "sequencer/showEighths",
     false
   );
+  const [packId, setPackId] = usePersistentState<string>(
+    "sequencer/soundPack",
+    DEFAULT_PACK.id
+  );
+
+  const pack = packById(packId);
 
   const effectiveGrid = useMemo(() => resizeGrid(grid, steps), [grid, steps]);
 
   const beats: Measures = useMemo(() => {
     const measure: Measure = Array.from({ length: steps }, (_, i) => ({
+      // Translate each on row from its grid identity to the selected pack's
+      // sound name, so a pattern authored on drums still sounds on any pack.
       voices: TRACKS.filter(({ voice }) => effectiveGrid[voice][i]).map(
-        ({ voice }) => voice
+        ({ voice }) => pack.voices[voice]
       ),
       // BPM always counts quarter notes, so in eighth-note mode each column is
       // half a beat rather than the tempo doubling underneath the user.
       duration: showEighths ? 0.5 : 1,
     }));
     return [measure];
-  }, [effectiveGrid, steps, showEighths]);
+  }, [effectiveGrid, steps, showEighths, pack]);
 
   const spec: MetronomeSpec = useMemo(
-    () => ({ bpm, beats, sound: { soundPack: "drums" } }),
-    [bpm, beats]
+    () => ({ bpm, beats, sound: { soundPack: pack.id } }),
+    [bpm, beats, pack]
   );
 
   const {
@@ -293,6 +350,24 @@ const SequencerMetronome = () => {
           }
           label="Show eighth notes"
         />
+        <div>
+          <InputLabel htmlFor="soundpack-select" sx={{ fontSize: 14 }}>
+            Sound
+          </InputLabel>
+          <Select
+            id="soundpack-select"
+            size="small"
+            variant="standard"
+            value={pack.id}
+            onChange={(event) => setPackId(event.target.value)}
+          >
+            {SOUND_PACKS.map(({ id, label }) => (
+              <MenuItem key={id} value={id}>
+                {label}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
         <div className={styles.Spacer} />
         <Button onClick={clearGrid}>Clear</Button>
       </Box>
