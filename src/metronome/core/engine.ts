@@ -326,7 +326,13 @@ export class Metronome {
       source.buffer = buffer;
       source.playbackRate.value = sound.freqMultiplier;
       source.connect(this._gainNode);
-      const offset = beat.offsets?.[i] ?? 0;
+      // Range offsets are sampled here, per schedule, rather than upstream in
+      // the spec — the spec is static, so sampling any earlier would freeze
+      // one draw and every repeat of the beat would land identically.
+      const offsetSpec = beat.offsets?.[i] ?? 0;
+      const offset = Array.isArray(offsetSpec)
+        ? offsetSpec[0] + Math.random() * (offsetSpec[1] - offsetSpec[0])
+        : offsetSpec;
       source.start(time + offset);
 
       // Track the source so stop() can cancel it if it's still pending, and

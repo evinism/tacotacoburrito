@@ -8,7 +8,7 @@ import { useMetronome } from "@/metronome/shared/usemetronome";
 import { useTapTempo } from "@/metronome/shared/usetaptempo";
 import { MetronomeSpec } from "@/metronome/core/engine";
 import { scaleBPM, invScaleBPM, TEMPO_SLIDER_MAX } from "@/metronome/core/tempo";
-import { Measure, Measures } from "@/metronome/core/types";
+import { Measure, Measures, VoiceOffset } from "@/metronome/core/types";
 import type { SoundPackId } from "@/metronome/core/soundpacks";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
@@ -49,10 +49,10 @@ const MIN_STEPS = 1;
 const MAX_STEPS = 64;
 const DEFAULT_STEPS = 8;
 
-// Spacing between the hits of a doublet row (tk/kk). Fixed milliseconds, like
-// a drum machine's flam knob — below ~10ms the hits blend into one thick
-// stroke, above ~40ms they read as separate grace notes.
-const DOUBLET_OFFSET = 0.02;
+// Spacing between the hits of a doublet row (tk/kk), sampled uniformly per
+// occurrence so repeats don't sound machine-identical. Below ~10ms the hits
+// blend into one thick stroke, above ~40ms they read as separate grace notes.
+const DOUBLET_OFFSET_RANGE: [number, number] = [0.01, 0.03];
 
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
@@ -241,13 +241,23 @@ const SequencerMetronome = () => {
     const measure: Measure = Array.from({ length: steps }, (_, i) => {
       // Translate each on row from its grid identity to the selected pack's
       // sound name(s), so a pattern authored on drums still sounds on any
-      // pack. A row can voice more than one sound (a doublet/roll), each
-      // fired DOUBLET_OFFSET seconds after the last.
+      // pack. A row can voice more than one sound (a doublet/roll): the first
+      // hit lands on the grid, each later one a humanized DOUBLET_OFFSET_RANGE
+      // draw after the previous.
       const hits = TRACKS.filter(({ voice }) => effectiveGrid[voice][i]).flatMap(
         ({ voice }) => {
           const sounds = pack.voices[voice];
           return (Array.isArray(sounds) ? sounds : [sounds]).map(
-            (sound, j) => ({ sound, offset: j * DOUBLET_OFFSET })
+            (sound, j): { sound: string; offset: VoiceOffset } => ({
+              sound,
+              offset:
+                j === 0
+                  ? 0
+                  : [
+                      j * DOUBLET_OFFSET_RANGE[0],
+                      j * DOUBLET_OFFSET_RANGE[1],
+                    ],
+            })
           );
         }
       );
