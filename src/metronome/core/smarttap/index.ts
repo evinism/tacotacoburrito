@@ -1,4 +1,4 @@
-import { Beat } from "@/metronome/core/types";
+import type { Beat } from "@/metronome/core/types";
 import methodOne from "./methodone";
 
 // Tap intensity, as recorded during Tap Rhythm input — a separate concept

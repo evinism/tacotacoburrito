@@ -2,8 +2,8 @@
 // Hodge-podge soup of heuristics, based on tap times rather than beat durations.
 
 import { getMean, getVariance, maxBy, transpose, getMedian } from "@/metronome/core/util";
-import { BeatClick, RhythmInferenceMethod, TapStrength } from ".";
-import { Beat } from "@/metronome/core/types";
+import type { BeatClick, RhythmInferenceMethod, TapStrength } from ".";
+import type { Beat } from "@/metronome/core/types";
 
 type Result<T> = {
   value: T;
@@ -247,10 +247,14 @@ const candidateToBeats = (
     return undefined;
   }
 
+  const reduced = tryReduce(quantized.value);
+
   return {
     value: {
-      bpmMultiplier: bestBeatCount.count,
-      beats: tryReduce(quantized.value).map((strength) => ({
+      // The quantized grid ran at `count` cells per cycle; reduction may have
+      // widened each cell, and the tempo describes a cell.
+      bpmMultiplier: bestBeatCount.count / reduced.gridFactor,
+      beats: reduced.beats.map((strength) => ({
         voices: tapStrengthToVoices(strength),
         duration: 1,
       })),
@@ -288,8 +292,21 @@ const inferRhythm: RhythmInferenceMethod = (clicks) => {
   };
 };
 
+type Reduction = {
+  beats: TapStrength[];
+  // How much longer one grid cell became. 1 unless a half-time reduction fired.
+  gridFactor: number;
+};
+
 // We should generalize this because this is silly.
-const tryReduce = (beats: TapStrength[]): TapStrength[] => {
+//
+// Note that the two kinds of reduction here are not interchangeable. Stripping
+// whole repeats ([X,x,X,x] -> [X,x]) shortens the cycle but leaves a grid cell
+// meaning the same span of time. Halving the time base ([X,.,x,.] -> [X,x])
+// keeps the cycle and makes every cell twice as long — so the reported tempo has
+// to come down with it, or the metronome plays the pattern at double speed.
+const tryReduce = (beats: TapStrength[]): Reduction => {
+  let gridFactor = 1;
   while (true) {
     const third = tryReduceThirds(beats);
     if (third !== undefined) {
@@ -304,9 +321,10 @@ const tryReduce = (beats: TapStrength[]): TapStrength[] => {
     const doubleTime = tryReduceHalfTime(beats);
     if (doubleTime !== undefined) {
       beats = doubleTime;
+      gridFactor *= 2;
       continue;
     }
-    return beats;
+    return { beats, gridFactor };
   }
 };
 

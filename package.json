@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "bench:smarttap": "node --import ./scripts/tsalias.mjs scripts/smarttapbench.mts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
