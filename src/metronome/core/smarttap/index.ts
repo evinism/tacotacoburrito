@@ -1,5 +1,6 @@
 import type { Beat } from "@/metronome/core/types";
 import methodOne from "./methodone";
+import methodTwo from "./methodtwo";
 
 // Tap intensity, as recorded during Tap Rhythm input — a separate concept
 // from the core Voice model, so it's defined locally rather than reusing
@@ -23,8 +24,14 @@ export type RhythmInferenceMethod = (taps: BeatClick[]) => Result<{
   tempo: number;
 }>;
 
+// Every method, so the bench can run them against each other.
 export const methods = {
   methodOne,
+  methodTwo,
 };
 
-export default methodOne;
+export type MethodName = keyof typeof methods;
+
+// The method the app ships. Frontends import this rather than naming a version,
+// so swapping the shipped method is a one-line change here.
+export default methodTwo;

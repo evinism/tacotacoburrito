@@ -10,16 +10,7 @@ import type { Rhythm } from "@/metronome/core/engine";
 import type { Beat } from "@/metronome/core/types";
 import { arrayFlatten } from "@/metronome/core/util";
 import type { BeatClick, TapStrength } from ".";
-
-// Beats carry pack-named voices; Tap Rhythm only ever records intensity. The
-// core contract is that the "strong" voice reads as accented and anything else
-// audible reads as weak — the inverse of tapStrengthToVoices in methodone.
-const asTapStrength = (voices: Beat["voices"]): TapStrength =>
-  voices.length === 0 ? "off" : voices.includes("strong") ? "strong" : "weak";
-
-// The voices a synthetic tap of the given intensity should sound.
-const asVoices = (strength: TapStrength): Beat["voices"] =>
-  strength === "off" ? [] : [strength];
+import { tapStrengthToVoices, voicesToTapStrength } from "./tapvoices";
 
 export type Preimage = {
   // One full cycle of the grid. Durations are in grid units, as elsewhere.
@@ -106,7 +97,7 @@ export const randomPreimage = (
     const onset = i === 0 || rng() < density;
     const strong = i === 0 || rng() < options.strongRate;
     beats.push({
-      voices: asVoices(onset ? (strong ? "strong" : "weak") : "off"),
+      voices: tapStrengthToVoices(onset ? (strong ? "strong" : "weak") : "off"),
       duration: 1,
     });
   }
@@ -118,7 +109,7 @@ export const randomPreimage = (
     const rests = beats
       .map((beat, i) => (beat.voices.length === 0 ? i : -1))
       .filter((i) => i >= 0);
-    beats[rests[Math.floor(rng() * rests.length)]].voices = asVoices("weak");
+    beats[rests[Math.floor(rng() * rests.length)]].voices = tapStrengthToVoices("weak");
   }
 
   return {
@@ -213,7 +204,7 @@ export const generateTaps = (
       // so that the draw sequence doesn't depend on how dense the pattern is.
       tempoScale *= 1 + gaussian(rng) * humanization.driftPerBeat;
 
-      const accent = asTapStrength(beat.voices);
+      const accent = voicesToTapStrength(beat.voices);
       if (accent === "off") continue;
       if (rng() < humanization.missRate) continue;
 

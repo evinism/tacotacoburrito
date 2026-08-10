@@ -9,6 +9,7 @@
 // tapped. Deterministic: the same --seed reproduces every trial exactly.
 //
 // Flags:
+//   --method NAME       which inference method to run         [the shipped one]
 //   --trials N          trials per grid cell                  [10]
 //   --cycles N          how many times the pattern is tapped  [4]
 //   --jitter a,b,c      timing-jitter sweep, ms sd            [5,10,20,40]
@@ -25,7 +26,10 @@
 //   --examples          print one worked failure per case
 
 import { writeFileSync } from "node:fs";
-import inferRhythm from "@/metronome/core/smarttap/methodone";
+import shippedMethod, {
+  methods,
+  type MethodName,
+} from "@/metronome/core/smarttap";
 import {
   generateTaps,
   makeRng,
@@ -58,6 +62,20 @@ const num = (name: string, fallback: number): number => {
 // the count behind a printed figure is this times the pooled axes: 10 here puts
 // 200 trials behind each case/jitter and each case/drift cell.
 const TRIALS = num("trials", 10);
+
+// Defaults to whatever the app ships, so a bare run reports what users get
+// rather than a method nothing is pointed at.
+const shipped = (Object.keys(methods) as MethodName[]).find(
+  (name) => methods[name] === shippedMethod,
+);
+const METHOD = (flag("method") ?? shipped ?? "methodOne") as MethodName;
+if (!(METHOD in methods)) {
+  console.error(
+    `Unknown --method ${METHOD}. Known: ${Object.keys(methods).join(", ")}`,
+  );
+  process.exit(1);
+}
+const inferRhythm = methods[METHOD];
 const CYCLES = num("cycles", 4);
 const SEED = num("seed", 1);
 // Deliberately no 0 in the default sweep. Perfectly quantized taps are a
@@ -283,7 +301,7 @@ const describe = (beats: Beat[]) =>
     )
     .join("");
 
-console.log(`\nsmart tap bench — methodOne`);
+console.log(`\nsmart tap bench — ${METHOD}`);
 console.log(
   `${corpus.length} cases x ${TEMPOS.length} tempos x ${JITTERS.length} jitters ` +
     `x ${DRIFTS.length} drifts x ${TRIALS} trials = ${trials.length} runs`,
