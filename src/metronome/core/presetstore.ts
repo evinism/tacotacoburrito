@@ -1,5 +1,5 @@
-import { Rhythm } from "./engine";
-import { Beat } from "./types";
+import type { Rhythm } from "./engine";
+import type { Beat } from "./types";
 
 export type PresetStore = {
   // Grouped by Topic
