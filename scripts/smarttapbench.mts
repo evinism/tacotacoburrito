@@ -15,6 +15,7 @@
 //   --jitter a,b,c      timing-jitter sweep, ms sd            [5,10,20,40]
 //   --tempo a,b,c       multipliers on each preset's own bpm  [0.5,0.75,1,1.5,2]
 //   --drift a,b,c       tempo-walk sweep, sd per grid cell    [0,0.002,0.005,0.01,0.02]
+//   --variants a,b,c    which simplifications of each preset  [base,flat,skeleton]
 //   --flat-accents      tap everything weak, as the button does
 //   --seed N            base seed                             [1]
 //   --miss F            probability a tap is dropped          [0]
@@ -43,7 +44,12 @@ import {
   type Grade,
   type Verdict,
 } from "@/metronome/core/smarttap/evaluate";
+import {
+  tapStrengthToVoices,
+  voicesToTapStrength,
+} from "@/metronome/core/smarttap/tapvoices";
 import { defaultPresetStore } from "@/metronome/core/presetstore";
+import type { TapStrength } from "@/metronome/core/smarttap";
 import type { Beat } from "@/metronome/core/types";
 
 // --- args ---------------------------------------------------------------
@@ -120,42 +126,131 @@ const baseHumanization: Omit<Humanization, "jitterMs" | "driftPerBeat"> = {
 
 // --- corpus -------------------------------------------------------------
 
-type BenchCase = { name: string; preimage: Preimage };
+type BenchCase = { name: string; variant: VariantName; preimage: Preimage };
 
-// Flattening the *preimage* (not just the taps) drops accents from the target
-// as well as the input, so the run measures what's actually recoverable from a
-// button-tapped performance: the timing, not the emphasis.
-const flatten = (preimage: Preimage): Preimage => ({
+const describe = (beats: Beat[]) =>
+  beats
+    .map((beat) =>
+      beat.voices.length === 0 ? "." : beat.voices.includes("strong") ? "X" : "x",
+    )
+    .join("");
+
+// Rewriting the *preimage* (not just the taps) moves the target along with the
+// input, so each variant is graded on what it actually is rather than being
+// punished for not being the rhythm it was derived from.
+const mapStrengths = (
+  preimage: Preimage,
+  map: (strength: TapStrength) => TapStrength,
+): Preimage => ({
   ...preimage,
   beats: preimage.beats.map((beat) => ({
     ...beat,
-    voices: beat.voices.length === 0 ? [] : ["weak"],
+    voices: tapStrengthToVoices(map(voicesToTapStrength(beat.voices))),
   })),
 });
 
+// Nobody taps the full notated rhythm every time. These are the two ways a
+// performance gets simpler, and both are strictly harder to infer than the
+// original because each throws information away.
+const VARIANT_TRANSFORMS = {
+  // The rhythm as notated.
+  base: (preimage: Preimage) => preimage,
+  // Every onset weak: the timing survives, the emphasis doesn't. This is
+  // exactly what the mouse path produces, since the Tap Rhythm button reports
+  // every tap as weak — only the ,/. keys carry accent.
+  flat: (preimage: Preimage) =>
+    mapStrengths(preimage, (strength) => (strength === "off" ? "off" : "weak")),
+  // Only the accented beats get tapped at all — someone marking out the frame
+  // of the rhythm rather than playing it. Much sparser, so the grid has far
+  // less evidence to place cells against.
+  skeleton: (preimage: Preimage) =>
+    mapStrengths(preimage, (strength) => (strength === "strong" ? "weak" : "off")),
+} satisfies Record<string, (preimage: Preimage) => Preimage>;
+
+type VariantName = keyof typeof VARIANT_TRANSFORMS;
+
+const ALL_VARIANTS = Object.keys(VARIANT_TRANSFORMS) as VariantName[];
+const VARIANTS = ((flag("variants")?.split(",") ?? ALL_VARIANTS) as VariantName[])
+  // --flat-accents flattens the whole corpus anyway, which would make the flat
+  // variant a duplicate of the base one.
+  .filter((variant) => !(FLAT_ACCENTS && variant === "flat"));
+for (const variant of VARIANTS) {
+  if (!(variant in VARIANT_TRANSFORMS)) {
+    console.error(
+      `Unknown --variants entry ${variant}. Known: ${ALL_VARIANTS.join(", ")}`,
+    );
+    process.exit(1);
+  }
+}
+
+// The shortest prefix the pattern is a whole number of repeats of. A rhythm and
+// its repeat sound identical, so this is the pattern inference can actually be
+// held to.
+const primitivePattern = (pattern: string): string => {
+  for (let length = 1; length < pattern.length; length++) {
+    if (pattern.length % length !== 0) continue;
+    const head = pattern.slice(0, length);
+    if (head.repeat(pattern.length / length) === pattern) return head;
+  }
+  return pattern;
+};
+
+// A pattern with one onset per primitive cycle is an even click track — there
+// is no rhythm left in it, only a tempo. Simplification collapses a fair few
+// presets to exactly that (a flat 4/4 is four even taps; the skeleton of 6/8 is
+// one tap every three cells), and those cases are trivially correct for any
+// method. Keeping them would pad the headline rather than test anything.
+const isPulse = (preimage: Preimage) =>
+  [...primitivePattern(describe(preimage.beats))].filter((cell) => cell !== ".")
+    .length < 2;
+
+const skipped: string[] = [];
 const presetCases: BenchCase[] = Object.entries(defaultPresetStore).flatMap(
   ([topic, rhythms]) =>
-    Object.entries(rhythms).map(([name, rhythm]) => ({
-      name: `${topic}/${name}`,
-      preimage: toPreimage(rhythm),
-    })),
+    Object.entries(rhythms).flatMap(([name, rhythm]) => {
+      const base = toPreimage(rhythm);
+      // Deduped per rhythm rather than globally: a rhythm with no accents is
+      // its own flat variant, and one that's accents-only is its own skeleton.
+      const seen = new Set<string>();
+      return VARIANTS.flatMap((variant): BenchCase[] => {
+        const preimage = VARIANT_TRANSFORMS[variant](base);
+        const pattern = describe(preimage.beats);
+        const label = `${topic}/${name}${variant === "base" ? "" : ` [${variant}]`}`;
+        if (seen.has(pattern) || (variant !== "base" && isPulse(preimage))) {
+          skipped.push(label);
+          return [];
+        }
+        seen.add(pattern);
+        return [{ name: label, variant, preimage }];
+      });
+    }),
 );
 
 // Enough arbitrary patterns to make a quarter of the corpus, so the headline
 // number isn't purely a measure of how well inference handles the two dozen
 // dance rhythms that happen to ship with the app. Their own rng stream, keyed
 // off --seed, so the drawn corpus is stable run to run but moves with the seed.
+//
+// Derived from the *expanded* preset count, so adding variants doesn't quietly
+// shrink the arbitrary patterns' share of the corpus. They're left unvariated
+// themselves: a flattened or thinned random pattern is just another random
+// pattern, so they stay a fixed control group against the preset variants.
 const RANDOM_COUNT = num("random", Math.round(presetCases.length / 3));
 const randomRng = makeRng(SEED + 999983);
 const randomCases: BenchCase[] = Array.from({ length: RANDOM_COUNT }, (_, i) => ({
   name: `Random/r${i + 1}`,
+  variant: "base" as const,
   preimage: randomPreimage(randomRng),
 }));
 
 const corpus: BenchCase[] = [...presetCases, ...randomCases]
   .map((benchCase) => ({
     ...benchCase,
-    preimage: FLAT_ACCENTS ? flatten(benchCase.preimage) : benchCase.preimage,
+    // Applied after the variants are derived, not before: flattening first
+    // would leave the skeleton transform with no accents to keep, emptying it.
+    preimage: FLAT_ACCENTS
+      ? VARIANT_TRANSFORMS.flat(benchCase.preimage)
+      : benchCase.preimage,
   }))
   .filter(({ name }) => !CASE_FILTER || name.includes(CASE_FILTER));
 
@@ -168,6 +263,7 @@ if (corpus.length === 0) {
 
 type Trial = {
   case: string;
+  variant: VariantName;
   jitterMs: number;
   tempoMult: number;
   driftPerBeat: number;
@@ -249,6 +345,7 @@ for (const [caseIndex, benchCase] of corpus.entries()) {
           );
           trials.push({
             case: benchCase.name,
+            variant: benchCase.variant,
             jitterMs,
             tempoMult,
             driftPerBeat,
@@ -294,13 +391,6 @@ const table = (headers: string[], rows: string[][]) => {
 
 const where = (predicate: (trial: Trial) => boolean) => trials.filter(predicate);
 
-const describe = (beats: Beat[]) =>
-  beats
-    .map((beat) =>
-      beat.voices.length === 0 ? "." : beat.voices.includes("strong") ? "X" : "x",
-    )
-    .join("");
-
 console.log(`\nsmart tap bench — ${METHOD}`);
 console.log(
   `${corpus.length} cases x ${TEMPOS.length} tempos x ${JITTERS.length} jitters ` +
@@ -315,6 +405,21 @@ console.log(
     `miss ${baseHumanization.missRate}  ghost ${baseHumanization.ghostRate}  ` +
     `accent-error ${baseHumanization.strengthErrorRate}`,
 );
+
+console.log(
+  `variants ${VARIANTS.join(",")}  (` +
+    VARIANTS.map(
+      (variant) =>
+        `${variant} ${corpus.filter((c) => c.variant === variant && !c.name.startsWith("Random/")).length}`,
+    ).join(", ") +
+    `)`,
+);
+if (skipped.length > 0) {
+  console.log(
+    `${skipped.length} variants dropped as duplicates or plain pulses: ` +
+      skipped.join(", "),
+  );
+}
 
 // The random cases have opaque names, so show what was actually drawn.
 const drawn = corpus.filter(({ name }) => name.startsWith("Random/"));
@@ -348,6 +453,13 @@ const axisOf = <T,>(
 
 const caseAxis = axisOf(corpus.map((c) => c.name), (n) => n, (t) => t.case);
 const jitterAxis = axisOf(JITTERS, String, (t) => t.jitterMs);
+// Preset trials only. The arbitrary patterns are all "base" by construction, so
+// leaving them in would put a different corpus behind that row than behind the
+// other two and make the comparison meaningless.
+const variantAxis: Axis[] = VARIANTS.map((variant) => ({
+  label: variant,
+  match: (t) => t.variant === variant && !t.case.startsWith("Random/"),
+}));
 const tempoAxis = axisOf(TEMPOS, (t) => `${t}x`, (t) => t.tempoMult);
 const driftAxis = axisOf(DRIFTS, String, (t) => t.driftPerBeat);
 
@@ -391,6 +503,19 @@ matrix(
   driftAxis,
   true,
 );
+
+// The per-case tables above are long enough that the shape of the variant
+// effect is hard to see in them. These two collapse it: same rhythms, same
+// grid, differing only in how much of each rhythm the tapper bothered to play.
+if (variantAxis.length > 1) {
+  matrix(
+    `what simplifying the rhythm costs, by jitter — presets only`,
+    "variant",
+    variantAxis,
+    jitterAxis,
+  );
+  matrix(`the same, by tempo drift — presets only`, "variant", variantAxis, driftAxis);
+}
 
 if (TEMPOS.length > 1) {
   matrix(
@@ -515,8 +640,9 @@ if (JSON_OUT) {
           jitters: JITTERS,
           humanization: baseHumanization,
         },
-        cases: corpus.map(({ name, preimage }) => ({
+        cases: corpus.map(({ name, variant, preimage }) => ({
           name,
+          variant,
           bpm: preimage.bpm,
           pattern: describe(preimage.beats),
         })),
