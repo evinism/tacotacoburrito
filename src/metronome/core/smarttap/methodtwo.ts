@@ -37,7 +37,12 @@ const FIT_ITERATIONS = 6;
 const DRIFT_WINDOW = 4;
 const DRIFT_ITERATIONS = 3;
 // Mild pressure toward coarser grids, to settle ties the residuals can't see.
-const COMPLEXITY_WEIGHT = 0.001;
+// A fraction of the misfit charged per grid cell per tap — see gridCost.
+const COMPLEXITY_WEIGHT = 0.05;
+// Misfit nobody can beat, as a fraction of a cell. Keeps the complexity term
+// discriminating when the taps sit perfectly on the grid and misfit is zero,
+// which would otherwise leave every candidate costing nothing.
+const MISFIT_FLOOR = 0.001;
 // Share of the onsets a candidate period must actually test against a repeat
 // before its agreement is believable. Guards the long end of the search, where
 // a period approaching the whole performance has almost nothing to contradict.
@@ -148,11 +153,25 @@ const evaluateFit = (times: number[], positions: number[]): GridFit => {
 };
 
 // Lower is better. The squared misfit does the real work; the complexity term
-// only breaks ties, since an ever-finer grid can always drive the residual down
-// by brute force.
+// only breaks ties, since a fine enough grid can eventually drive the residual
+// down by brute force.
+//
+// The term has to be *multiplicative* to stay a tie-breaker. Charging it as a
+// flat addition sounds equivalent and isn't, because misfit² ranges over more
+// than two orders of magnitude across the cases that matter: around 0.02 for a
+// dense rhythm tapped at 15% jitter, but 0.0001 for a sparse one tapped
+// cleanly. Any constant big enough to matter in the first case buries the
+// second — a sparse pattern's true grid needs more cells per tap than the
+// coarse misreading of it, so a flat penalty hands the win to whichever reading
+// is coarser regardless of how much better the true one fits. That is what made
+// a tapped `x......x....` come back as `x...x..`. As a fraction of the misfit,
+// the charge is the same size relative to the evidence everywhere.
+//
+// Read it as: each additional grid cell per tap has to buy a COMPLEXITY_WEIGHT
+// fraction off the misfit to pay for itself.
 const gridCost = (fit: GridFit, tapCount: number): number =>
-  fit.misfit ** 2 +
-  COMPLEXITY_WEIGHT * (fit.positions[fit.positions.length - 1] / tapCount);
+  (fit.misfit ** 2 + MISFIT_FLOOR ** 2) *
+  (1 + COMPLEXITY_WEIGHT * (fit.positions[fit.positions.length - 1] / tapCount));
 
 // Re-place every tap against a locally fitted line through its neighbours,
 // rather than against its own predecessor.
