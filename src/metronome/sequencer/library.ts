@@ -7,6 +7,11 @@ import libraryJson from "./library.json";
 export interface LibraryPattern extends PatternState {
   // Doubles as the React key, so keep these unique.
   name: string;
+  // Freeform annotation — song titles, variant descriptions, whatever. Not
+  // sequencer state, so it stays off PatternState and never round-trips
+  // through load/save. The UI lets it be edited, storing the edit in
+  // localStorage rather than mutating what ships here.
+  notes?: string;
 }
 
 // The on-disk shape of library.json. Rows are step strings ("x" = hit, any
@@ -15,10 +20,19 @@ export interface LibraryPattern extends PatternState {
 // Rows with no hits are omitted and filled in as empty below.
 interface LibraryJsonPattern {
   name: string;
+  notes?: string;
   bpm: number;
   steps: number;
   showEighths: boolean;
   bars: Record<string, string>[];
+}
+
+interface LibraryJson {
+  // Keyed by family name — the pattern name with its trailing variant number
+  // stripped. Holds what's true of the whole rhythm (its grouping, the songs
+  // it's played for) rather than of one variant.
+  familyNotes: Record<string, string>;
+  patterns: LibraryJsonPattern[];
 }
 
 const expandRow = (row: string | undefined, steps: number): boolean[] =>
@@ -42,9 +56,10 @@ const expandRow = (row: string | undefined, steps: number): boolean[] =>
   don't come out empty.
 */
 export const LIBRARY_PATTERNS: LibraryPattern[] = (
-  libraryJson as LibraryJsonPattern[]
-).map(({ name, bpm, steps, showEighths, bars }) => ({
+  libraryJson as LibraryJson
+).patterns.map(({ name, notes, bpm, steps, showEighths, bars }) => ({
   name,
+  notes,
   bpm,
   steps,
   showEighths,
@@ -54,3 +69,7 @@ export const LIBRARY_PATTERNS: LibraryPattern[] = (
     )
   ),
 }));
+
+export const LIBRARY_FAMILY_NOTES: Record<string, string> = (
+  libraryJson as LibraryJson
+).familyNotes;

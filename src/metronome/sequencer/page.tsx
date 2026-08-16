@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 
 import { usePersistentState } from "@/hooks";
@@ -14,8 +14,11 @@ import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
 import PatternList, {
   LibraryList,
+  PatternNotes,
   PatternState,
+  selectionKey,
   usePatterns,
+  type NoteTarget,
 } from "./patterns";
 import styles from "./sequencer.module.css";
 
@@ -389,7 +392,16 @@ const SequencerMetronome = () => {
     setBars(effectiveBars.filter((_, i) => i !== barIndex));
   };
 
-  const { patterns, saveNew, overwrite, rename, remove } = usePatterns();
+  const {
+    groups,
+    saveNew,
+    addVariant,
+    overwrite,
+    renameGroup,
+    setGroupNotes,
+    setNotes,
+    removeVariant,
+  } = usePatterns();
 
   const currentPattern: PatternState = {
     bpm,
@@ -397,6 +409,10 @@ const SequencerMetronome = () => {
     showEighths,
     bars: effectiveBars,
   };
+
+  // Which variant the notes box is showing. Owned here rather than in either
+  // list so selecting in one clears the other — only one pattern is loaded.
+  const [noteTarget, setNoteTarget] = useState<NoteTarget>(null);
 
   const loadPattern = (pattern: PatternState) => {
     setBpm(pattern.bpm);
@@ -408,6 +424,11 @@ const SequencerMetronome = () => {
     // Resize defensively — a pattern saved before a shape change could carry
     // bars that disagree with its own step count.
     setBars(normalizeBars(loadedBars).map((bar) => resizeGrid(bar, pattern.steps)));
+  };
+
+  const loadAndSelect = (pattern: PatternState, target: NoteTarget) => {
+    loadPattern(pattern);
+    setNoteTarget(target);
   };
 
   const activeFlat = playing ? currentBeat : -1;
@@ -618,6 +639,13 @@ const SequencerMetronome = () => {
         );
       })}
 
+      <PatternNotes
+        target={noteTarget}
+        groups={groups}
+        onSetGroupNotes={setGroupNotes}
+        onSetVariantNotes={setNotes}
+      />
+
       <Divider />
 
       <div className={styles.ButtonGroup}>
@@ -661,16 +689,30 @@ const SequencerMetronome = () => {
       <Divider />
 
       <PatternList
-        patterns={patterns}
-        onLoad={loadPattern}
-        onOverwrite={(id) => overwrite(id, currentPattern)}
-        onRename={rename}
-        onRemove={remove}
+        groups={groups}
+        selected={selectionKey(noteTarget)}
+        onLoad={loadAndSelect}
+        onAddVariant={(groupId) => addVariant(groupId, currentPattern)}
+        onOverwrite={(groupId, variantId) =>
+          overwrite(groupId, variantId, currentPattern)
+        }
+        onRenameGroup={renameGroup}
+        onRemoveVariant={removeVariant}
       />
 
       <Divider />
 
-      <LibraryList onLoad={loadPattern} />
+      <LibraryList selected={selectionKey(noteTarget)} onLoad={loadAndSelect} />
+
+      <Typography variant="body2" className={styles.LibraryCredit}>
+        Pattern library thanks to{" "}
+        <a href="https://www.instagram.com/seantergis/">@seantergis</a>
+        <br />
+        Darbuka samples thanks to{" "}
+        <a href="https://www.youtube.com/channel/UCcaZVRa_usGwiQaASFZSyOg">
+          @ArtemUzunov
+        </a>
+      </Typography>
 
       <Typography variant="body2" className={styles.BackLink}>
         <a href="/metronomes">Other metronomes</a>
