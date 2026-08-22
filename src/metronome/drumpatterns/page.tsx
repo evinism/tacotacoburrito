@@ -452,10 +452,14 @@ const DrumPatternLibrary = () => {
       >
         <div className={styles.Settings}>
           <div className={styles.SettingsInner}>
-            <Grid container spacing={2} sx={{ alignItems: "center" }}>
-              <Grid size={3}>Volume</Grid>
-              <Grid size={3}>
+            {/* Two columns, each a label next to the control it names, so a
+                setting and its widget never split across the fold. */}
+            <Grid container spacing={4} sx={{ alignItems: "center" }}>
+              <Grid size={6} className={styles.SettingsField}>
+                <InputLabel htmlFor="volume-slider">Volume</InputLabel>
                 <Slider
+                  id="volume-slider"
+                  sx={{ width: 140 }}
                   min={0}
                   max={1}
                   step={0.01}
@@ -464,10 +468,8 @@ const DrumPatternLibrary = () => {
                   aria-label="Volume"
                 />
               </Grid>
-              <Grid size={3}>
+              <Grid size={6} className={styles.SettingsField}>
                 <InputLabel htmlFor="soundpack-select">Sound Pack</InputLabel>
-              </Grid>
-              <Grid size={3}>
                 <Select
                   id="soundpack-select"
                   size="small"

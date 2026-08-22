@@ -76,6 +76,19 @@
   padding: 1rem 2rem;
 }
 
+/* One settings column: label then control, the label never squeezed down to
+   an ellipsis by whatever sits next to it. */
+.SettingsField {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.SettingsField > label {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 /*
   Kinda Special group that replaces the annoyances of grid everywhere
   Expects a margin-able thing beneath it.
