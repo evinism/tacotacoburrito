@@ -478,76 +478,79 @@ const SequencerMetronome = () => {
       </Typography>
       <Divider />
       <Box className={`${styles.HorizontalGroup} ${styles.TempoRow}`}>
-        <Tooltip
-          title={
-            soundPackStatus === "error"
-              ? "Sound pack failed to load"
-              : soundPackStatus === "loading"
-                ? "Loading sound pack…"
-                : ""
-          }
-          {...ttConfig}
-        >
-          {/* span wrapper so the Tooltip still works while the Button is disabled */}
-          <span>
-            <Button
-              onClick={togglePlaying}
-              color={soundPackStatus === "error" ? "error" : "primary"}
-              disabled={soundPackStatus === "loading"}
-              startIcon={
-                soundPackStatus === "loading" ? (
-                  <CircularProgress size={16} color="inherit" />
-                ) : undefined
-              }
-            >
-              {soundPackStatus === "loading"
-                ? "Loading"
-                : soundPackStatus === "error"
-                  ? "Error"
-                  : playing
-                    ? "Stop"
-                    : "Play"}
-            </Button>
-          </span>
-        </Tooltip>
-        <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
-        <div>
-          <InputLabel htmlFor="bpm-input" sx={{ fontSize: 14 }}>
-            BPM
-          </InputLabel>
-          <Input
-            className={styles.BPMNumberInput}
-            type="number"
-            size="small"
-            id="bpm-input"
-            inputProps={{ min: 1 }}
-            value={Math.round(bpm)}
-            onChange={(event) => setBpm(parseInt(event.target.value))}
-          />
+        {/* Transport on the left, tempo on the right: the two things you
+            reach for mid-practice sit at opposite, predictable ends. */}
+        <div className={styles.ControlCluster}>
+          <Tooltip
+            title={
+              soundPackStatus === "error"
+                ? "Sound pack failed to load"
+                : soundPackStatus === "loading"
+                  ? "Loading sound pack…"
+                  : ""
+            }
+            {...ttConfig}
+          >
+            {/* span wrapper so the Tooltip still works while the Button is disabled */}
+            <span>
+              <Button
+                onClick={togglePlaying}
+                color={soundPackStatus === "error" ? "error" : "primary"}
+                disabled={soundPackStatus === "loading"}
+                startIcon={
+                  soundPackStatus === "loading" ? (
+                    <CircularProgress size={16} color="inherit" />
+                  ) : undefined
+                }
+              >
+                {soundPackStatus === "loading"
+                  ? "Loading"
+                  : soundPackStatus === "error"
+                    ? "Error"
+                    : playing
+                      ? "Stop"
+                      : "Play"}
+              </Button>
+            </span>
+          </Tooltip>
+          <div className={styles.VolumeGroup}>
+            <VolumeUpIcon fontSize="small" htmlColor="#ccc" />
+            <Slider
+              size="small"
+              min={0}
+              max={1}
+              step={0.01}
+              value={volume}
+              onChange={(_, newValue) => setVolume(newValue as number)}
+              aria-label="Volume"
+            />
+          </div>
         </div>
-
-        {/* No tempo slider here — the grid is what this frontend is about, so
-            tempo is the number field, the arrow keys (±3%) and Tap Tempo. */}
+        <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
         <GlobalKeydownListener
           onKeyDown={modTempo(1 / 1.03)}
           keyFilter="ArrowLeft"
         />
         <GlobalKeydownListener onKeyDown={modTempo(1.03)} keyFilter="ArrowRight" />
-        <div>
-          <Button onClick={handleTapTempoClick}>Tap Tempo</Button>
-          <GlobalKeydownListener onKeyDown={handleTapTempoClick} keyFilter="/" />
-        </div>
-        <div className={styles.VolumeGroup}>
-          <VolumeUpIcon fontSize="small" htmlColor="#ccc" />
-          <Slider
-            size="small"
-            min={0}
-            max={1}
-            step={0.01}
-            value={volume}
-            onChange={(_, newValue) => setVolume(newValue as number)}
-            aria-label="Volume"
-          />
+        <div className={styles.ControlCluster}>
+          <div>
+            <InputLabel htmlFor="bpm-input" sx={{ fontSize: 14 }}>
+              BPM
+            </InputLabel>
+            <Input
+              className={styles.BPMNumberInput}
+              type="number"
+              size="small"
+              id="bpm-input"
+              inputProps={{ min: 1 }}
+              value={Math.round(bpm)}
+              onChange={(event) => setBpm(parseInt(event.target.value))}
+            />
+          </div>
+          <div>
+            <Button onClick={handleTapTempoClick}>Tap Tempo</Button>
+            <GlobalKeydownListener onKeyDown={handleTapTempoClick} keyFilter="/" />
+          </div>
         </div>
       </Box>
 

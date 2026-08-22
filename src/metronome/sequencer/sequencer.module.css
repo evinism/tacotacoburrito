@@ -50,10 +50,15 @@
   max-width: 70px;
 }
 
-/* The one control row: Play pinned left, volume pinned right, the tempo
-   controls between them evenly spaced. */
+/* The one control row, as two clusters pushed to opposite ends. */
 .TempoRow {
   justify-content: space-between;
+}
+
+.ControlCluster {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
 }
 
 /* Keeps the volume slider from eating the BPM row's flex width. */
