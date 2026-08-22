@@ -41,6 +41,39 @@
 .DrumPatterns hr {
   margin: 1rem 0;
   opacity: 1;
+  transition: 0.2s linear;
+}
+
+/* The divider under the title line fades out while the panel is open, so the
+   panel reads as the header's own drawer rather than a second section. */
+.DrumPatterns hr.Invisible {
+  opacity: 0;
+}
+
+/* Collapsible settings drawer: animating grid rows 0fr -> 1fr lets the panel
+   size itself to its content without hardcoding a height. */
+.SettingsGridWrapper {
+  position: relative;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.2s ease-out;
+  background-color: #444;
+  margin: 0 -2rem;
+  top: 1rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2) inset;
+}
+
+.SettingsGridWrapper.Open {
+  grid-template-rows: 1fr;
+}
+
+.Settings {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.SettingsInner {
+  padding: 1rem 2rem;
 }
 
 /*
@@ -78,14 +111,6 @@
   display: flex;
   align-items: center;
   gap: 1.25rem;
-}
-
-/* Keeps the volume slider from eating the BPM row's flex width. */
-.VolumeGroup {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  width: 140px;
 }
 
 /* The step grid: one row per voice, one button per step. */

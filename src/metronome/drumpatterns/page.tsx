@@ -32,6 +32,7 @@ import {
   Button,
   CircularProgress,
   Divider,
+  Grid,
   IconButton,
   Input,
   InputLabel,
@@ -44,8 +45,8 @@ import {
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
-import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import ShareIcon from "@mui/icons-material/Share";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const ttConfig = {
   enterDelay: 500,
@@ -204,6 +205,7 @@ const DrumPatternLibrary = () => {
     "drumpatterns/volume",
     1
   );
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
   const pack = packById(packId);
 
@@ -434,8 +436,57 @@ const DrumPatternLibrary = () => {
             </IconButton>
           </Tooltip>
         </div>
+        <div className={styles.TitleAction}>
+          <IconButton
+            aria-label="Settings"
+            onClick={() => setSettingsOpen(!settingsOpen)}
+          >
+            <SettingsIcon />
+          </IconButton>
+        </div>
       </div>
-      <Divider />
+      {/* Set-and-forget controls live behind the gear, keeping the rows below
+          to what you touch while practicing. */}
+      <div
+        className={`${styles.SettingsGridWrapper} ${settingsOpen ? styles.Open : ""}`}
+      >
+        <div className={styles.Settings}>
+          <div className={styles.SettingsInner}>
+            <Grid container spacing={2} sx={{ alignItems: "center" }}>
+              <Grid size={3}>Volume</Grid>
+              <Grid size={3}>
+                <Slider
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={volume}
+                  onChange={(_, newValue) => setVolume(newValue as number)}
+                  aria-label="Volume"
+                />
+              </Grid>
+              <Grid size={3}>
+                <InputLabel htmlFor="soundpack-select">Sound Pack</InputLabel>
+              </Grid>
+              <Grid size={3}>
+                <Select
+                  id="soundpack-select"
+                  size="small"
+                  variant="standard"
+                  value={pack.id}
+                  onChange={(event) => setPackId(event.target.value)}
+                >
+                  {SOUND_PACKS.map(({ id, label }) => (
+                    <MenuItem key={id} value={id}>
+                      {label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+            </Grid>
+          </div>
+        </div>
+      </div>
+      <Divider className={settingsOpen ? styles.Invisible : ""} />
       <Box className={`${styles.HorizontalGroup} ${styles.TempoRow}`}>
         {/* Transport on the left, tempo on the right: the two things you
             reach for mid-practice sit at opposite, predictable ends. */}
@@ -472,18 +523,6 @@ const DrumPatternLibrary = () => {
               </Button>
             </span>
           </Tooltip>
-          <div className={styles.VolumeGroup}>
-            <VolumeUpIcon fontSize="small" htmlColor="#ccc" />
-            <Slider
-              size="small"
-              min={0}
-              max={1}
-              step={0.01}
-              value={volume}
-              onChange={(_, newValue) => setVolume(newValue as number)}
-              aria-label="Volume"
-            />
-          </div>
         </div>
         <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
         <GlobalKeydownListener
@@ -548,24 +587,6 @@ const DrumPatternLibrary = () => {
               handleCountChange(parseInt(event.target.value))
             }
           />
-        </div>
-        <div>
-          <InputLabel htmlFor="soundpack-select" sx={{ fontSize: 14 }}>
-            Sound
-          </InputLabel>
-          <Select
-            id="soundpack-select"
-            size="small"
-            variant="standard"
-            value={pack.id}
-            onChange={(event) => setPackId(event.target.value)}
-          >
-            {SOUND_PACKS.map(({ id, label }) => (
-              <MenuItem key={id} value={id}>
-                {label}
-              </MenuItem>
-            ))}
-          </Select>
         </div>
         <div className={styles.Spacer} />
         <Button onClick={() => setNoteTarget(saveNew(currentPattern))}>
