@@ -15,6 +15,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
+import { useEffect } from "react";
+
 import { usePersistentState } from "@/hooks";
 
 import {
@@ -43,9 +45,8 @@ export interface PatternVariant extends PatternState {
   // Stable identity for the React key and for "which variant is selected",
   // neither of which can key off position while variants are being added.
   id: string;
-  // Freeform metadata — song titles, "running", "3-2-2-2 version". Variants
-  // aren't named individually, so this is where anything distinguishing them
-  // goes. Not sequencer state, so loading a variant never touches it.
+  // Legacy: per-variant notes, folded into the group's single commentary by
+  // the migration in usePatterns and never written again.
   notes?: string;
   createdAt: number;
   updatedAt: number;
@@ -56,11 +57,33 @@ export interface PatternVariant extends PatternState {
 export interface PatternGroup {
   id: string;
   name: string;
-  // Freeform metadata about the rhythm as a whole — its grouping, the songs
-  // it's played for — as opposed to a single variant's `notes`.
+  // The rhythm's whole commentary — its grouping, the songs it's played for,
+  // what distinguishes each variant — in one freeform block. Notes about a
+  // particular variant go on their own line, prefixed with its number.
   notes?: string;
   variants: PatternVariant[];
 }
+
+// How a variant's own line reads inside that block. Also the shape the library
+// composes, so both stores present commentary the same way.
+export const variantNoteLine = (variant: number, notes: string) =>
+  `\n${variant}. ${notes}`;
+
+// One block from a rhythm's own notes plus whatever its variants carried.
+const mergeNotes = (
+  notes: string | undefined,
+  variantNotes: (string | undefined)[]
+) =>
+  [
+    notes ?? "",
+    ...variantNotes.map((text, index) =>
+      text ? variantNoteLine(index + 1, text) : ""
+    ),
+    // trimStart so a rhythm with no notes of its own doesn't lead with the
+    // blank line that the first variant's prefix would otherwise leave.
+  ]
+    .join("")
+    .trimStart();
 
 /*
   The library groups by naming convention instead of structure: a trailing
@@ -128,6 +151,26 @@ export const usePatterns = () => {
     NO_GROUPS
   );
 
+  // One-time fold of the retired per-variant notes into each group's single
+  // commentary block, so nothing written under the two-field UI is lost.
+  useEffect(() => {
+    if (!groups.some((group) => group.variants.some(({ notes }) => notes))) {
+      return;
+    }
+    setGroups(
+      groups.map((group) => ({
+        ...group,
+        notes: mergeNotes(
+          group.notes,
+          group.variants.map(({ notes }) => notes)
+        ),
+        variants: group.variants.map(({ notes: _notes, ...rest }) => rest),
+      }))
+    );
+    // Runs once on mount against the just-loaded persisted value.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const updateGroup = (id: string, change: (group: PatternGroup) => PatternGroup) =>
     setGroups(groups.map((group) => (group.id === id ? change(group) : group)));
 
@@ -172,11 +215,8 @@ export const usePatterns = () => {
   const renameGroup = (groupId: string, name: string) =>
     updateGroup(groupId, (group) => ({ ...group, name }));
 
-  const setGroupNotes = (groupId: string, notes: string) =>
+  const setNotes = (groupId: string, notes: string) =>
     updateGroup(groupId, (group) => ({ ...group, notes }));
-
-  const setNotes = (groupId: string, variantId: string, notes: string) =>
-    updateVariant(groupId, variantId, { notes });
 
   // The group exists to hold variants, so emptying it removes it.
   const removeVariant = (groupId: string, variantId: string) =>
@@ -196,7 +236,6 @@ export const usePatterns = () => {
     addVariant,
     overwrite,
     renameGroup,
-    setGroupNotes,
     setNotes,
     removeVariant,
   };
@@ -299,50 +338,42 @@ const NoteBox = ({ label, value, onChange, placeholder }: NoteField & {
 export const PatternNotes = ({
   target,
   groups,
-  onSetGroupNotes,
-  onSetVariantNotes,
+  onSetNotes,
 }: {
   target: NoteTarget;
   groups: PatternGroup[];
-  onSetGroupNotes: (groupId: string, notes: string) => void;
-  onSetVariantNotes: (groupId: string, variantId: string, notes: string) => void;
+  onSetNotes: (groupId: string, notes: string) => void;
 }) => {
   if (!target) return null;
 
-  const resolve = (): { family: NoteField; variant: NoteField } | null => {
+  const resolve = (): NoteField | null => {
     if (target.kind === "library") {
-      const pattern = LIBRARY_PATTERNS.find(
-        (candidate) => candidate.name === target.name
+      const family = LIBRARY_FAMILIES.find(
+        (candidate) => candidate.family === target.family
       );
-      if (!pattern) return null;
+      if (!family) return null;
+      // The library keeps its notes split across familyNotes and each
+      // pattern's own line; compose them into the one block the UI shows.
       return {
-        family: {
-          label: `${target.family} — `,
-          value: LIBRARY_FAMILY_NOTES[target.family] ?? "",
-        },
-        variant: {
-          label: `${pattern.name} — `,
-          value: pattern.notes ?? "",
-        },
+        label: "Commentary — ",
+        value: [
+          LIBRARY_FAMILY_NOTES[target.family] ?? "",
+          ...family.members.map(({ pattern, variant }, index) =>
+            pattern.notes
+              ? variantNoteLine(variant ?? index + 1, pattern.notes)
+              : ""
+          ),
+        ]
+          .join("")
+          .trimStart(),
       };
     }
     const group = groups.find((candidate) => candidate.id === target.groupId);
-    const index =
-      group?.variants.findIndex((variant) => variant.id === target.variantId) ??
-      -1;
-    if (!group || index < 0) return null;
+    if (!group) return null;
     return {
-      family: {
-        label: `${group.name} — rhythm notes`,
-        value: group.notes ?? "",
-        onChange: (notes) => onSetGroupNotes(group.id, notes),
-      },
-      variant: {
-        label: `${group.name} ${index + 1} — variant notes`,
-        value: group.variants[index].notes ?? "",
-        onChange: (notes) =>
-          onSetVariantNotes(group.id, target.variantId, notes),
-      },
+      label: "Commentary",
+      value: group.notes ?? "",
+      onChange: (notes) => onSetNotes(group.id, notes),
     };
   };
 
@@ -352,12 +383,8 @@ export const PatternNotes = ({
   return (
     <div className={styles.PatternNotes}>
       <NoteBox
-        {...resolved.family}
-        placeholder="Grouping, songs, anything true of the whole rhythm"
-      />
-      <NoteBox
-        {...resolved.variant}
-        placeholder="What makes this variant different"
+        {...resolved}
+        placeholder="Grouping, songs, what each variant does differently"
       />
     </div>
   );
