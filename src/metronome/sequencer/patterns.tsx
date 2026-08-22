@@ -205,7 +205,6 @@ export const usePatterns = () => {
 // Hoisted so usePersistentState's defaults keep a stable identity across
 // renders (they feed a useCallback dependency list).
 const NO_GROUPS: PatternGroup[] = [];
-const NO_EDITS: Record<string, string> = {};
 
 // One row of variant buttons. Selecting a variant also loads it, so the notes
 // box below always describes what you're currently hearing.
@@ -252,38 +251,50 @@ export type NoteTarget =
 const selectionKey = (target: NoteTarget): string | null =>
   target === null ? null : target.kind === "library" ? target.name : target.variantId;
 
-// Library notes are editable but library.json ships read-only, so edits live
-// in localStorage and shadow the built-in text — keyed by pattern name for
-// variant notes, by family name for family notes.
-const useLibraryNotes = (key: string) =>
-  usePersistentState<Record<string, string>>(key, NO_EDITS);
-
 interface NoteField {
   label: string;
   value: string;
-  onChange: (notes: string) => void;
+  // Absent for the built-in library, which ships with the app and so reads as
+  // documentation rather than as a notebook.
+  onChange?: (notes: string) => void;
 }
+
+// Small type throughout: these are annotations on the pattern above them, not
+// the main event.
+const NOTE_FONT = { fontSize: "0.8rem" };
 
 const NoteBox = ({ label, value, onChange, placeholder }: NoteField & {
   placeholder: string;
-}) => (
-  <TextField
-    size="small"
-    fullWidth
-    multiline
-    minRows={3}
-    variant="outlined"
-    label={label}
-    placeholder={placeholder}
-    value={value}
-    onChange={(event) => onChange(event.target.value)}
-  />
-);
+}) =>
+  onChange ? (
+    <TextField
+      size="small"
+      fullWidth
+      multiline
+      minRows={2}
+      variant="outlined"
+      label={label}
+      placeholder={placeholder}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      slotProps={{
+        input: { sx: NOTE_FONT },
+        inputLabel: { sx: NOTE_FONT },
+      }}
+    />
+  ) : value ? (
+    // Read-only: plain text rather than a disabled field, which would read as
+    // "you could edit this but not right now".
+    <Typography variant="body2" className={styles.ReadOnlyNote} sx={NOTE_FONT}>
+      <span className={styles.NoteLabel}>{label}</span>
+      {value}
+    </Typography>
+  ) : null;
 
 /*
-  The metadata boxes, rendered under the grid rather than inside either list so
-  they stay visible while you audition variants. Split in two: what's true of
-  the whole rhythm on the left, what's true of this one variant on the right.
+  The metadata for whatever is loaded, rendered under the picker it belongs to.
+  Split in two: what's true of the whole rhythm on the left, what's true of
+  this one variant on the right.
 */
 export const PatternNotes = ({
   target,
@@ -296,12 +307,6 @@ export const PatternNotes = ({
   onSetGroupNotes: (groupId: string, notes: string) => void;
   onSetVariantNotes: (groupId: string, variantId: string, notes: string) => void;
 }) => {
-  const [variantEdits, setVariantEdits] = useLibraryNotes(
-    "sequencer/libraryNotes"
-  );
-  const [familyEdits, setFamilyEdits] = useLibraryNotes(
-    "sequencer/libraryFamilyNotes"
-  );
   if (!target) return null;
 
   const resolve = (): { family: NoteField; variant: NoteField } | null => {
@@ -312,19 +317,12 @@ export const PatternNotes = ({
       if (!pattern) return null;
       return {
         family: {
-          label: `${target.family} — rhythm notes`,
-          value:
-            familyEdits[target.family] ??
-            LIBRARY_FAMILY_NOTES[target.family] ??
-            "",
-          onChange: (notes) =>
-            setFamilyEdits({ ...familyEdits, [target.family]: notes }),
+          label: `${target.family} — `,
+          value: LIBRARY_FAMILY_NOTES[target.family] ?? "",
         },
         variant: {
-          label: `${pattern.name} — variant notes`,
-          value: variantEdits[pattern.name] ?? pattern.notes ?? "",
-          onChange: (notes) =>
-            setVariantEdits({ ...variantEdits, [pattern.name]: notes }),
+          label: `${pattern.name} — `,
+          value: pattern.notes ?? "",
         },
       };
     }

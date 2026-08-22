@@ -550,6 +550,12 @@ const SequencerMetronome = () => {
         onRenameGroup={renameGroup}
         onRemoveVariant={removeVariant}
       />
+      <PatternNotes
+        target={noteTarget}
+        groups={groups}
+        onSetGroupNotes={setGroupNotes}
+        onSetVariantNotes={setNotes}
+      />
 
       <Divider />
 
@@ -677,13 +683,6 @@ const SequencerMetronome = () => {
           </div>
         );
       })}
-
-      <PatternNotes
-        target={noteTarget}
-        groups={groups}
-        onSetGroupNotes={setGroupNotes}
-        onSetVariantNotes={setNotes}
-      />
 
       <Divider />
 
