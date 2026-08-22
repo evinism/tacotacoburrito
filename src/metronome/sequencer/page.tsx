@@ -7,7 +7,6 @@ import { usePersistentState } from "@/hooks";
 import { useMetronome } from "@/metronome/shared/usemetronome";
 import { useTapTempo } from "@/metronome/shared/usetaptempo";
 import { MetronomeSpec } from "@/metronome/core/engine";
-import { scaleBPM, invScaleBPM, TEMPO_SLIDER_MAX } from "@/metronome/core/tempo";
 import { Measure, Measures, VoiceOffset } from "@/metronome/core/types";
 import type { SoundPackId } from "@/metronome/core/soundpacks";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
@@ -312,10 +311,6 @@ const SequencerMetronome = () => {
     setBpm(bpm * fraction);
   };
 
-  const handleSliderChange = (_: Event, newValue: number | number[]) => {
-    setBpm(scaleBPM(newValue as number));
-  };
-
   const handleTapTempoClick = useTapTempo(setBpm);
 
   // The input is in quarter notes; the grid underneath is in eighths.
@@ -498,19 +493,8 @@ const SequencerMetronome = () => {
           />
         </div>
 
-        {/* The tempo slider rides inline here rather than in a row of its own:
-            the grid is what this frontend is about, so the transport chrome
-            above it stays one line tall. Arrow keys still nudge by 3% — the
-            buttons that used to do that are what the slider replaced. */}
-        <Slider
-          className={styles.TempoSlider}
-          size="small"
-          min={0}
-          max={TEMPO_SLIDER_MAX}
-          value={invScaleBPM(bpm)}
-          onChange={handleSliderChange}
-          aria-label="Tempo"
-        />
+        {/* No tempo slider here — the grid is what this frontend is about, so
+            tempo is the number field, the arrow keys (±3%) and Tap Tempo. */}
         <GlobalKeydownListener
           onKeyDown={modTempo(1 / 1.03)}
           keyFilter="ArrowLeft"
