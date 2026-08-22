@@ -11,6 +11,25 @@
   margin: auto;
 }
 
+.TitleLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* The title block takes the slack so the icon actions stay hard right. */
+.TitleLine > :first-child {
+  flex-grow: 1;
+}
+
+.TitleAction {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
 .Title {
   filter: saturate(0.5);
 }

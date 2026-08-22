@@ -416,12 +416,25 @@ const DrumPatternLibrary = () => {
 
   return (
     <Paper className={styles.DrumPatterns} elevation={4}>
-      <Typography variant="h5" className={styles.Title}>
-        Drum Pattern Library
-      </Typography>
-      <Typography variant="body1" className={styles.SubTitle}>
-        a step sequencer and pattern library for darbuka strokes
-      </Typography>
+      {/* Title on the left, icon actions on the right — the same title line
+          the classic frontend uses, so the two read as one app. */}
+      <div className={styles.TitleLine}>
+        <div>
+          <Typography variant="h5" className={styles.Title}>
+            Drum Pattern Library
+          </Typography>
+          <Typography variant="body1" className={styles.SubTitle}>
+            a step sequencer and pattern library for darbuka strokes
+          </Typography>
+        </div>
+        <div className={styles.TitleAction}>
+          <Tooltip title="Copy a link to this pattern" {...ttConfig}>
+            <IconButton aria-label="Share" onClick={sharePattern}>
+              <ShareIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </div>
       <Divider />
       <Box className={`${styles.HorizontalGroup} ${styles.TempoRow}`}>
         {/* Transport on the left, tempo on the right: the two things you
@@ -555,11 +568,6 @@ const DrumPatternLibrary = () => {
           </Select>
         </div>
         <div className={styles.Spacer} />
-        <Tooltip title="Copy a link to this pattern" {...ttConfig}>
-          <Button startIcon={<ShareIcon />} onClick={sharePattern}>
-            Share
-          </Button>
-        </Tooltip>
         <Button onClick={() => setNoteTarget(saveNew(currentPattern))}>
           Save as New
         </Button>
