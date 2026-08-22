@@ -159,19 +159,6 @@ const SOUND_PACKS: SoundPackOption[] = [
       kk: ["strong", "strong"],
     },
   },
-  {
-    id: "doumbek",
-    label: "Doumbek",
-    voices: {
-      doum: "weak",
-      te1: "strong",
-      te2: "strong",
-      ka1: "strong",
-      ka2: "strong",
-      tk: ["strong", "strong"],
-      kk: ["strong", "strong"],
-    },
-  },
 ];
 
 const DEFAULT_PACK =

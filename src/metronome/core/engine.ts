@@ -1,7 +1,7 @@
 import {
   SoundPackId,
   SoundStatus,
-  soundPacks,
+  getSoundPack,
   soundPackStatus,
 } from "./soundpacks";
 import { multiLength, multiIndex } from "./util";
@@ -144,7 +144,7 @@ export class Metronome {
   // mid-schedule — which would risk a timing hitch on the audio path.
   _warmSoundPackCache = () => {
     const sound = resolveSound(this.spec);
-    const pack = soundPacks[sound.soundPack];
+    const pack = getSoundPack(sound.soundPack);
     for (const clickSound of Object.values(pack)) {
       // Each load settles by re-evaluating whole-pack status rather than tracking
       // "both done" here, so the sounds can finish loading in any order and a
@@ -164,7 +164,7 @@ export class Metronome {
 
   // The aggregate load status of every Sound in the current pack.
   soundpackStatus(): SoundStatus {
-    return soundPackStatus(soundPacks[resolveSound(this.spec).soundPack]);
+    return soundPackStatus(getSoundPack(resolveSound(this.spec).soundPack));
   }
 
   _notifySoundPackStatus = () => {
@@ -305,7 +305,7 @@ export class Metronome {
   scheduleBeat = (beat: Beat, time: number) => {
     // Empty voices = a silent beat; nothing to schedule.
     const sound = resolveSound(this.spec);
-    const pack = soundPacks[sound.soundPack];
+    const pack = getSoundPack(sound.soundPack);
     for (const [i, voice] of beat.voices.entries()) {
       const clickSound = pack[voice];
       // Missing (a rhythm naming a sound this pack doesn't have) or not ready
