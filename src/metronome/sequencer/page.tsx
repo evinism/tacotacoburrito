@@ -50,11 +50,15 @@ const ttConfig = {
   enterDelay: 500,
 };
 
-const MIN_STEPS = 1;
-// Generous enough that toggling eighth-note mode on can double a full-length
-// quarter-note pattern without truncating it.
+// Steps are eighth-note columns; the UI asks for the *count* (quarter notes)
+// and doubles it, so a step total is always even and at least one beat long.
+const MIN_STEPS = 2;
 const MAX_STEPS = 64;
 const DEFAULT_STEPS = 8;
+
+// Round an odd step total up to a whole beat, appending a rest column. Only
+// legacy data gets here — nothing writes an odd count any more.
+const evenSteps = (steps: number) => steps + (steps % 2);
 // Sanity cap on phrase length, not an engine limit — Measures has no bound.
 const MAX_BARS = 8;
 
@@ -314,19 +318,31 @@ const SequencerMetronome = () => {
 
   const handleTapTempoClick = useTapTempo(setBpm);
 
-  const handleStepsChange = (newSteps: number) => {
-    const clamped = clamp(newSteps, MIN_STEPS, MAX_STEPS);
+  // The input is in quarter notes; the grid underneath is in eighths.
+  const handleCountChange = (count: number) => {
+    // The input reports NaN while it's empty mid-edit; leave the grid alone.
+    if (!Number.isFinite(count)) return;
+    const clamped = clamp(count * 2, MIN_STEPS, MAX_STEPS);
     setSteps(clamped);
     setBars(effectiveBars.map((bar) => resizeGrid(bar, clamped)));
   };
 
-  // One-time upgrade of a grid left behind by the retired quarter-note mode.
+  // One-time upgrade of a grid left behind by the retired quarter-note mode,
+  // and of any odd step total from before the length was counted in beats.
   useEffect(() => {
-    if (wasEighths) return;
-    const newSteps = clamp(steps * 2, MIN_STEPS, MAX_STEPS);
+    if (wasEighths && steps % 2 === 0) return;
+    const newSteps = clamp(
+      wasEighths ? evenSteps(steps) : steps * 2,
+      MIN_STEPS,
+      MAX_STEPS
+    );
     setWasEighths(true);
     setSteps(newSteps);
-    setBars(effectiveBars.map((bar) => resizeGrid(toEighths(bar), newSteps)));
+    setBars(
+      effectiveBars.map((bar) =>
+        resizeGrid(wasEighths ? bar : toEighths(bar), newSteps)
+      )
+    );
     // Runs once on mount against the just-loaded persisted values.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -399,7 +415,7 @@ const SequencerMetronome = () => {
     // many columns; widen it onto the eighth-note grid on the way in.
     const quarters = pattern.showEighths === false;
     const newSteps = clamp(
-      quarters ? pattern.steps * 2 : pattern.steps,
+      quarters ? pattern.steps * 2 : evenSteps(pattern.steps),
       MIN_STEPS,
       MAX_STEPS
     );
@@ -539,18 +555,18 @@ const SequencerMetronome = () => {
 
       <Box className={styles.HorizontalGroup}>
         <div>
-          <InputLabel htmlFor="steps-input" sx={{ fontSize: 14 }}>
-            Steps
+          <InputLabel htmlFor="count-input" sx={{ fontSize: 14 }}>
+            Count
           </InputLabel>
           <Input
             className={styles.ShortNumberInput}
             type="number"
             size="small"
-            id="steps-input"
-            inputProps={{ min: MIN_STEPS, max: MAX_STEPS }}
-            value={steps}
+            id="count-input"
+            inputProps={{ min: MIN_STEPS / 2, max: MAX_STEPS / 2 }}
+            value={steps / 2}
             onChange={(event) =>
-              handleStepsChange(parseInt(event.target.value))
+              handleCountChange(parseInt(event.target.value))
             }
           />
         </div>
