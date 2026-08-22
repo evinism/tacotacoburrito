@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import {
   Box,
   Button,
@@ -140,15 +138,19 @@ export const usePatterns = () => {
       ),
     }));
 
-  const saveNew = (state: PatternState) =>
-    setGroups([
-      ...groups,
-      {
-        id: crypto.randomUUID(),
-        name: `Pattern ${groups.length + 1}`,
-        variants: [newVariant(state)],
-      },
-    ]);
+  // Returns where the new pattern landed so the caller can select it — with
+  // one combined dropdown, a save that didn't move the selection would look
+  // like nothing happened.
+  const saveNew = (state: PatternState): NoteTarget => {
+    const variant = newVariant(state);
+    const group: PatternGroup = {
+      id: crypto.randomUUID(),
+      name: `Pattern ${groups.length + 1}`,
+      variants: [variant],
+    };
+    setGroups([...groups, group]);
+    return { kind: "saved", groupId: group.id, variantId: variant.id };
+  };
 
   const addVariant = (groupId: string, state: PatternState) =>
     updateGroup(groupId, (group) => ({
@@ -242,7 +244,7 @@ export type NoteTarget =
   | null;
 
 // The key a list uses to highlight its selected variant button.
-export const selectionKey = (target: NoteTarget): string | null =>
+const selectionKey = (target: NoteTarget): string | null =>
   target === null ? null : target.kind === "library" ? target.name : target.variantId;
 
 // Library notes are editable but library.json ships read-only, so edits live
@@ -358,67 +360,128 @@ export const PatternNotes = ({
   );
 };
 
-interface PatternListProps {
+/*
+  Library families are bucketed by cycle length, since that's how these rhythms
+  are actually grouped in practice (a 9-beat Karsilama and a 7-beat Kalamatiano
+  are unrelated even though both are "a Greek rhythm"). The buckets are the
+  dropdown's subheaders. A family's length comes from its first member;
+  variants of one family never disagree on step count in practice, and if one
+  did it would only mis-file that family, not break loading.
+*/
+const LIBRARY_SECTIONS = (() => {
+  const sections = new Map<number, Family[]>();
+  for (const family of groupByFamily(LIBRARY_PATTERNS)) {
+    const beats = beatCount(family.members[0].pattern);
+    sections.set(beats, [...(sections.get(beats) ?? []), family]);
+  }
+  return [...sections.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([beats, families]) => ({ beats, families }));
+})();
+
+const LIBRARY_FAMILIES = LIBRARY_SECTIONS.flatMap(({ families }) => families);
+
+/*
+  Both the built-in library and the user's own patterns live in one dropdown,
+  the saved ones under a "Custom" subheader at the bottom — the same shape the
+  classic frontend's preset list uses. Option values carry which store they
+  came from, since a library family is keyed by name and a saved group by id.
+*/
+const libraryValue = (family: string) => `library:${family}`;
+const savedValue = (groupId: string) => `saved:${groupId}`;
+
+// Which option the dropdown shows, derived from the loaded pattern rather than
+// held locally: selection and "what you're hearing" are the same thing.
+const selectValue = (target: NoteTarget): string =>
+  target === null
+    ? ""
+    : target.kind === "library"
+      ? libraryValue(target.family)
+      : savedValue(target.groupId);
+
+interface PatternLibraryProps {
   groups: PatternGroup[];
-  selected: string | null;
-  onLoad: (variant: PatternVariant, target: NoteTarget) => void;
+  target: NoteTarget;
+  onLoad: (pattern: PatternState, target: NoteTarget) => void;
   onAddVariant: (groupId: string) => void;
   onOverwrite: (groupId: string, variantId: string) => void;
   onRenameGroup: (groupId: string, name: string) => void;
   onRemoveVariant: (groupId: string, variantId: string) => void;
 }
 
-const PatternList = ({
+const PatternLibrary = ({
   groups,
-  selected,
+  target,
   onLoad,
   onAddVariant,
   onOverwrite,
   onRenameGroup,
   onRemoveVariant,
-}: PatternListProps) => {
-  // Display-only ordering — the underlying store keeps insertion order.
+}: PatternLibraryProps) => {
+  // Display-only ordering of the saved section — the underlying store keeps
+  // insertion order.
   const [newestFirst, setNewestFirst] = usePersistentState<boolean>(
     "sequencer/patternsNewestFirst",
     true
   );
-  // Only one group's variants are on screen at a time; the dropdown swaps
-  // them. Not persisted, so a reload never loads a pattern over the grid you
-  // left behind.
-  const [groupId, setGroupId] = useState<string | null>(null);
+
+  const selected = selectionKey(target);
 
   const lastTouched = (group: PatternGroup) =>
     Math.max(...group.variants.map((variant) => variant.updatedAt));
 
-  const sorted = groups
+  const sortedGroups = groups
     .slice()
     .sort((a, b) =>
-      newestFirst ? lastTouched(b) - lastTouched(a) : lastTouched(a) - lastTouched(b)
+      newestFirst
+        ? lastTouched(b) - lastTouched(a)
+        : lastTouched(a) - lastTouched(b)
     );
 
-  const group = groups.find((candidate) => candidate.id === groupId);
-  const open = group?.variants.find((variant) => variant.id === selected);
+  const family =
+    target?.kind === "library"
+      ? LIBRARY_FAMILIES.find((entry) => entry.family === target.family)
+      : undefined;
+  const group =
+    target?.kind === "saved"
+      ? groups.find((candidate) => candidate.id === target.groupId)
+      : undefined;
+  const openVariant = group?.variants.find(
+    (variant) => variant.id === selected
+  );
 
-  const choose = (group: PatternGroup, variant: PatternVariant) =>
+  const chooseLibrary = (pattern: LibraryPattern) =>
+    onLoad(pattern, {
+      kind: "library",
+      family: parseName(pattern.name).family,
+      name: pattern.name,
+    });
+
+  const chooseSaved = (group: PatternGroup, variant: PatternVariant) =>
     onLoad(variant, {
       kind: "saved",
       groupId: group.id,
       variantId: variant.id,
     });
 
-  // Picking a group drops straight onto its first variant, so choosing a
+  // Picking a rhythm drops straight onto its first variant, so choosing a
   // pattern is one click rather than two.
-  const chooseGroup = (id: string) => {
-    setGroupId(id);
-    const next = groups.find((candidate) => candidate.id === id);
-    if (next) choose(next, next.variants[0]);
+  const choose = (value: string) => {
+    const [kind, key] = [value.slice(0, value.indexOf(":")), value.slice(value.indexOf(":") + 1)];
+    if (kind === "library") {
+      const next = LIBRARY_FAMILIES.find((entry) => entry.family === key);
+      if (next) chooseLibrary(next.members[0].pattern);
+      return;
+    }
+    const next = groups.find((candidate) => candidate.id === key);
+    if (next) chooseSaved(next, next.variants[0]);
   };
 
   return (
     <>
       <Box className={styles.PatternsHeader}>
         <Typography variant="h6" className={styles.PatternsTitle}>
-          Saved Patterns
+          Pattern Library
         </Typography>
         <div className={styles.Spacer} />
         {groups.length > 0 && (
@@ -437,194 +500,117 @@ const PatternList = ({
           </Button>
         )}
       </Box>
-      {groups.length === 0 ? (
-        <Typography variant="body2" className={styles.PatternsEmpty}>
-          No saved patterns yet — use “Save as New” to keep the current one.
-        </Typography>
-      ) : (
-        <div className={styles.FamilyRow}>
-          <Select
-            className={styles.FamilySelect}
-            size="small"
-            variant="standard"
-            displayEmpty
-            value={group?.id ?? ""}
-            onChange={(event) => chooseGroup(event.target.value)}
-            aria-label="Saved pattern group"
-          >
-            <MenuItem value="" disabled>
-              Choose a saved pattern…
-            </MenuItem>
-            {sorted.map((candidate) => (
-              <MenuItem key={candidate.id} value={candidate.id}>
-                {candidate.name}
+      <div className={styles.FamilyRow}>
+        <Select
+          className={styles.FamilySelect}
+          size="small"
+          variant="standard"
+          displayEmpty
+          value={selectValue(target)}
+          onChange={(event) => choose(event.target.value)}
+          aria-label="Rhythm"
+        >
+          <MenuItem value="" disabled>
+            Choose a rhythm…
+          </MenuItem>
+          {LIBRARY_SECTIONS.flatMap(({ beats, families }) => [
+            <ListSubheader key={`beats-${beats}`}>{beats} beats</ListSubheader>,
+            ...families.map(({ family: name }) => (
+              <MenuItem key={name} value={libraryValue(name)}>
+                {name}
               </MenuItem>
-            ))}
-          </Select>
-          {group && (
-            <>
-              <TextField
-                className={styles.FamilyName}
-                variant="standard"
-                size="small"
-                value={group.name}
-                onChange={(event) => onRenameGroup(group.id, event.target.value)}
-                aria-label="Pattern group name"
-              />
-              <VariantButtons
-                variants={group.variants}
-                keyOf={(variant) => variant.id}
-                labelOf={(_, index) => String(index + 1)}
-                selected={selected}
-                onSelect={(variant) => choose(group, variant)}
-              />
-              <Tooltip
-                title={`Save the current pattern as a new "${group.name}" variant`}
-                enterDelay={500}
-              >
-                <IconButton
-                  size="small"
-                  aria-label={`Add a variant to ${group.name}`}
-                  onClick={() => onAddVariant(group.id)}
-                >
-                  <AddIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </>
+            )),
+          ])}
+          {/* Saved patterns last: the built-ins are the common case, and a
+              user's own patterns are easiest to find at a fixed end. */}
+          {groups.length > 0 && (
+            <ListSubheader key="custom">Custom</ListSubheader>
           )}
-          {group && open && (
-            <>
-              <div className={styles.Spacer} />
-              <Typography variant="caption" className={styles.PatternDate}>
-                {formatDate(open.updatedAt)}
-              </Typography>
-              <Tooltip title="Replace with the current pattern" enterDelay={500}>
-                <IconButton
-                  size="small"
-                  aria-label="Overwrite this variant"
-                  onClick={() => {
-                    if (confirm("Replace this variant with the current pattern?")) {
-                      onOverwrite(group.id, open.id);
-                    }
-                  }}
-                >
-                  <SaveIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Delete this variant" enterDelay={500}>
-                <IconButton
-                  size="small"
-                  aria-label="Delete this variant"
-                  onClick={() => {
-                    if (confirm("Delete this variant?")) {
-                      onRemoveVariant(group.id, open.id);
-                    }
-                  }}
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </>
-          )}
-        </div>
-      )}
-    </>
-  );
-};
-
-// Library families are bucketed by cycle length, since that's how these
-// rhythms are actually grouped in practice (a 9-beat Karsilama and a 7-beat
-// Kalamatiano are unrelated even though both are "a Greek rhythm"). The
-// buckets are the dropdown's subheaders. A family's length comes from its
-// first member; variants of one family never disagree on step count in
-// practice, and if one did it would only mis-file that family, not break
-// loading.
-const LIBRARY_SECTIONS = (() => {
-  const sections = new Map<number, Family[]>();
-  for (const family of groupByFamily(LIBRARY_PATTERNS)) {
-    const beats = beatCount(family.members[0].pattern);
-    sections.set(beats, [...(sections.get(beats) ?? []), family]);
-  }
-  return [...sections.entries()]
-    .sort(([a], [b]) => a - b)
-    .map(([beats, families]) => ({ beats, families }));
-})();
-
-const LIBRARY_FAMILIES = LIBRARY_SECTIONS.flatMap(({ families }) => families);
-
-// Built-in patterns: loadable, but with no rename/overwrite/delete affordances,
-// since the library ships with the app rather than living in localStorage.
-export const LibraryList = ({
-  selected,
-  onLoad,
-}: {
-  selected: string | null;
-  onLoad: (pattern: PatternState, target: NoteTarget) => void;
-}) => {
-  const [family, setFamily] = useState<string | null>(null);
-
-  const current = LIBRARY_FAMILIES.find((entry) => entry.family === family);
-
-  const choose = (pattern: LibraryPattern) =>
-    onLoad(pattern, {
-      kind: "library",
-      family: parseName(pattern.name).family,
-      name: pattern.name,
-    });
-
-  const chooseFamily = (name: string) => {
-    setFamily(name);
-    const next = LIBRARY_FAMILIES.find((entry) => entry.family === name);
-    if (next) choose(next.members[0].pattern);
-  };
-
-  return (
-    <>
-      <Box className={styles.PatternsHeader}>
-        <Typography variant="h6" className={styles.PatternsTitle}>
-          Pattern Library
-        </Typography>
-      </Box>
-      {LIBRARY_PATTERNS.length === 0 ? (
-        <Typography variant="body2" className={styles.PatternsEmpty}>
-          The built-in library is empty for now.
-        </Typography>
-      ) : (
-        <div className={styles.FamilyRow}>
-          <Select
-            className={styles.FamilySelect}
-            size="small"
-            variant="standard"
-            displayEmpty
-            value={current?.family ?? ""}
-            onChange={(event) => chooseFamily(event.target.value)}
-            aria-label="Library rhythm"
-          >
-            <MenuItem value="" disabled>
-              Choose a rhythm…
+          {sortedGroups.map((candidate) => (
+            <MenuItem key={candidate.id} value={savedValue(candidate.id)}>
+              {candidate.name}
             </MenuItem>
-            {LIBRARY_SECTIONS.flatMap(({ beats, families }) => [
-              <ListSubheader key={`beats-${beats}`}>{beats} beats</ListSubheader>,
-              ...families.map(({ family: name }) => (
-                <MenuItem key={name} value={name}>
-                  {name}
-                </MenuItem>
-              )),
-            ])}
-          </Select>
-          {current && (
-            <VariantButtons
-              variants={current.members}
-              keyOf={({ pattern }) => pattern.name}
-              labelOf={({ variant }, index) => String(variant ?? index + 1)}
-              selected={selected}
-              onSelect={({ pattern }) => choose(pattern)}
+          ))}
+        </Select>
+        {family && (
+          <VariantButtons
+            variants={family.members}
+            keyOf={({ pattern }) => pattern.name}
+            labelOf={({ variant }, index) => String(variant ?? index + 1)}
+            selected={selected}
+            onSelect={({ pattern }) => chooseLibrary(pattern)}
+          />
+        )}
+        {/* Saved patterns are editable in place; library entries ship with the
+            app, so they get no rename/overwrite/delete affordances. */}
+        {group && (
+          <>
+            <TextField
+              className={styles.FamilyName}
+              variant="standard"
+              size="small"
+              value={group.name}
+              onChange={(event) => onRenameGroup(group.id, event.target.value)}
+              aria-label="Pattern group name"
             />
-          )}
-        </div>
-      )}
+            <VariantButtons
+              variants={group.variants}
+              keyOf={(variant) => variant.id}
+              labelOf={(_, index) => String(index + 1)}
+              selected={selected}
+              onSelect={(variant) => chooseSaved(group, variant)}
+            />
+            <Tooltip
+              title={`Save the current pattern as a new "${group.name}" variant`}
+              enterDelay={500}
+            >
+              <IconButton
+                size="small"
+                aria-label={`Add a variant to ${group.name}`}
+                onClick={() => onAddVariant(group.id)}
+              >
+                <AddIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </>
+        )}
+        {group && openVariant && (
+          <>
+            <div className={styles.Spacer} />
+            <Typography variant="caption" className={styles.PatternDate}>
+              {formatDate(openVariant.updatedAt)}
+            </Typography>
+            <Tooltip title="Replace with the current pattern" enterDelay={500}>
+              <IconButton
+                size="small"
+                aria-label="Overwrite this variant"
+                onClick={() => {
+                  if (confirm("Replace this variant with the current pattern?")) {
+                    onOverwrite(group.id, openVariant.id);
+                  }
+                }}
+              >
+                <SaveIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete this variant" enterDelay={500}>
+              <IconButton
+                size="small"
+                aria-label="Delete this variant"
+                onClick={() => {
+                  if (confirm("Delete this variant?")) {
+                    onRemoveVariant(group.id, openVariant.id);
+                  }
+                }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </>
+        )}
+      </div>
     </>
   );
 };
 
-export default PatternList;
+export default PatternLibrary;

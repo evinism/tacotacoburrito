@@ -12,11 +12,9 @@ import { Measure, Measures, VoiceOffset } from "@/metronome/core/types";
 import type { SoundPackId } from "@/metronome/core/soundpacks";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
-import PatternList, {
-  LibraryList,
+import PatternLibrary, {
   PatternNotes,
   PatternState,
-  selectionKey,
   usePatterns,
   type NoteTarget,
 } from "./patterns";
@@ -670,14 +668,16 @@ const SequencerMetronome = () => {
         </Tooltip>
         <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
         <div className={styles.Spacer} />
-        <Button onClick={() => saveNew(currentPattern)}>Save as New</Button>
+        <Button onClick={() => setNoteTarget(saveNew(currentPattern))}>
+          Save as New
+        </Button>
       </div>
 
       <Divider />
 
-      <PatternList
+      <PatternLibrary
         groups={groups}
-        selected={selectionKey(noteTarget)}
+        target={noteTarget}
         onLoad={loadAndSelect}
         onAddVariant={(groupId) => addVariant(groupId, currentPattern)}
         onOverwrite={(groupId, variantId) =>
@@ -686,10 +686,6 @@ const SequencerMetronome = () => {
         onRenameGroup={renameGroup}
         onRemoveVariant={removeVariant}
       />
-
-      <Divider />
-
-      <LibraryList selected={selectionKey(noteTarget)} onLoad={loadAndSelect} />
 
       <Typography variant="body2" className={styles.LibraryCredit}>
         Pattern library thanks to{" "}
