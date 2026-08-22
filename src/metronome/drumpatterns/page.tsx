@@ -16,6 +16,7 @@ import PatternLibrary, {
   familyKey,
   PatternNotes,
   PatternState,
+  randomLibraryPattern,
   usePatterns,
   type NoteTarget,
 } from "./patterns";
@@ -366,7 +367,21 @@ const DrumPatternLibrary = () => {
   // entry, so it selects nothing — "Save as New" is how you keep it.
   useEffect(() => {
     const hash = window.location.hash.slice(1);
-    if (!hash.startsWith(SHARE_HASH_PREFIX)) return;
+    if (!hash.startsWith(SHARE_HASH_PREFIX)) {
+      // Nothing shared and nothing on the grid — a first visit, or one whose
+      // last action was Clear. Open on a random rhythm rather than an empty
+      // grid, so there's always something to play.
+      const silent = effectiveBars.every((bar) =>
+        TRACKS.every(({ voice }) => bar[voice].every((on) => !on))
+      );
+      if (silent) {
+        const { pattern, target } = randomLibraryPattern();
+        // A deliberate one-time seed on mount, like the share import below.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadAndSelect(pattern, target);
+      }
+      return;
+    }
     const pattern = deserializePattern(hash.slice(SHARE_HASH_PREFIX.length));
     if (!pattern) {
       showSnackbar("That share link could not be read");

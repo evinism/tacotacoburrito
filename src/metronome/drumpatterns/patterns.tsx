@@ -366,6 +366,24 @@ const LIBRARY_SECTIONS = (() => {
 const LIBRARY_FAMILIES = LIBRARY_SECTIONS.flatMap(({ families }) => families);
 
 /*
+  A random variant from the library. The frontend opens on one of these rather
+  than an empty grid, so there's always something to play on arrival.
+*/
+export const randomLibraryPattern = (): {
+  pattern: PatternState;
+  target: NoteTarget;
+} => {
+  const pick = <T,>(items: readonly T[]): T =>
+    items[Math.floor(Math.random() * items.length)];
+  const family = pick(LIBRARY_FAMILIES);
+  const { pattern } = pick(family.members);
+  return {
+    pattern,
+    target: { kind: "library", family: family.family, name: pattern.name },
+  };
+};
+
+/*
   Both the built-in library and the user's own patterns live in one dropdown,
   the saved ones under a "Custom" subheader at the bottom — the same shape the
   classic frontend's preset list uses. Option values carry which store they
