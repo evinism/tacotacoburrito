@@ -512,6 +512,12 @@ const PatternLibrary = ({
           size="small"
           variant="standard"
           displayEmpty
+          /*
+            MUI reopens a focused Select on space, which is also the play
+            shortcut — so hand focus back to the page once the menu closes,
+            rather than leaving it on the trigger.
+          */
+          MenuProps={{ disableRestoreFocus: true }}
           value={familyKey(target)}
           onChange={(event) => choose(event.target.value)}
           aria-label="Rhythm"

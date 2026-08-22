@@ -475,6 +475,9 @@ const DrumPatternLibrary = () => {
                   size="small"
                   variant="standard"
                   value={pack.id}
+                  /* Same as the pattern picker: don't hold focus and eat
+                     the space shortcut. */
+                  MenuProps={{ disableRestoreFocus: true }}
                   onChange={(event) => setPackId(event.target.value)}
                 >
                   {SOUND_PACKS.map(({ id, label }) => (
