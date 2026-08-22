@@ -13,6 +13,7 @@ import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 import { useSnackbar } from "@/metronome/shared/snackbar";
 
 import PatternLibrary, {
+  familyKey,
   PatternNotes,
   PatternState,
   usePatterns,
@@ -341,16 +342,21 @@ const DrumPatternLibrary = () => {
   // list so selecting in one clears the other — only one pattern is loaded.
   const [noteTarget, setNoteTarget] = useState<NoteTarget>(null);
 
-  const loadPattern = (pattern: PatternState) => {
+  const loadPattern = (pattern: PatternState, keepBpm = false) => {
     const newSteps = clamp(pattern.steps, MIN_STEPS, MAX_STEPS);
-    setBpm(pattern.bpm);
+    if (!keepBpm) setBpm(pattern.bpm);
     setSteps(newSteps);
     // resizeGrid fills in the all-rest rows a stored pattern leaves out.
     setBars(pattern.bars.map((bar) => resizeGrid(bar, newSteps)));
   };
 
   const loadAndSelect = (pattern: PatternState, target: NoteTarget) => {
-    loadPattern(pattern);
+    // Variants of one family are the same rhythm, so flipping between them
+    // holds whatever tempo you've dialed in; only crossing into another family
+    // adopts that family's stored BPM.
+    const sameFamily =
+      noteTarget !== null && familyKey(target) === familyKey(noteTarget);
+    loadPattern(pattern, sameFamily);
     setNoteTarget(target);
   };
 

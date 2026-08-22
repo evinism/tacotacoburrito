@@ -374,9 +374,13 @@ const LIBRARY_FAMILIES = LIBRARY_SECTIONS.flatMap(({ families }) => families);
 const libraryValue = (family: string) => `library:${family}`;
 const savedValue = (groupId: string) => `saved:${groupId}`;
 
-// Which option the dropdown shows, derived from the loaded pattern rather than
-// held locally: selection and "what you're hearing" are the same thing.
-const selectValue = (target: NoteTarget): string =>
+/*
+  Which option the dropdown shows, derived from the loaded pattern rather than
+  held locally: selection and "what you're hearing" are the same thing. Doubles
+  as the identity of the family a selection belongs to, which is how the
+  frontend tells a variant switch from a family switch.
+*/
+export const familyKey = (target: NoteTarget): string =>
   target === null
     ? ""
     : target.kind === "library"
@@ -490,7 +494,7 @@ const PatternLibrary = ({
           size="small"
           variant="standard"
           displayEmpty
-          value={selectValue(target)}
+          value={familyKey(target)}
           onChange={(event) => choose(event.target.value)}
           aria-label="Rhythm"
         >
