@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 
 import SettingsIcon from "@mui/icons-material/Settings";
-import BookmarksIcon from "@mui/icons-material/Bookmarks";
+import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 import ShareIcon from "@mui/icons-material/Share";
 import PresetModal from "./components/presetmodal";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
@@ -194,15 +194,17 @@ const MetronomeComponent = () => {
           </Typography>
         </div>
         <div className={styles.SettingsIconWrapper}>
-          <IconButton
-            aria-label="Presets"
-            onClick={() => setPresetsOpen(!presetsOpen)}
-          >
-            <BookmarksIcon />
-          </IconButton>
+          <Tooltip title="Rhythm presets" {...ttConfig}>
+            <IconButton
+              aria-label="Presets"
+              onClick={() => setPresetsOpen(!presetsOpen)}
+            >
+              <LibraryMusicIcon />
+            </IconButton>
+          </Tooltip>
         </div>
         <div className={styles.SettingsIconWrapper}>
-          <Tooltip title="Share rhythm pattern" {...ttConfig}>
+          <Tooltip title="Copy rhythm pattern URL" {...ttConfig}>
             <IconButton
               aria-label="Share"
               onClick={async () => {
@@ -223,12 +225,14 @@ const MetronomeComponent = () => {
           </Tooltip>
         </div>
         <div className={styles.SettingsIconWrapper}>
-          <IconButton
-            aria-label="Settings"
-            onClick={() => setSettingsOpen(!settingsOpen)}
-          >
-            <SettingsIcon />
-          </IconButton>
+          <Tooltip title="Settings" {...ttConfig}>
+            <IconButton
+              aria-label="Settings"
+              onClick={() => setSettingsOpen(!settingsOpen)}
+            >
+              <SettingsIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       </div>
       <SettingsPanel
