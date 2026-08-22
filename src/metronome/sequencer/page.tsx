@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 
 import { usePersistentState } from "@/hooks";
@@ -11,6 +11,7 @@ import { scaleBPM, invScaleBPM, TEMPO_SLIDER_MAX } from "@/metronome/core/tempo"
 import { Measure, Measures, VoiceOffset } from "@/metronome/core/types";
 import type { SoundPackId } from "@/metronome/core/soundpacks";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
+import { useSnackbar } from "@/metronome/shared/snackbar";
 
 import PatternLibrary, {
   PatternNotes,
@@ -18,6 +19,11 @@ import PatternLibrary, {
   usePatterns,
   type NoteTarget,
 } from "./patterns";
+import {
+  SHARE_HASH_PREFIX,
+  deserializePattern,
+  serializePattern,
+} from "./share";
 import styles from "./sequencer.module.css";
 
 import {
@@ -42,6 +48,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import ShareIcon from "@mui/icons-material/Share";
 
 const ttConfig = {
   enterDelay: 500,
@@ -416,6 +423,43 @@ const SequencerMetronome = () => {
     setNoteTarget(target);
   };
 
+  const { showSnackbar } = useSnackbar();
+
+  // A shared pattern seeds the grid on arrival. It isn't a library or saved
+  // entry, so it selects nothing — "Save as New" is how you keep it.
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (!hash.startsWith(SHARE_HASH_PREFIX)) return;
+    const pattern = deserializePattern(hash.slice(SHARE_HASH_PREFIX.length));
+    if (!pattern) {
+      showSnackbar("That share link could not be read");
+      return;
+    }
+    loadPattern(pattern);
+    showSnackbar("Pattern loaded from URL");
+    // Drop the hash once imported — otherwise a reload after editing silently
+    // reverts to the shared pattern.
+    history.replaceState(
+      null,
+      "",
+      window.location.pathname + window.location.search
+    );
+    // Run once on mount: this reads the initial URL hash to seed state, and
+    // must not re-run when the (unmemoized) setters change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const sharePattern = async () => {
+    const url = `${window.location.origin}${window.location.pathname}#${SHARE_HASH_PREFIX}${serializePattern(currentPattern)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showSnackbar("Pattern URL copied to clipboard");
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error);
+      showSnackbar("Could not copy the pattern URL");
+    }
+  };
+
   const activeFlat = playing ? currentBeat : -1;
 
   return (
@@ -668,6 +712,11 @@ const SequencerMetronome = () => {
         </Tooltip>
         <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
         <div className={styles.Spacer} />
+        <Tooltip title="Copy a link to this pattern" {...ttConfig}>
+          <Button startIcon={<ShareIcon />} onClick={sharePattern}>
+            Share
+          </Button>
+        </Tooltip>
         <Button onClick={() => setNoteTarget(saveNew(currentPattern))}>
           Save as New
         </Button>
