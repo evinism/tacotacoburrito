@@ -50,12 +50,17 @@
   max-width: 70px;
 }
 
-/* Inline tempo slider: wide enough to be usable, bounded so it doesn't push
-   the rest of the transport row onto a second line. */
+/* The one control row: BPM pinned left, volume pinned right, the tempo slider
+   and Tap Tempo evenly spaced between them. */
+.TempoRow {
+  justify-content: space-between;
+}
+
+/* Inline tempo slider: wide enough to be usable, but it doesn't grow — the
+   row's spacing is what distributes the leftover width. */
 .TempoSlider {
+  flex: 0 1 200px;
   min-width: 120px;
-  max-width: 260px;
-  flex: 1 1 160px;
 }
 
 /* Keeps the volume slider from eating the BPM row's flex width. */

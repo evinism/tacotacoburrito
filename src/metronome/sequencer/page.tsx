@@ -483,7 +483,7 @@ const SequencerMetronome = () => {
         a step sequencer for darbuka strokes
       </Typography>
       <Divider />
-      <Box className={styles.HorizontalGroup}>
+      <Box className={`${styles.HorizontalGroup} ${styles.TempoRow}`}>
         <div>
           <InputLabel htmlFor="bpm-input" sx={{ fontSize: 14 }}>
             BPM
