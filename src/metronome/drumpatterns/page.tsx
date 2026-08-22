@@ -550,9 +550,15 @@ const DrumPatternLibrary = () => {
           {...ttConfig}
         >
           {/* span wrapper so the Tooltip still works while the Button is disabled */}
-          <span>
+          <span className={styles.LeadButton}>
             <Button
               onClick={togglePlaying}
+              /*
+                Drop MUI's 64px min-width: it centers a short label inside the
+                box, which would float "Play" past the inset every other row
+                lines up on.
+              */
+              sx={{ minWidth: 0 }}
               color={soundPackStatus === "error" ? "error" : "primary"}
               disabled={soundPackStatus === "loading"}
               startIcon={

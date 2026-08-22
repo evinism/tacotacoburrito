@@ -1,4 +1,12 @@
 .DrumPatterns {
+  /*
+    Every row's left edge. The BPM row sets it — .HorizontalGroup gives its
+    children an 8px margin — and the sections that aren't built out of
+    .HorizontalGroup pad themselves to match, so labels, the picker, the step
+    grid and the buttons all start on one line.
+  */
+  --content-inset: 8px;
+
   z-index: 1;
   max-width: 900px;
   padding: 2rem;
@@ -15,6 +23,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-left: var(--content-inset);
 }
 
 /* The title block takes the slack so the icon actions stay hard right. */
@@ -100,7 +109,15 @@
 }
 
 .HorizontalGroup > * {
-  margin: 8px;
+  margin: var(--content-inset);
+}
+
+/*
+  A text button carries 8px of its own padding, so the leading one in a row
+  drops the margin: its label lands on the inset, not its hit area.
+*/
+.HorizontalGroup > .LeadButton {
+  margin-left: 0;
 }
 
 .Spacer {
@@ -132,7 +149,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  padding: 0.5rem 0;
+  padding: 0.5rem 0 0.5rem var(--content-inset);
   overflow-x: auto;
 }
 
@@ -203,6 +220,7 @@
   display: flex;
   align-items: center;
   margin-top: 0.25rem;
+  padding-left: var(--content-inset);
 }
 
 .BarTitle {
@@ -214,6 +232,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 0.25rem;
+  padding-left: var(--content-inset);
 }
 
 .PatternsTitle {
@@ -222,7 +241,7 @@
 
 .PatternsEmpty {
   color: #999;
-  padding: 0.25rem 0 0.5rem;
+  padding: 0.25rem 0 0.5rem var(--content-inset);
 }
 
 .PatternDate {
@@ -241,7 +260,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem;
-  padding: 0.3rem 0;
+  padding: 0.3rem 0 0.3rem var(--content-inset);
 }
 
 .FamilySelect,
@@ -274,6 +293,7 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   margin: 0.25rem 0 0.5rem;
+  padding-left: var(--content-inset);
 }
 
 /* Built-in notes: annotation under the picker, closer to the credits' weight
