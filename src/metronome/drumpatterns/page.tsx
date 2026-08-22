@@ -23,7 +23,7 @@ import {
   deserializePattern,
   serializePattern,
 } from "./share";
-import styles from "./sequencer.module.css";
+import styles from "./drumpatterns.module.css";
 
 import {
   Box,
@@ -74,7 +74,7 @@ const clamp = (value: number, min: number, max: number) =>
 const stepLabel = (index: number): string =>
   index % 2 === 0 ? String(index / 2 + 1) : "&";
 
-// Sequencer-local track list — not core metadata. These `voice` keys are the
+// Frontend-local track list — not core metadata. These `voice` keys are the
 // grid's ROW IDENTITIES, not pack sound names: they key the persisted grid and
 // stay fixed no matter which sound pack is selected, so switching packs never
 // rewrites a saved pattern. They're named after darbuka strokes because
@@ -174,7 +174,7 @@ type Grid = Record<string, boolean[]>;
 const emptyGrid = (steps: number): Grid =>
   Object.fromEntries(TRACKS.map(({ voice }) => [voice, Array(steps).fill(false)]));
 
-// Rows the deployed 3-row sequencer (and patterns saved under it) persisted
+// Rows the original 3-row sequencer (and patterns saved under it) persisted
 // under kick/snare/hihat keys — fall back to these when a grid lacks the new key.
 const LEGACY_ROW: Record<string, string> = { doum: "kick", te1: "snare", ka1: "hihat" };
 
@@ -215,7 +215,10 @@ const normalizeBars = (value: unknown): Grid[] => {
   return [emptyGrid(DEFAULT_STEPS)];
 };
 
-const SequencerMetronome = () => {
+const DrumPatternLibrary = () => {
+  // Persisted keys keep the frontend's original "sequencer/" prefix: renaming
+  // them would orphan every grid and saved pattern already in localStorage,
+  // and the prefix only has to be unique across frontends, not descriptive.
   const [bpm, setBpm] = usePersistentState<number>("sequencer/bpm", 120);
   const [steps, setSteps] = usePersistentState<number>(
     "sequencer/steps",
@@ -469,12 +472,12 @@ const SequencerMetronome = () => {
   const activeFlat = playing ? currentBeat : -1;
 
   return (
-    <Paper className={styles.Sequencer} elevation={4}>
+    <Paper className={styles.DrumPatterns} elevation={4}>
       <Typography variant="h5" className={styles.Title}>
-        Sequencer
+        Drum Pattern Library
       </Typography>
       <Typography variant="body1" className={styles.SubTitle}>
-        a step sequencer for darbuka strokes
+        a step sequencer and pattern library for darbuka strokes
       </Typography>
       <Divider />
       <Box className={`${styles.HorizontalGroup} ${styles.TempoRow}`}>
@@ -735,6 +738,6 @@ const SequencerMetronome = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(SequencerMetronome), {
+export default dynamic(() => Promise.resolve(DrumPatternLibrary), {
   ssr: false,
 });

@@ -24,9 +24,9 @@ import {
   LIBRARY_PATTERNS,
   type LibraryPattern,
 } from "./library";
-import styles from "./sequencer.module.css";
+import styles from "./drumpatterns.module.css";
 
-// The full sequencer state a pattern round-trips. Structurally compatible with
+// The full grid state a pattern round-trips. Structurally compatible with
 // the frontend's `Grid` without importing it, which would make this module and
 // page.tsx circular.
 export interface PatternState {

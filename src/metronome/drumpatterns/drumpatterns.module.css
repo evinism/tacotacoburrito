@@ -1,4 +1,4 @@
-.Sequencer {
+.DrumPatterns {
   z-index: 1;
   max-width: 900px;
   padding: 2rem;
@@ -19,7 +19,7 @@
   color: #666666;
 }
 
-.Sequencer hr {
+.DrumPatterns hr {
   margin: 1rem 0;
   opacity: 1;
 }

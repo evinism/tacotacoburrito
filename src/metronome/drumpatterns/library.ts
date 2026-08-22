@@ -8,7 +8,7 @@ export interface LibraryPattern extends PatternState {
   // Doubles as the React key, so keep these unique.
   name: string;
   // Freeform annotation — song titles, variant descriptions, whatever. Not
-  // sequencer state, so it stays off PatternState and never round-trips
+  // pattern state, so it stays off PatternState and never round-trips
   // through load/save. The UI lets it be edited, storing the edit in
   // localStorage rather than mutating what ships here.
   notes?: string;
@@ -42,7 +42,7 @@ const expandRow = (row: string | undefined, steps: number): boolean[] =>
 
 /*
   Built-in, read-only patterns shipped with the app, loaded from library.json.
-  To add to this list: build patterns in the sequencer, save them to your own
+  To add to this list: build patterns in the app, save them to your own
   "Saved Patterns", then run this in the browser devtools console and convert
   the output into library.json's row-string form.
 

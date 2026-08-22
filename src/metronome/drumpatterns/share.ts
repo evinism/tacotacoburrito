@@ -1,7 +1,7 @@
 import type { PatternState } from "./patterns";
 
 /*
-  Share links are expected to be the main way sequencer patterns get kept —
+  Share links are expected to be the main way drum patterns get kept —
   bookmarked, pasted into a notes app — rather than localStorage, so the wire
   shape is a stable, self-contained snapshot of everything the grid needs and
   nothing else (no ids, no timestamps, no notes, no sound pack: those are
