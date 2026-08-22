@@ -50,8 +50,8 @@
   max-width: 70px;
 }
 
-/* The one control row: BPM pinned left, volume pinned right, whatever sits
-   between them evenly spaced. */
+/* The one control row: Play pinned left, volume pinned right, the tempo
+   controls between them evenly spaced. */
 .TempoRow {
   justify-content: space-between;
 }
@@ -62,10 +62,6 @@
   align-items: center;
   gap: 0.6rem;
   width: 140px;
-}
-
-.ButtonGroup {
-  display: flex;
 }
 
 /* The step grid: one row per voice, one button per step. */

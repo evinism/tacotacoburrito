@@ -478,6 +478,39 @@ const SequencerMetronome = () => {
       </Typography>
       <Divider />
       <Box className={`${styles.HorizontalGroup} ${styles.TempoRow}`}>
+        <Tooltip
+          title={
+            soundPackStatus === "error"
+              ? "Sound pack failed to load"
+              : soundPackStatus === "loading"
+                ? "Loading sound pack…"
+                : ""
+          }
+          {...ttConfig}
+        >
+          {/* span wrapper so the Tooltip still works while the Button is disabled */}
+          <span>
+            <Button
+              onClick={togglePlaying}
+              color={soundPackStatus === "error" ? "error" : "primary"}
+              disabled={soundPackStatus === "loading"}
+              startIcon={
+                soundPackStatus === "loading" ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : undefined
+              }
+            >
+              {soundPackStatus === "loading"
+                ? "Loading"
+                : soundPackStatus === "error"
+                  ? "Error"
+                  : playing
+                    ? "Stop"
+                    : "Play"}
+            </Button>
+          </span>
+        </Tooltip>
+        <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
         <div>
           <InputLabel htmlFor="bpm-input" sx={{ fontSize: 14 }}>
             BPM
@@ -573,6 +606,14 @@ const SequencerMetronome = () => {
           </Select>
         </div>
         <div className={styles.Spacer} />
+        <Tooltip title="Copy a link to this pattern" {...ttConfig}>
+          <Button startIcon={<ShareIcon />} onClick={sharePattern}>
+            Share
+          </Button>
+        </Tooltip>
+        <Button onClick={() => setNoteTarget(saveNew(currentPattern))}>
+          Save as New
+        </Button>
         <Button onClick={addBar} disabled={effectiveBars.length >= MAX_BARS}>
           Add Bar
         </Button>
@@ -661,53 +702,6 @@ const SequencerMetronome = () => {
           </div>
         );
       })}
-
-      <Divider />
-
-      <div className={styles.ButtonGroup}>
-        <Tooltip
-          title={
-            soundPackStatus === "error"
-              ? "Sound pack failed to load"
-              : soundPackStatus === "loading"
-                ? "Loading sound pack…"
-                : ""
-          }
-          {...ttConfig}
-        >
-          {/* span wrapper so the Tooltip still works while the Button is disabled */}
-          <span>
-            <Button
-              onClick={togglePlaying}
-              color={soundPackStatus === "error" ? "error" : "primary"}
-              disabled={soundPackStatus === "loading"}
-              startIcon={
-                soundPackStatus === "loading" ? (
-                  <CircularProgress size={16} color="inherit" />
-                ) : undefined
-              }
-            >
-              {soundPackStatus === "loading"
-                ? "Loading"
-                : soundPackStatus === "error"
-                  ? "Error"
-                  : playing
-                    ? "Stop"
-                    : "Play"}
-            </Button>
-          </span>
-        </Tooltip>
-        <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
-        <div className={styles.Spacer} />
-        <Tooltip title="Copy a link to this pattern" {...ttConfig}>
-          <Button startIcon={<ShareIcon />} onClick={sharePattern}>
-            Share
-          </Button>
-        </Tooltip>
-        <Button onClick={() => setNoteTarget(saveNew(currentPattern))}>
-          Save as New
-        </Button>
-      </div>
 
       <Divider />
 
