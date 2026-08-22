@@ -521,6 +521,22 @@ const SequencerMetronome = () => {
 
       <Divider />
 
+      {/* The library sits directly above the grid it loads into, so picking a
+          rhythm and reading it back are one glance apart. */}
+      <PatternLibrary
+        groups={groups}
+        target={noteTarget}
+        onLoad={loadAndSelect}
+        onAddVariant={(groupId) => addVariant(groupId, currentPattern)}
+        onOverwrite={(groupId, variantId) =>
+          overwrite(groupId, variantId, currentPattern)
+        }
+        onRenameGroup={renameGroup}
+        onRemoveVariant={removeVariant}
+      />
+
+      <Divider />
+
       <Box className={styles.HorizontalGroup}>
         <div>
           <InputLabel htmlFor="steps-input" sx={{ fontSize: 14 }}>
@@ -701,18 +717,6 @@ const SequencerMetronome = () => {
       </div>
 
       <Divider />
-
-      <PatternLibrary
-        groups={groups}
-        target={noteTarget}
-        onLoad={loadAndSelect}
-        onAddVariant={(groupId) => addVariant(groupId, currentPattern)}
-        onOverwrite={(groupId, variantId) =>
-          overwrite(groupId, variantId, currentPattern)
-        }
-        onRenameGroup={renameGroup}
-        onRemoveVariant={removeVariant}
-      />
 
       <Typography variant="body2" className={styles.LibraryCredit}>
         Pattern library thanks to{" "}
