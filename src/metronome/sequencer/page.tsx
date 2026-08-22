@@ -31,7 +31,6 @@ import {
   Button,
   CircularProgress,
   Divider,
-  FormControlLabel,
   IconButton,
   Input,
   InputLabel,
@@ -39,7 +38,6 @@ import {
   Paper,
   Select,
   Slider,
-  Switch,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -68,14 +66,10 @@ const DOUBLET_OFFSET_RANGE: [number, number] = [0.01, 0.03];
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
-// When showEighths is on, each pair of columns is one quarter note: the first
-// gets its quarter-note count, the second is labeled "&".
-const stepLabel = (index: number, showEighths: boolean): string =>
-  showEighths
-    ? index % 2 === 0
-      ? String(index / 2 + 1)
-      : "&"
-    : String(index + 1);
+// The grid is always eighth-note resolution, so each pair of columns is one
+// quarter note: the first gets its quarter-note count, the second is "&".
+const stepLabel = (index: number): string =>
+  index % 2 === 0 ? String(index / 2 + 1) : "&";
 
 // Sequencer-local track list — not core metadata. These `voice` keys are the
 // grid's ROW IDENTITIES, not pack sound names: they key the persisted grid and
@@ -199,17 +193,12 @@ const resizeGrid = (grid: Grid, steps: number): Grid => {
   );
 };
 
-// Re-grid between quarter- and eighth-note resolution. Doubling interleaves
-// empty offbeat columns; halving drops them, so anything written on an "&" is
-// lost — the same trade as shortening the pattern.
-const changeResolution = (grid: Grid, doubling: boolean): Grid =>
+// Re-grid a quarter-note pattern to the eighth-note grid this frontend now
+// always uses, interleaving a rest on every "&". Only reached by data written
+// before the resolution toggle was retired.
+const toEighths = (grid: Grid): Grid =>
   Object.fromEntries(
-    TRACKS.map(({ voice }) => [
-      voice,
-      doubling
-        ? grid[voice].flatMap((on) => [on, false])
-        : grid[voice].filter((_, index) => index % 2 === 0),
-    ])
+    TRACKS.map(({ voice }) => [voice, grid[voice].flatMap((on) => [on, false])])
   );
 
 // `usePersistentState`'s migrateFrom copies the legacy JSON verbatim, so a
@@ -235,9 +224,12 @@ const SequencerMetronome = () => {
     0,
     "sequencer/grid"
   );
-  const [showEighths, setShowEighths] = usePersistentState<boolean>(
+  // Vestigial: the resolution toggle is gone and every grid is eighth-note
+  // now. Kept only to spot a grid persisted under the old quarter-note mode,
+  // which the effect below rewrites once and then never looks at again.
+  const [wasEighths, setWasEighths] = usePersistentState<boolean>(
     "sequencer/showEighths",
-    false
+    true
   );
   const [packId, setPackId] = usePersistentState<string>(
     "sequencer/soundPack",
@@ -283,14 +275,14 @@ const SequencerMetronome = () => {
         return {
           voices: hits.map((hit) => hit.sound),
           offsets: hits.map((hit) => hit.offset),
-          // BPM always counts quarter notes, so in eighth-note mode each column
-          // is half a beat rather than the tempo doubling underneath the user.
-          duration: showEighths ? 0.5 : 1,
+          // BPM always counts quarter notes, so each column is half a beat
+          // rather than the tempo doubling underneath the user.
+          duration: 0.5,
         };
       });
       return measure;
     });
-  }, [effectiveBars, steps, showEighths, pack]);
+  }, [effectiveBars, steps, pack]);
 
   const spec: MetronomeSpec = useMemo(
     () => ({ bpm, beats, sound: { soundPack: pack.id, volume } }),
@@ -328,20 +320,16 @@ const SequencerMetronome = () => {
     setBars(effectiveBars.map((bar) => resizeGrid(bar, clamped)));
   };
 
-  const handleShowEighthsChange = (next: boolean) => {
-    const newSteps = clamp(
-      next ? steps * 2 : Math.ceil(steps / 2),
-      MIN_STEPS,
-      MAX_STEPS
-    );
-    setShowEighths(next);
+  // One-time upgrade of a grid left behind by the retired quarter-note mode.
+  useEffect(() => {
+    if (wasEighths) return;
+    const newSteps = clamp(steps * 2, MIN_STEPS, MAX_STEPS);
+    setWasEighths(true);
     setSteps(newSteps);
-    setBars(
-      effectiveBars.map((bar) =>
-        resizeGrid(changeResolution(bar, next), newSteps)
-      )
-    );
-  };
+    setBars(effectiveBars.map((bar) => resizeGrid(toEighths(bar), newSteps)));
+    // Runs once on mount against the just-loaded persisted values.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleCell = (barIndex: number, voice: string, index: number) => {
     const row = effectiveBars[barIndex][voice].slice();
@@ -396,7 +384,6 @@ const SequencerMetronome = () => {
   const currentPattern: PatternState = {
     bpm,
     steps,
-    showEighths,
     bars: effectiveBars,
   };
 
@@ -405,15 +392,26 @@ const SequencerMetronome = () => {
   const [noteTarget, setNoteTarget] = useState<NoteTarget>(null);
 
   const loadPattern = (pattern: PatternState) => {
-    setBpm(pattern.bpm);
-    setSteps(pattern.steps);
-    setShowEighths(pattern.showEighths);
     // Pre-bars patterns stored a single `grid`; fall back to it, then to a
     // fresh empty bar, before falling into the normal multi-bar path.
     const loadedBars = pattern.bars ?? (pattern.grid ? [pattern.grid] : [emptyGrid(pattern.steps)]);
+    // A pattern written before the resolution toggle was retired spans half as
+    // many columns; widen it onto the eighth-note grid on the way in.
+    const quarters = pattern.showEighths === false;
+    const newSteps = clamp(
+      quarters ? pattern.steps * 2 : pattern.steps,
+      MIN_STEPS,
+      MAX_STEPS
+    );
     // Resize defensively — a pattern saved before a shape change could carry
     // bars that disagree with its own step count.
-    setBars(normalizeBars(loadedBars).map((bar) => resizeGrid(bar, pattern.steps)));
+    const bars = normalizeBars(loadedBars)
+      .map((bar) => resizeGrid(bar, pattern.steps))
+      .map((bar) => (quarters ? toEighths(bar) : bar))
+      .map((bar) => resizeGrid(bar, newSteps));
+    setBpm(pattern.bpm);
+    setSteps(newSteps);
+    setBars(bars);
   };
 
   const loadAndSelect = (pattern: PatternState, target: NoteTarget) => {
@@ -540,15 +538,6 @@ const SequencerMetronome = () => {
             }
           />
         </div>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={showEighths}
-              onChange={(event) => handleShowEighthsChange(event.target.checked)}
-            />
-          }
-          label="Show eighth notes"
-        />
         <div>
           <InputLabel htmlFor="soundpack-select" sx={{ fontSize: 14 }}>
             Sound
@@ -624,7 +613,7 @@ const SequencerMetronome = () => {
                         index === activeStep ? styles.active : "",
                       ].join(" ")}
                     >
-                      {stepLabel(index, showEighths)}
+                      {stepLabel(index)}
                     </Typography>
                   ))}
                 </div>

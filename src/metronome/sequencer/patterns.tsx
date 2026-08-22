@@ -30,8 +30,11 @@ import styles from "./sequencer.module.css";
 export interface PatternState {
   bpm: number;
   steps: number;
-  showEighths: boolean;
   bars: Record<string, boolean[]>[];
+  // Legacy, written before the grid was always eighth-note resolution: `false`
+  // means the columns are quarter notes and get widened on load. Never written
+  // by new saves, so absent reads as "already eighths".
+  showEighths?: boolean;
   // Pre-bars patterns stored a single grid; kept so old saves still load.
   grid?: Record<string, boolean[]>;
 }
@@ -98,10 +101,12 @@ const groupByFamily = (patterns: LibraryPattern[]): Family[] => {
   }));
 };
 
-// BPM always counts quarter notes, so an eighth-resolution pattern spans half
-// as many beats as it has columns. Used only to title the library's sections.
+// BPM always counts quarter notes and the grid is always eighths, so a pattern
+// spans half as many beats as it has columns — except for a legacy
+// quarter-note entry, whose columns are beats already. Only used to title the
+// library's sections.
 const beatCount = (pattern: PatternState) =>
-  pattern.showEighths ? pattern.steps / 2 : pattern.steps;
+  pattern.showEighths === false ? pattern.steps : pattern.steps / 2;
 
 const formatDate = (timestamp: number) =>
   new Date(timestamp).toLocaleString(undefined, {

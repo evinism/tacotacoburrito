@@ -23,8 +23,10 @@ interface LibraryJsonPattern {
   notes?: string;
   bpm: number;
   steps: number;
-  showEighths: boolean;
   bars: Record<string, string>[];
+  // Legacy: `false` marks an entry whose columns are quarter notes rather than
+  // the eighth-note grid everything now uses. New entries omit it.
+  showEighths?: boolean;
 }
 
 interface LibraryJson {
