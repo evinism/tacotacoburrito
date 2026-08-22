@@ -55,9 +55,6 @@ const MIN_STEPS = 2;
 const MAX_STEPS = 64;
 const DEFAULT_STEPS = 8;
 
-// Round an odd step total up to a whole beat, appending a rest column. Only
-// legacy data gets here — nothing writes an odd count any more.
-const evenSteps = (steps: number) => steps + (steps % 2);
 // Sanity cap on phrase length, not an engine limit — Measures has no bound.
 const MAX_BARS = 8;
 
@@ -174,14 +171,9 @@ type Grid = Record<string, boolean[]>;
 const emptyGrid = (steps: number): Grid =>
   Object.fromEntries(TRACKS.map(({ voice }) => [voice, Array(steps).fill(false)]));
 
-// Rows the original 3-row sequencer (and patterns saved under it) persisted
-// under kick/snare/hihat keys — fall back to these when a grid lacks the new key.
-const LEGACY_ROW: Record<string, string> = { doum: "kick", te1: "snare", ka1: "hihat" };
-
 // Resize every row to `steps`, preserving existing cells (truncate or pad with
-// false). Applied defensively on every render so a `grid`/`steps` mismatch
-// (e.g. independently-migrated localStorage values) can't desync the UI. Also
-// doubles as the legacy 3-row grid migration via LEGACY_ROW.
+// false). Rows a pattern omits entirely (the library and share links drop
+// all-rest rows) come back empty and get filled in here.
 const resizeGrid = (grid: Grid, steps: number): Grid => {
   const resizeRow = (row: boolean[]): boolean[] => {
     const next = (row ?? []).slice(0, steps);
@@ -189,67 +181,32 @@ const resizeGrid = (grid: Grid, steps: number): Grid => {
     return next;
   };
   return Object.fromEntries(
-    TRACKS.map(({ voice }) => [
-      voice,
-      resizeRow(grid[voice] ?? grid[LEGACY_ROW[voice]]),
-    ])
+    TRACKS.map(({ voice }) => [voice, resizeRow(grid[voice])])
   );
-};
-
-// Re-grid a quarter-note pattern to the eighth-note grid this frontend now
-// always uses, interleaving a rest on every "&". Only reached by data written
-// before the resolution toggle was retired.
-const toEighths = (grid: Grid): Grid =>
-  Object.fromEntries(
-    TRACKS.map(({ voice }) => [voice, grid[voice].flatMap((on) => [on, false])])
-  );
-
-// `usePersistentState`'s migrateFrom copies the legacy JSON verbatim, so a
-// migrated pre-bars value is a bare Grid object, not a Grid[]. Normalize
-// whatever shape localStorage hands back into a bar list.
-const normalizeBars = (value: unknown): Grid[] => {
-  if (Array.isArray(value)) {
-    return value.length > 0 ? (value as Grid[]) : [emptyGrid(DEFAULT_STEPS)];
-  }
-  if (value && typeof value === "object") return [value as Grid];
-  return [emptyGrid(DEFAULT_STEPS)];
 };
 
 const DrumPatternLibrary = () => {
-  // Persisted keys keep the frontend's original "sequencer/" prefix: renaming
-  // them would orphan every grid and saved pattern already in localStorage,
-  // and the prefix only has to be unique across frontends, not descriptive.
-  const [bpm, setBpm] = usePersistentState<number>("sequencer/bpm", 120);
+  const [bpm, setBpm] = usePersistentState<number>("drumpatterns/bpm", 120);
   const [steps, setSteps] = usePersistentState<number>(
-    "sequencer/steps",
+    "drumpatterns/steps",
     DEFAULT_STEPS
   );
-  const [bars, setBars] = usePersistentState<Grid[]>(
-    "sequencer/bars",
-    [emptyGrid(DEFAULT_STEPS)],
-    0,
-    "sequencer/grid"
-  );
-  // Vestigial: the resolution toggle is gone and every grid is eighth-note
-  // now. Kept only to spot a grid persisted under the old quarter-note mode,
-  // which the effect below rewrites once and then never looks at again.
-  const [wasEighths, setWasEighths] = usePersistentState<boolean>(
-    "sequencer/showEighths",
-    true
-  );
+  const [bars, setBars] = usePersistentState<Grid[]>("drumpatterns/bars", [
+    emptyGrid(DEFAULT_STEPS),
+  ]);
   const [packId, setPackId] = usePersistentState<string>(
-    "sequencer/soundPack",
+    "drumpatterns/soundPack",
     DEFAULT_PACK.id
   );
   const [volume, setVolume] = usePersistentState<number>(
-    "sequencer/volume",
+    "drumpatterns/volume",
     1
   );
 
   const pack = packById(packId);
 
   const effectiveBars = useMemo(
-    () => normalizeBars(bars).map((bar) => resizeGrid(bar, steps)),
+    () => bars.map((bar) => resizeGrid(bar, steps)),
     [bars, steps]
   );
 
@@ -325,26 +282,6 @@ const DrumPatternLibrary = () => {
     setBars(effectiveBars.map((bar) => resizeGrid(bar, clamped)));
   };
 
-  // One-time upgrade of a grid left behind by the retired quarter-note mode,
-  // and of any odd step total from before the length was counted in beats.
-  useEffect(() => {
-    if (wasEighths && steps % 2 === 0) return;
-    const newSteps = clamp(
-      wasEighths ? evenSteps(steps) : steps * 2,
-      MIN_STEPS,
-      MAX_STEPS
-    );
-    setWasEighths(true);
-    setSteps(newSteps);
-    setBars(
-      effectiveBars.map((bar) =>
-        resizeGrid(wasEighths ? bar : toEighths(bar), newSteps)
-      )
-    );
-    // Runs once on mount against the just-loaded persisted values.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const toggleCell = (barIndex: number, voice: string, index: number) => {
     const row = effectiveBars[barIndex][voice].slice();
     row[index] = !row[index];
@@ -405,26 +342,11 @@ const DrumPatternLibrary = () => {
   const [noteTarget, setNoteTarget] = useState<NoteTarget>(null);
 
   const loadPattern = (pattern: PatternState) => {
-    // Pre-bars patterns stored a single `grid`; fall back to it, then to a
-    // fresh empty bar, before falling into the normal multi-bar path.
-    const loadedBars = pattern.bars ?? (pattern.grid ? [pattern.grid] : [emptyGrid(pattern.steps)]);
-    // A pattern written before the resolution toggle was retired spans half as
-    // many columns; widen it onto the eighth-note grid on the way in.
-    const quarters = pattern.showEighths === false;
-    const newSteps = clamp(
-      quarters ? pattern.steps * 2 : evenSteps(pattern.steps),
-      MIN_STEPS,
-      MAX_STEPS
-    );
-    // Resize defensively — a pattern saved before a shape change could carry
-    // bars that disagree with its own step count.
-    const bars = normalizeBars(loadedBars)
-      .map((bar) => resizeGrid(bar, pattern.steps))
-      .map((bar) => (quarters ? toEighths(bar) : bar))
-      .map((bar) => resizeGrid(bar, newSteps));
+    const newSteps = clamp(pattern.steps, MIN_STEPS, MAX_STEPS);
     setBpm(pattern.bpm);
     setSteps(newSteps);
-    setBars(bars);
+    // resizeGrid fills in the all-rest rows a stored pattern leaves out.
+    setBars(pattern.bars.map((bar) => resizeGrid(bar, newSteps)));
   };
 
   const loadAndSelect = (pattern: PatternState, target: NoteTarget) => {

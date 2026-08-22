@@ -18,9 +18,6 @@ interface SharedPattern {
   bpm: number;
   steps: number;
   bars: Record<string, string>[];
-  // Only ever present on links made before the grid went always-eighths; the
-  // columns of such a link are quarter notes.
-  eighths?: boolean;
 }
 
 export const SHARE_HASH_PREFIX = "pattern-";
@@ -60,7 +57,6 @@ export const deserializePattern = (base64: string): PatternState | null => {
     return {
       bpm: shared.bpm,
       steps,
-      showEighths: shared.eighths ?? true,
       // Rows the sender omitted are all-rest; the frontend's resizeGrid fills
       // in whatever rows are missing here.
       bars: shared.bars.map((bar) =>

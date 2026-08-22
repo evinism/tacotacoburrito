@@ -7,10 +7,9 @@ import libraryJson from "./library.json";
 export interface LibraryPattern extends PatternState {
   // Doubles as the React key, so keep these unique.
   name: string;
-  // Freeform annotation — song titles, variant descriptions, whatever. Not
-  // pattern state, so it stays off PatternState and never round-trips
-  // through load/save. The UI lets it be edited, storing the edit in
-  // localStorage rather than mutating what ships here.
+  // Freeform annotation — song titles, what this variant does differently.
+  // Not pattern state, so it stays off PatternState and never round-trips
+  // through load/save; the UI shows it read-only alongside the family's notes.
   notes?: string;
 }
 
@@ -24,9 +23,6 @@ interface LibraryJsonPattern {
   bpm: number;
   steps: number;
   bars: Record<string, string>[];
-  // Legacy: `false` marks an entry whose columns are quarter notes rather than
-  // the eighth-note grid everything now uses. New entries omit it.
-  showEighths?: boolean;
 }
 
 interface LibraryJson {
@@ -42,29 +38,31 @@ const expandRow = (row: string | undefined, steps: number): boolean[] =>
 
 /*
   Built-in, read-only patterns shipped with the app, loaded from library.json.
-  To add to this list: build patterns in the app, save them to your own
-  "Saved Patterns", then run this in the browser devtools console and convert
-  the output into library.json's row-string form.
+  To add to this list: build patterns in the app, save them under your own
+  patterns, then run this in the browser devtools console and convert the
+  output into library.json's row-string form.
 
     copy(JSON.stringify(
-      JSON.parse(localStorage.getItem("persistentState/sequencer/patterns"))
-        .map(({ name, bpm, steps, showEighths, bars, grid }) =>
-          ({ name, bpm, steps, showEighths, bars: bars ?? [grid] })),
+      JSON.parse(localStorage.getItem("persistentState/drumpatterns/patternGroups"))
+        .flatMap(({ name, variants }) =>
+          variants.map(({ bpm, steps, bars }, i) => ({
+            name: variants.length > 1 ? `${name} ${i + 1}` : name,
+            bpm, steps, bars,
+          }))),
       null, 2))
 
-  The id/createdAt/updatedAt fields are personal-store bookkeeping and are
-  dropped on purpose — library entries have no identity beyond their name.
-  `grid` is the pre-bars single-bar shape; keep it in the dump so older saves
-  don't come out empty.
+  Variants become separate entries with a trailing number, which is how the UI
+  regroups them into a family. The id/createdAt/updatedAt fields are
+  personal-store bookkeeping and are dropped on purpose — library entries have
+  no identity beyond their name.
 */
 export const LIBRARY_PATTERNS: LibraryPattern[] = (
   libraryJson as LibraryJson
-).patterns.map(({ name, notes, bpm, steps, showEighths, bars }) => ({
+).patterns.map(({ name, notes, bpm, steps, bars }) => ({
   name,
   notes,
   bpm,
   steps,
-  showEighths,
   bars: bars.map((bar) =>
     Object.fromEntries(
       Object.keys(bar).map((voice) => [voice, expandRow(bar[voice], steps)])

@@ -15,8 +15,6 @@ import SaveIcon from "@mui/icons-material/Save";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
-import { useEffect } from "react";
-
 import { usePersistentState } from "@/hooks";
 
 import {
@@ -31,23 +29,16 @@ import styles from "./drumpatterns.module.css";
 // page.tsx circular.
 export interface PatternState {
   bpm: number;
+  // Eighth-note columns; the UI counts them in quarter notes.
   steps: number;
+  // All-rest rows may be omitted — the frontend fills them back in.
   bars: Record<string, boolean[]>[];
-  // Legacy, written before the grid was always eighth-note resolution: `false`
-  // means the columns are quarter notes and get widened on load. Never written
-  // by new saves, so absent reads as "already eighths".
-  showEighths?: boolean;
-  // Pre-bars patterns stored a single grid; kept so old saves still load.
-  grid?: Record<string, boolean[]>;
 }
 
 export interface PatternVariant extends PatternState {
   // Stable identity for the React key and for "which variant is selected",
   // neither of which can key off position while variants are being added.
   id: string;
-  // Legacy: per-variant notes, folded into the group's single commentary by
-  // the migration in usePatterns and never written again.
-  notes?: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -69,21 +60,6 @@ export interface PatternGroup {
 export const variantNoteLine = (variant: number, notes: string) =>
   `\n${variant}. ${notes}`;
 
-// One block from a rhythm's own notes plus whatever its variants carried.
-const mergeNotes = (
-  notes: string | undefined,
-  variantNotes: (string | undefined)[]
-) =>
-  [
-    notes ?? "",
-    ...variantNotes.map((text, index) =>
-      text ? variantNoteLine(index + 1, text) : ""
-    ),
-    // trimStart so a rhythm with no notes of its own doesn't lead with the
-    // blank line that the first variant's prefix would otherwise leave.
-  ]
-    .join("")
-    .trimStart();
 
 /*
   The library groups by naming convention instead of structure: a trailing
@@ -125,11 +101,9 @@ const groupByFamily = (patterns: LibraryPattern[]): Family[] => {
 };
 
 // BPM always counts quarter notes and the grid is always eighths, so a pattern
-// spans half as many beats as it has columns — except for a legacy
-// quarter-note entry, whose columns are beats already. Only used to title the
-// library's sections.
-const beatCount = (pattern: PatternState) =>
-  pattern.showEighths === false ? pattern.steps : pattern.steps / 2;
+// spans half as many beats as it has columns. Only used to title the library's
+// sections.
+const beatCount = (pattern: PatternState) => pattern.steps / 2;
 
 const formatDate = (timestamp: number) =>
   new Date(timestamp).toLocaleString(undefined, {
@@ -147,29 +121,9 @@ const newVariant = (state: PatternState): PatternVariant => {
 
 export const usePatterns = () => {
   const [groups, setGroups] = usePersistentState<PatternGroup[]>(
-    "sequencer/patternGroups",
+    "drumpatterns/patternGroups",
     NO_GROUPS
   );
-
-  // One-time fold of the retired per-variant notes into each group's single
-  // commentary block, so nothing written under the two-field UI is lost.
-  useEffect(() => {
-    if (!groups.some((group) => group.variants.some(({ notes }) => notes))) {
-      return;
-    }
-    setGroups(
-      groups.map((group) => ({
-        ...group,
-        notes: mergeNotes(
-          group.notes,
-          group.variants.map(({ notes }) => notes)
-        ),
-        variants: group.variants.map(({ notes: _notes, ...rest }) => rest),
-      }))
-    );
-    // Runs once on mount against the just-loaded persisted value.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const updateGroup = (id: string, change: (group: PatternGroup) => PatternGroup) =>
     setGroups(groups.map((group) => (group.id === id ? change(group) : group)));
@@ -451,7 +405,7 @@ const PatternLibrary = ({
   // Display-only ordering of the saved section — the underlying store keeps
   // insertion order.
   const [newestFirst, setNewestFirst] = usePersistentState<boolean>(
-    "sequencer/patternsNewestFirst",
+    "drumpatterns/patternsNewestFirst",
     true
   );
 
