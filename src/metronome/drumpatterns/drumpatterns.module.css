@@ -102,9 +102,10 @@
   max-width: 70px;
 }
 
-/* The one control row, as two clusters pushed to opposite ends. */
+/* Tempo is the only thing left in this row; it starts at the same left edge
+   as the grid and the button row below it. */
 .TempoRow {
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .ControlCluster {

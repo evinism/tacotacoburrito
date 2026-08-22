@@ -487,44 +487,9 @@ const DrumPatternLibrary = () => {
         </div>
       </div>
       <Divider className={settingsOpen ? styles.Invisible : ""} />
+      {/* Tempo sits alone up here; transport lives with the other actions in
+          the bottom row, the way the classic frontend arranges them. */}
       <Box className={`${styles.HorizontalGroup} ${styles.TempoRow}`}>
-        {/* Transport on the left, tempo on the right: the two things you
-            reach for mid-practice sit at opposite, predictable ends. */}
-        <div className={styles.ControlCluster}>
-          <Tooltip
-            title={
-              soundPackStatus === "error"
-                ? "Sound pack failed to load"
-                : soundPackStatus === "loading"
-                  ? "Loading sound pack…"
-                  : ""
-            }
-            {...ttConfig}
-          >
-            {/* span wrapper so the Tooltip still works while the Button is disabled */}
-            <span>
-              <Button
-                onClick={togglePlaying}
-                color={soundPackStatus === "error" ? "error" : "primary"}
-                disabled={soundPackStatus === "loading"}
-                startIcon={
-                  soundPackStatus === "loading" ? (
-                    <CircularProgress size={16} color="inherit" />
-                  ) : undefined
-                }
-              >
-                {soundPackStatus === "loading"
-                  ? "Loading"
-                  : soundPackStatus === "error"
-                    ? "Error"
-                    : playing
-                      ? "Stop"
-                      : "Play"}
-              </Button>
-            </span>
-          </Tooltip>
-        </div>
-        <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
         <GlobalKeydownListener
           onKeyDown={modTempo(1 / 1.03)}
           keyFilter="ArrowLeft"
@@ -572,6 +537,39 @@ const DrumPatternLibrary = () => {
       <Divider />
 
       <Box className={styles.HorizontalGroup}>
+        <Tooltip
+          title={
+            soundPackStatus === "error"
+              ? "Sound pack failed to load"
+              : soundPackStatus === "loading"
+                ? "Loading sound pack…"
+                : ""
+          }
+          {...ttConfig}
+        >
+          {/* span wrapper so the Tooltip still works while the Button is disabled */}
+          <span>
+            <Button
+              onClick={togglePlaying}
+              color={soundPackStatus === "error" ? "error" : "primary"}
+              disabled={soundPackStatus === "loading"}
+              startIcon={
+                soundPackStatus === "loading" ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : undefined
+              }
+            >
+              {soundPackStatus === "loading"
+                ? "Loading"
+                : soundPackStatus === "error"
+                  ? "Error"
+                  : playing
+                    ? "Stop"
+                    : "Play"}
+            </Button>
+          </span>
+        </Tooltip>
+        <GlobalKeydownListener onKeyDown={togglePlaying} keyFilter=" " />
         <div>
           <InputLabel htmlFor="count-input" sx={{ fontSize: 14 }}>
             Count
