@@ -43,8 +43,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
@@ -487,28 +485,32 @@ const SequencerMetronome = () => {
           />
         </div>
 
-        <Tooltip title="Decrease Tempo by 3%" {...ttConfig}>
-          <IconButton
-            onClick={modTempo(1 / 1.03)}
-            aria-label="Decrease Tempo by 3%"
-          >
-            <RemoveIcon />
-          </IconButton>
-        </Tooltip>
+        {/* The tempo slider rides inline here rather than in a row of its own:
+            the grid is what this frontend is about, so the transport chrome
+            above it stays one line tall. Arrow keys still nudge by 3% — the
+            buttons that used to do that are what the slider replaced. */}
+        <Slider
+          className={styles.TempoSlider}
+          size="small"
+          min={0}
+          max={TEMPO_SLIDER_MAX}
+          value={invScaleBPM(bpm)}
+          onChange={handleSliderChange}
+          aria-label="Tempo"
+        />
         <GlobalKeydownListener
           onKeyDown={modTempo(1 / 1.03)}
           keyFilter="ArrowLeft"
         />
-        <Tooltip title="Increase Tempo by 3%" {...ttConfig}>
-          <IconButton onClick={modTempo(1.03)} aria-label="Increase Tempo by 3%">
-            <AddIcon />
-          </IconButton>
-        </Tooltip>
         <GlobalKeydownListener onKeyDown={modTempo(1.03)} keyFilter="ArrowRight" />
-        <div className={styles.Spacer} />
+        <div>
+          <Button onClick={handleTapTempoClick}>Tap Tempo</Button>
+          <GlobalKeydownListener onKeyDown={handleTapTempoClick} keyFilter="/" />
+        </div>
         <div className={styles.VolumeGroup}>
           <VolumeUpIcon fontSize="small" htmlColor="#ccc" />
           <Slider
+            size="small"
             min={0}
             max={1}
             step={0.01}
@@ -517,19 +519,6 @@ const SequencerMetronome = () => {
             aria-label="Volume"
           />
         </div>
-        <div>
-          <Button onClick={handleTapTempoClick}>Tap Tempo</Button>
-          <GlobalKeydownListener onKeyDown={handleTapTempoClick} keyFilter="/" />
-        </div>
-      </Box>
-      <Box className={styles.HorizontalGroup}>
-        <Slider
-          min={0}
-          max={TEMPO_SLIDER_MAX}
-          value={invScaleBPM(bpm)}
-          onChange={handleSliderChange}
-          aria-labelledby="input-slider"
-        />
       </Box>
 
       <Divider />

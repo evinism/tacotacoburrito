@@ -50,6 +50,14 @@
   max-width: 70px;
 }
 
+/* Inline tempo slider: wide enough to be usable, bounded so it doesn't push
+   the rest of the transport row onto a second line. */
+.TempoSlider {
+  min-width: 120px;
+  max-width: 260px;
+  flex: 1 1 160px;
+}
+
 /* Keeps the volume slider from eating the BPM row's flex width. */
 .VolumeGroup {
   display: flex;
