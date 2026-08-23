@@ -131,7 +131,11 @@ type BenchCase = { name: string; variant: VariantName; preimage: Preimage };
 const describe = (beats: Beat[]) =>
   beats
     .map((beat) =>
-      beat.voices.length === 0 ? "." : beat.voices.includes("strong") ? "X" : "x",
+      beat.voices.length === 0
+        ? "."
+        : beat.voices.some(({ sound }) => sound === "strong")
+          ? "X"
+          : "x",
     )
     .join("");
 

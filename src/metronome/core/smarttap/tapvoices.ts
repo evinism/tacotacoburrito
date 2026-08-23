@@ -4,13 +4,21 @@
 //
 // TapStrength is imported as a type only, which keeps this module clear of the
 // index <-> method import cycle at runtime.
-import type { Beat } from "@/metronome/core/types";
+import { type Beat, voice } from "@/metronome/core/types";
 import type { TapStrength } from ".";
 
 export const tapStrengthToVoices = (strength: TapStrength): Beat["voices"] =>
-  strength === "strong" ? ["strong"] : strength === "weak" ? ["weak"] : [];
+  strength === "strong"
+    ? [voice("strong")]
+    : strength === "weak"
+      ? [voice("weak")]
+      : [];
 
 // The core contract is that a beat carrying the "strong" voice reads as
 // accented, and anything else audible reads as weak.
 export const voicesToTapStrength = (voices: Beat["voices"]): TapStrength =>
-  voices.length === 0 ? "off" : voices.includes("strong") ? "strong" : "weak";
+  voices.length === 0
+    ? "off"
+    : voices.some(({ sound }) => sound === "strong")
+      ? "strong"
+      : "weak";

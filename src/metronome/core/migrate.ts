@@ -1,25 +1,51 @@
-// Converts legacy `{ strength, duration }` beats (old localStorage, old share
-// URLs, old saved presets) into the current `{ voices, duration }` shape.
+// Converts legacy beats — `{ strength, duration }`, and the later
+// `{ voices: string[], offsets }` — from old localStorage, old share URLs and
+// old saved presets into the current `{ voices: Voice[], duration }` shape.
 // These run on every read rather than once at a migration boundary, so they
 // must be idempotent — already-migrated data must pass through unchanged.
-import { Beat, BeatFillMethod, Measures } from "./types";
+import { Beat, BeatFillMethod, Measures, Voice, VoiceOffset } from "./types";
 import { Rhythm } from "./engine";
 
-const STRENGTH_TO_VOICES: Record<string, string[]> = {
+const STRENGTH_TO_SOUNDS: Record<string, string[]> = {
   off: [],
   strong: ["strong"],
   weak: ["weak"],
 };
 
-export function migrateBeat(beat: unknown): Beat {
-  const b = beat as { voices?: unknown; strength?: unknown; duration?: unknown };
-  if (Array.isArray(b?.voices)) {
-    return { voices: b.voices as Beat["voices"], duration: b.duration ?? 1 } as Beat;
+// A stored voice is either a bare sound name (with its offset, if any, held in
+// the beat's parallel `offsets` array) or an already-current Voice object.
+function migrateVoice(stored: unknown, offset: unknown): Voice | undefined {
+  if (typeof stored === "string") {
+    return offset === undefined
+      ? { sound: stored }
+      : { sound: stored, offset: offset as VoiceOffset };
   }
-  const voices = STRENGTH_TO_VOICES[String(b?.strength)] ?? [];
+  const v = stored as Partial<Voice> | null;
+  return typeof v?.sound === "string" ? (v as Voice) : undefined;
+}
+
+export function migrateBeat(beat: unknown): Beat {
+  const b = beat as {
+    voices?: unknown;
+    offsets?: unknown;
+    strength?: unknown;
+    duration?: unknown;
+  };
+  const duration = typeof b?.duration === "number" ? b.duration : 1;
+  if (Array.isArray(b?.voices)) {
+    const offsets = Array.isArray(b.offsets) ? b.offsets : [];
+    return {
+      voices: b.voices
+        .map((stored, i) => migrateVoice(stored, offsets[i]))
+        .filter((v): v is Voice => v !== undefined),
+      duration,
+    };
+  }
   return {
-    voices: voices as Beat["voices"],
-    duration: typeof b?.duration === "number" ? b.duration : 1,
+    voices: (STRENGTH_TO_SOUNDS[String(b?.strength)] ?? []).map((sound) => ({
+      sound,
+    })),
+    duration,
   };
 }
 

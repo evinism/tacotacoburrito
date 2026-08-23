@@ -1,6 +1,12 @@
 import { Box, Input, InputLabel, Tooltip } from "@mui/material";
 import { useState } from "react";
-import { Beat, BeatFillMethod, Voice, Measures } from "@/metronome/core/types";
+import {
+  Beat,
+  BeatFillMethod,
+  Measures,
+  SoundName,
+  voice,
+} from "@/metronome/core/types";
 import styles from "@/metronome/classic/classic.module.css";
 import { SmartTapButton } from "./smarttap";
 
@@ -24,8 +30,8 @@ const parseMeasureSpec = (size: string) => {
 const renderMeasureSpec = (beats: Measures) =>
   beats.map((beat) => beat.length).join("+");
 
-const toBeat = (voice: Voice | "off"): Beat => ({
-  voices: voice === "off" ? [] : [voice],
+const toBeat = (sound: SoundName | "off"): Beat => ({
+  voices: sound === "off" ? [] : [voice(sound)],
   duration: 1,
 });
 

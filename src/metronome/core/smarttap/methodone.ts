@@ -225,6 +225,7 @@ function generateCandidateCycles(clicks: BeatClick[]): CandidateCycle[] {
   return candidateCycles;
 }
 
+
 const candidateToBeats = (
   candidate: CandidateCycle
 ): Result<{ bpmMultiplier: number; beats: Beat[] }> | undefined => {

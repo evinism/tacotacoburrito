@@ -7,7 +7,7 @@ import { usePersistentState } from "@/hooks";
 import { useMetronome } from "@/metronome/shared/usemetronome";
 import { useTapTempo } from "@/metronome/shared/usetaptempo";
 import { MetronomeSpec } from "@/metronome/core/engine";
-import { Measure, Measures, VoiceOffset } from "@/metronome/core/types";
+import { Measure, Measures, Voice } from "@/metronome/core/types";
 import type { SoundPackId } from "@/metronome/core/soundpacks";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 import { useSnackbar } from "@/metronome/shared/snackbar";
@@ -226,7 +226,7 @@ const DrumPatternLibrary = () => {
           ({ voice }) => {
             const sounds = pack.voices[voice];
             return (Array.isArray(sounds) ? sounds : [sounds]).map(
-              (sound, j): { sound: string; offset: VoiceOffset } => ({
+              (sound, j): Voice => ({
                 sound,
                 offset:
                   j === 0
@@ -240,8 +240,7 @@ const DrumPatternLibrary = () => {
           }
         );
         return {
-          voices: hits.map((hit) => hit.sound),
-          offsets: hits.map((hit) => hit.offset),
+          voices: hits,
           // BPM always counts quarter notes, so each column is half a beat
           // rather than the tempo doubling underneath the user.
           duration: 0.5,

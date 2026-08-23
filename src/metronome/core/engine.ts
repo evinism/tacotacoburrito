@@ -306,8 +306,8 @@ export class Metronome {
     // Empty voices = a silent beat; nothing to schedule.
     const sound = resolveSound(this.spec);
     const pack = getSoundPack(sound.soundPack);
-    for (const [i, voice] of beat.voices.entries()) {
-      const clickSound = pack[voice];
+    for (const { sound: voiceSound, offset: offsetSpec = 0 } of beat.voices) {
+      const clickSound = pack[voiceSound];
       // Missing (a rhythm naming a sound this pack doesn't have) or not ready
       // yet (a sample pack still decoding) — skip this click rather than
       // crash. Both are deliberately silent: cross-pack rhythms degrade
@@ -329,7 +329,6 @@ export class Metronome {
       // Range offsets are sampled here, per schedule, rather than upstream in
       // the spec — the spec is static, so sampling any earlier would freeze
       // one draw and every repeat of the beat would land identically.
-      const offsetSpec = beat.offsets?.[i] ?? 0;
       const offset = Array.isArray(offsetSpec)
         ? offsetSpec[0] + Math.random() * (offsetSpec[1] - offsetSpec[0])
         : offsetSpec;
