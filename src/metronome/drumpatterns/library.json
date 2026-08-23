@@ -9,8 +9,8 @@
     "Kopanitsa": "2-2-3-2-2.",
     "Sofka": "3-2-2, fast.",
     "Ruschenitsa (Mandilatos)": "2-2-3, fast.",
-    "Syrtos aka Cocek aka Malfoof": "The Khelav / Yunan Kasap Havası / Gunel Hirsizi (also maksoum) / Hijaz Raks (also maksoum and others) / San Pas Sta Ksena.",
-    "Greek Chiftitelli aka Duyek aka Maksoum": "Selanik Sirto / Hijaz Raks (also malfouf and others) / Gunel Hirsizi (also malfouf) / Jeni Jol (baladi) / Kanuni İstanbul (also Turkish chiftitelli).",
+    "Syrtos (Cocek, Malfoof)": "The Khelav / Yunan Kasap Havası / Gunel Hirsizi (also maksoum) / Hijaz Raks (also maksoum and others) / San Pas Sta Ksena.",
+    "Greek Chiftitelli (Duyek, Maksoum)": "Selanik Sirto / Hijaz Raks (also malfouf and others) / Gunel Hirsizi (also malfouf) / Jeni Jol (baladi) / Kanuni İstanbul (also Turkish chiftitelli).",
     "Ayoub": "Genc Osman / Horepsete / Nerantziá (sta dio).",
     "Turkish Ciftitelli": "Nikriz Sirto / Kanuni İstanbul (also maksoum).",
     "Tsamiko": "Mouriki / Tsamiko Medley.",
@@ -18,7 +18,7 @@
   },
   "patterns": [
     {
-      "name": "Syrtos aka Cocek aka Malfoof 3",
+      "name": "Syrtos (Cocek, Malfoof) 3",
       "bpm": 340,
       "steps": 16,
       "bars": [
@@ -31,7 +31,7 @@
       ]
     },
     {
-      "name": "Syrtos aka Cocek aka Malfoof 1",
+      "name": "Syrtos (Cocek, Malfoof) 1",
       "bpm": 340,
       "steps": 16,
       "bars": [
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "name": "Syrtos aka Cocek aka Malfoof 2",
+      "name": "Syrtos (Cocek, Malfoof) 2",
       "bpm": 340,
       "steps": 16,
       "bars": [
@@ -54,7 +54,7 @@
       ]
     },
     {
-      "name": "Syrtos aka Cocek aka Malfoof 4",
+      "name": "Syrtos (Cocek, Malfoof) 4",
       "bpm": 340,
       "steps": 16,
       "bars": [
@@ -67,7 +67,7 @@
       ]
     },
     {
-      "name": "Syrtos aka Cocek aka Malfoof 5",
+      "name": "Syrtos (Cocek, Malfoof) 5",
       "bpm": 340,
       "steps": 16,
       "bars": [
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "name": "Syrtos aka Cocek aka Malfoof 6",
+      "name": "Syrtos (Cocek, Malfoof) 6",
       "bpm": 340,
       "steps": 16,
       "bars": [
@@ -90,7 +90,7 @@
       ]
     },
     {
-      "name": "Syrtos aka Cocek aka Malfoof 8",
+      "name": "Syrtos (Cocek, Malfoof) 8",
       "notes": "Running",
       "bpm": 340,
       "steps": 16,
@@ -102,7 +102,7 @@
       ]
     },
     {
-      "name": "Syrtos aka Cocek aka Malfoof 7",
+      "name": "Syrtos (Cocek, Malfoof) 7",
       "bpm": 340,
       "steps": 16,
       "bars": [
@@ -113,7 +113,7 @@
       ]
     },
     {
-      "name": "Syrtos aka Cocek aka Malfoof 9",
+      "name": "Syrtos (Cocek, Malfoof) 9",
       "bpm": 340,
       "steps": 16,
       "bars": [
@@ -126,7 +126,7 @@
       ]
     },
     {
-      "name": "Syrtos aka Cocek aka Malfoof 10",
+      "name": "Syrtos (Cocek, Malfoof) 10",
       "bpm": 340,
       "steps": 16,
       "bars": [
@@ -139,7 +139,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 1",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 1",
       "bpm": 210,
       "steps": 16,
       "bars": [
@@ -150,7 +150,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 2",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 2",
       "bpm": 210,
       "steps": 16,
       "bars": [
@@ -162,7 +162,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 3",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 3",
       "bpm": 210,
       "steps": 16,
       "bars": [
@@ -174,7 +174,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 4",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 4",
       "bpm": 210,
       "steps": 16,
       "bars": [
@@ -187,7 +187,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 5",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 5",
       "notes": "Baladi",
       "bpm": 210,
       "steps": 16,
@@ -199,7 +199,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 6",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 6",
       "notes": "Saidi",
       "bpm": 210,
       "steps": 16,
@@ -211,7 +211,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 7",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 7",
       "notes": "Running",
       "bpm": 210,
       "steps": 16,
@@ -225,7 +225,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 8",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 8",
       "bpm": 210,
       "steps": 16,
       "bars": [
@@ -238,7 +238,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 9",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 9",
       "bpm": 210,
       "steps": 16,
       "bars": [
@@ -251,7 +251,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 10",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 10",
       "bpm": 210,
       "steps": 16,
       "bars": [
@@ -264,7 +264,7 @@
       ]
     },
     {
-      "name": "Greek Chiftitelli aka Duyek aka Maksoum 11",
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 11",
       "bpm": 210,
       "steps": 16,
       "bars": [
@@ -457,7 +457,7 @@
       ]
     },
     {
-      "name": "Zonaradiko or Pravo 1",
+      "name": "Zonaradiko (Pravo) 1",
       "bpm": 420,
       "steps": 12,
       "bars": [
@@ -470,7 +470,7 @@
       ]
     },
     {
-      "name": "Zonaradiko or Pravo 2",
+      "name": "Zonaradiko (Pravo) 2",
       "bpm": 420,
       "steps": 12,
       "bars": [
@@ -483,7 +483,7 @@
       ]
     },
     {
-      "name": "Zonaradiko or Pravo 3",
+      "name": "Zonaradiko (Pravo) 3",
       "bpm": 420,
       "steps": 12,
       "bars": [
@@ -496,7 +496,7 @@
       ]
     },
     {
-      "name": "Zonaradiko or Pravo 4",
+      "name": "Zonaradiko (Pravo) 4",
       "bpm": 420,
       "steps": 12,
       "bars": [
@@ -509,7 +509,7 @@
       ]
     },
     {
-      "name": "Zonaradiko or Pravo 5",
+      "name": "Zonaradiko (Pravo) 5",
       "bpm": 420,
       "steps": 12,
       "bars": [
