@@ -1,20 +1,21 @@
 {
   "familyNotes": {
-    "Kaba Roman": "4-3-2. Kiremit Bacalari / Nasti Usava.",
-    "Karsilama": "2-2-2-3. To Nerantzolemono.",
-    "Agir Roman": "4-4-3-3-4 (in eighths). Tulum.",
-    "Zeybek": "2-2-2-3, slow. Bozdogan zeybegi.",
-    "Curcuna": "3-2-2-3. Pronounced “djordjuna”. Saza niye gelmadin.",
-    "Semaii": "Hicaz Saz Semaisi.",
+    "Kaba Roman": "4-3-2. Songs: Kiremit Bacalari / Nasti Usava / Kalite, kalite / Illede Roman Olsun.",
+    "Karsilama": "2-2-2-3. Songs: To Nerantzolemono / Yüksek Yüksek Tepeler / Rompi.",
+    "Agir Roman": "4-4-3-3-4 (in eighths). Songs: Tulum / Arabim / Şu Köyceğiz Yolları / Mastika.",
+    "Zeybek": "2-2-2-3, slow. Songs: Bozdogan zeybegi / Yağcılar Zeybeği.",
+    "Curcuna": "3-2-2-3. Pronounced “djordjuna”. Songs: Saza niye gelmadin.",
+    "Semaii": "Songs: Hicaz Saz Semaisi.",
     "Kopanitsa": "2-2-3-2-2.",
-    "Sofka": "3-2-2, fast.",
-    "Ruschenitsa (Mandilatos)": "2-2-3, fast.",
-    "Syrtos (Cocek, Malfoof)": "The Khelav / Yunan Kasap Havası / Gunel Hirsizi (also maksoum) / Hijaz Raks (also maksoum and others) / San Pas Sta Ksena.",
-    "Greek Chiftitelli (Duyek, Maksoum)": "Selanik Sirto / Hijaz Raks (also malfouf and others) / Gunel Hirsizi (also malfouf) / Jeni Jol (baladi) / Kanuni İstanbul (also Turkish chiftitelli).",
-    "Ayoub": "Genc Osman / Horepsete / Nerantziá (sta dio).",
-    "Turkish Ciftitelli": "Nikriz Sirto / Kanuni İstanbul (also maksoum).",
-    "Tsamiko": "Mouriki / Tsamiko Medley.",
-    "Kalamatiano": "Tora pou stisan to horo / Min Kles Smyrnia Mou / Kalamatiano."
+    "Sofka": "3-2-2, fast. Songs: Raiko / Tesko Lilino.",
+    "Ruschenitsa (Mandilatos)": "2-2-3, fast. Songs: Mandilatos by Ara Dinkjian / Mena Mana Mou (mandilatos) / Jambolska Rachenitsa.",
+    "Syrtos (Cocek, Malfoof)": "Songs: The Khelav / Yunan Kasap Havası / Gunel Hirsizi (also maksoum) / Hijaz Raks / San Pas Sta Ksena.",
+    "Greek Chiftitelli (Duyek, Maksoum)": "Songs: Selanik Sirto / Hijaz Raks (also malfouf and others) / Gunel Hirsizi (also malfouf) / Jeni Jol (baladi) / Kanuni İstanbul (also Turkish chiftitelli).",
+    "Ayoub": "Songs: Genc Osman / Horepsete / Nerantziá (sta dio).",
+    "Turkish Ciftitelli": "Songs: Nikriz Sirto / Kanuni İstanbul (also maksoum).",
+    "Tsamiko": "Songs: Mouriki / Tsamiko Medley.",
+    "Kalamatiano": "Songs: Tora pou stisan to horo / Min Kles Smyrnia Mou / Kalamatiano."
+    "Zonaradiko (Pravo)": "Songs: Maria pai yia paskalies."
   },
   "patterns": [
     {
