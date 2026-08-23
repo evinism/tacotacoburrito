@@ -19,7 +19,7 @@
   "patterns": [
     {
       "name": "Syrtos aka Cocek aka Malfoof 3",
-      "bpm": 181.51076698261346,
+      "bpm": 340,
       "steps": 16,
       "bars": [
         {
@@ -32,7 +32,7 @@
     },
     {
       "name": "Syrtos aka Cocek aka Malfoof 1",
-      "bpm": 181.51076698261346,
+      "bpm": 340,
       "steps": 16,
       "bars": [
         {
@@ -43,7 +43,7 @@
     },
     {
       "name": "Syrtos aka Cocek aka Malfoof 2",
-      "bpm": 181.51076698261346,
+      "bpm": 340,
       "steps": 16,
       "bars": [
         {
@@ -55,7 +55,7 @@
     },
     {
       "name": "Syrtos aka Cocek aka Malfoof 4",
-      "bpm": 181.51076698261346,
+      "bpm": 340,
       "steps": 16,
       "bars": [
         {
@@ -68,7 +68,7 @@
     },
     {
       "name": "Syrtos aka Cocek aka Malfoof 5",
-      "bpm": 181.51076698261346,
+      "bpm": 340,
       "steps": 16,
       "bars": [
         {
@@ -80,7 +80,7 @@
     },
     {
       "name": "Syrtos aka Cocek aka Malfoof 6",
-      "bpm": 181.51076698261346,
+      "bpm": 340,
       "steps": 16,
       "bars": [
         {
@@ -92,7 +92,7 @@
     {
       "name": "Syrtos aka Cocek aka Malfoof 8",
       "notes": "Running",
-      "bpm": 181.51076698261346,
+      "bpm": 340,
       "steps": 16,
       "bars": [
         {
@@ -103,7 +103,7 @@
     },
     {
       "name": "Syrtos aka Cocek aka Malfoof 7",
-      "bpm": 181.51076698261346,
+      "bpm": 340,
       "steps": 16,
       "bars": [
         {
@@ -114,7 +114,7 @@
     },
     {
       "name": "Syrtos aka Cocek aka Malfoof 9",
-      "bpm": 181.51076698261346,
+      "bpm": 340,
       "steps": 16,
       "bars": [
         {
@@ -127,7 +127,7 @@
     },
     {
       "name": "Syrtos aka Cocek aka Malfoof 10",
-      "bpm": 181.51076698261346,
+      "bpm": 340,
       "steps": 16,
       "bars": [
         {
@@ -140,7 +140,7 @@
     },
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 1",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -151,7 +151,7 @@
     },
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 2",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -163,7 +163,7 @@
     },
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 3",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -175,7 +175,7 @@
     },
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 4",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -189,7 +189,7 @@
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 5",
       "notes": "Baladi",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -201,7 +201,7 @@
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 6",
       "notes": "Saidi",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -213,7 +213,7 @@
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 7",
       "notes": "Running",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -226,7 +226,7 @@
     },
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 8",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -239,7 +239,7 @@
     },
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 9",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -252,7 +252,7 @@
     },
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 10",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -265,7 +265,7 @@
     },
     {
       "name": "Greek Chiftitelli aka Duyek aka Maksoum 11",
-      "bpm": 181.51076698261346,
+      "bpm": 210,
       "steps": 16,
       "bars": [
         {
@@ -279,7 +279,7 @@
     },
     {
       "name": "2/4 aka Ayoub 1",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 16,
       "bars": [
         {
@@ -290,7 +290,7 @@
     },
     {
       "name": "2/4 aka Ayoub 2",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 16,
       "bars": [
         {
@@ -304,7 +304,7 @@
     {
       "name": "2/4 aka Ayoub 3",
       "notes": "Running",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 16,
       "bars": [
         {
@@ -318,7 +318,7 @@
     },
     {
       "name": "2/4 aka Ayoub 4",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 16,
       "bars": [
         {
@@ -333,7 +333,7 @@
     {
       "name": "2/4 aka Ayoub 5",
       "notes": "Sta dhio",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 16,
       "bars": [
         {
@@ -344,7 +344,7 @@
     },
     {
       "name": "2/4 aka Ayoub 6",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 16,
       "bars": [
         {
@@ -356,7 +356,7 @@
     },
     {
       "name": "2/4 aka Ayoub 7",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 16,
       "bars": [
         {
@@ -368,7 +368,7 @@
     },
     {
       "name": "2/4 aka Ayoub 8",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 16,
       "bars": [
         {
@@ -382,7 +382,7 @@
     },
     {
       "name": "Turkish Ciftitelli 1",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 16,
       "bars": [
         {
@@ -393,7 +393,7 @@
     },
     {
       "name": "Turkish Ciftitelli 2",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 16,
       "bars": [
         {
@@ -405,7 +405,7 @@
     },
     {
       "name": "Turkish Ciftitelli 3",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 16,
       "bars": [
         {
@@ -417,7 +417,7 @@
     {
       "name": "Turkish Ciftitelli 4",
       "notes": "Running",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 16,
       "bars": [
         {
@@ -431,7 +431,7 @@
     },
     {
       "name": "Turkish Ciftitelli 5",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 16,
       "bars": [
         {
@@ -444,7 +444,7 @@
     },
     {
       "name": "Turkish Ciftitelli 6",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 16,
       "bars": [
         {
@@ -458,7 +458,7 @@
     },
     {
       "name": "Zonaradiko or Pravo 1",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 12,
       "bars": [
         {
@@ -471,7 +471,7 @@
     },
     {
       "name": "Zonaradiko or Pravo 2",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 12,
       "bars": [
         {
@@ -484,7 +484,7 @@
     },
     {
       "name": "Zonaradiko or Pravo 3",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 12,
       "bars": [
         {
@@ -497,7 +497,7 @@
     },
     {
       "name": "Zonaradiko or Pravo 4",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 12,
       "bars": [
         {
@@ -510,7 +510,7 @@
     },
     {
       "name": "Zonaradiko or Pravo 5",
-      "bpm": 181.51076698261346,
+      "bpm": 420,
       "steps": 12,
       "bars": [
         {
@@ -523,7 +523,7 @@
     },
     {
       "name": "Tsamiko 1",
-      "bpm": 181.51076698261346,
+      "bpm": 165,
       "steps": 12,
       "bars": [
         {
@@ -534,7 +534,7 @@
     },
     {
       "name": "Tsamiko 2",
-      "bpm": 181.51076698261346,
+      "bpm": 165,
       "steps": 12,
       "bars": [
         {
@@ -547,7 +547,7 @@
     },
     {
       "name": "Tsamiko 3",
-      "bpm": 181.51076698261346,
+      "bpm": 165,
       "steps": 12,
       "bars": [
         {
@@ -560,7 +560,7 @@
     },
     {
       "name": "Tsamiko 4",
-      "bpm": 181.51076698261346,
+      "bpm": 165,
       "steps": 12,
       "bars": [
         {
@@ -573,7 +573,7 @@
     },
     {
       "name": "Tsamiko 6",
-      "bpm": 181.51076698261346,
+      "bpm": 165,
       "steps": 12,
       "bars": [
         {
@@ -587,7 +587,7 @@
     },
     {
       "name": "Tsamiko 5",
-      "bpm": 181.51076698261346,
+      "bpm": 165,
       "steps": 12,
       "bars": [
         {
@@ -599,7 +599,7 @@
     },
     {
       "name": "Kalamatiano 1",
-      "bpm": 181.51076698261346,
+      "bpm": 180,
       "steps": 14,
       "bars": [
         {
@@ -611,7 +611,7 @@
     },
     {
       "name": "Kalamatiano 2",
-      "bpm": 181.51076698261346,
+      "bpm": 180,
       "steps": 14,
       "bars": [
         {
@@ -624,7 +624,7 @@
     },
     {
       "name": "Kalamatiano 3",
-      "bpm": 181.51076698261346,
+      "bpm": 180,
       "steps": 14,
       "bars": [
         {
@@ -637,7 +637,7 @@
     },
     {
       "name": "Kalamatiano 4",
-      "bpm": 181.51076698261346,
+      "bpm": 180,
       "steps": 14,
       "bars": [
         {
@@ -650,7 +650,7 @@
     },
     {
       "name": "Kalamatiano 5",
-      "bpm": 181.51076698261346,
+      "bpm": 180,
       "steps": 14,
       "bars": [
         {
@@ -661,7 +661,7 @@
     },
     {
       "name": "Kalamatiano 6",
-      "bpm": 181.51076698261346,
+      "bpm": 180,
       "steps": 14,
       "bars": [
         {
@@ -674,7 +674,7 @@
     },
     {
       "name": "Kalamatiano 7",
-      "bpm": 181.51076698261346,
+      "bpm": 180,
       "steps": 14,
       "bars": [
         {
@@ -686,7 +686,7 @@
     },
     {
       "name": "Kalamatiano 8",
-      "bpm": 181.51076698261346,
+      "bpm": 180,
       "steps": 14,
       "bars": [
         {
@@ -701,7 +701,7 @@
     {
       "name": "Seven 1",
       "notes": "Raiko",
-      "bpm": 181.51076698261346,
+      "bpm": 380,
       "steps": 14,
       "bars": [
         {
@@ -712,7 +712,7 @@
     },
     {
       "name": "Seven 2",
-      "bpm": 181.51076698261346,
+      "bpm": 380,
       "steps": 14,
       "bars": [
         {
@@ -724,7 +724,7 @@
     {
       "name": "Seven 3",
       "notes": "Tesko Lilino",
-      "bpm": 181.51076698261346,
+      "bpm": 380,
       "steps": 14,
       "bars": [
         {
@@ -736,7 +736,7 @@
     },
     {
       "name": "Seven 4",
-      "bpm": 181.51076698261346,
+      "bpm": 380,
       "steps": 14,
       "bars": [
         {
@@ -753,7 +753,7 @@
     {
       "name": "Seven 5",
       "notes": "Tesko Lilino",
-      "bpm": 181.51076698261346,
+      "bpm": 380,
       "steps": 14,
       "bars": [
         {
@@ -768,7 +768,7 @@
     },
     {
       "name": "Seven 6",
-      "bpm": 181.51076698261346,
+      "bpm": 380,
       "steps": 14,
       "bars": [
         {
@@ -780,7 +780,7 @@
     },
     {
       "name": "Ruschenitsa (Mandilatos) 1",
-      "bpm": 181.51076698261346,
+      "bpm": 400,
       "steps": 14,
       "bars": [
         {
@@ -791,7 +791,7 @@
     },
     {
       "name": "Ruschenitsa (Mandilatos) 2",
-      "bpm": 181.51076698261346,
+      "bpm": 400,
       "steps": 14,
       "bars": [
         {
@@ -803,7 +803,7 @@
     },
     {
       "name": "Ruschenitsa (Mandilatos) 3",
-      "bpm": 181.51076698261346,
+      "bpm": 400,
       "steps": 14,
       "bars": [
         {
@@ -813,7 +813,7 @@
     },
     {
       "name": "Ruschenitsa (Mandilatos) 4",
-      "bpm": 181.51076698261346,
+      "bpm": 400,
       "steps": 14,
       "bars": [
         {
@@ -824,7 +824,7 @@
     },
     {
       "name": "Ruschenitsa (Mandilatos) 5",
-      "bpm": 181.51076698261346,
+      "bpm": 400,
       "steps": 14,
       "bars": [
         {
@@ -841,7 +841,7 @@
     },
     {
       "name": "Ruschenitsa (Mandilatos) 6",
-      "bpm": 181.51076698261346,
+      "bpm": 400,
       "steps": 14,
       "bars": [
         {
@@ -858,7 +858,7 @@
     },
     {
       "name": "Ruschenitsa (Mandilatos) 7",
-      "bpm": 181.51076698261346,
+      "bpm": 400,
       "steps": 14,
       "bars": [
         {
@@ -871,7 +871,7 @@
     {
       "name": "Kaba Roman 1",
       "notes": "Kalite, kalite",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -882,7 +882,7 @@
     },
     {
       "name": "Kaba Roman 2",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -895,7 +895,7 @@
     {
       "name": "Kaba Roman 3",
       "notes": "Illede Roman Olsun",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -908,7 +908,7 @@
     },
     {
       "name": "Kaba Roman 4",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -922,7 +922,7 @@
     {
       "name": "Kaba Roman 5",
       "notes": "3-2-2-2 variation",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -934,7 +934,7 @@
     },
     {
       "name": "Kaba Roman 6",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -948,7 +948,7 @@
     {
       "name": "Karsilama 1",
       "notes": "Yüksek Yüksek Tepeler",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -959,7 +959,7 @@
     },
     {
       "name": "Karsilama 2",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -973,7 +973,7 @@
     {
       "name": "Karsilama 3",
       "notes": "Rompi",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -986,7 +986,7 @@
     },
     {
       "name": "Karsilama 4",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -999,7 +999,7 @@
     },
     {
       "name": "Karsilama 5",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -1012,7 +1012,7 @@
     },
     {
       "name": "Karsilama 6",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -1023,7 +1023,7 @@
     },
     {
       "name": "Karsilama 7",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -1034,7 +1034,7 @@
     },
     {
       "name": "Karsilama 8",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -1046,7 +1046,7 @@
     {
       "name": "Karsilama 9",
       "notes": "Beginning is like syrto.",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -1059,7 +1059,7 @@
     },
     {
       "name": "Karsilama 10",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -1071,7 +1071,7 @@
     },
     {
       "name": "Karsilama 11",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -1083,7 +1083,7 @@
     },
     {
       "name": "Karsilama 12",
-      "bpm": 181.51076698261346,
+      "bpm": 270,
       "steps": 18,
       "bars": [
         {
@@ -1097,7 +1097,7 @@
     {
       "name": "Agir Roman 1",
       "notes": "Arabim",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 18,
       "bars": [
         {
@@ -1108,7 +1108,7 @@
     },
     {
       "name": "Agir Roman 2",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 18,
       "bars": [
         {
@@ -1120,7 +1120,7 @@
     {
       "name": "Agir Roman 3",
       "notes": "Şu Köyceğiz Yolları",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 18,
       "bars": [
         {
@@ -1134,7 +1134,7 @@
     },
     {
       "name": "Agir Roman 4",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 18,
       "bars": [
         {
@@ -1148,7 +1148,7 @@
     {
       "name": "Agir Roman 5",
       "notes": "Mastika",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 18,
       "bars": [
         {
@@ -1161,7 +1161,7 @@
     },
     {
       "name": "Agir Roman 6",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 18,
       "bars": [
         {
@@ -1175,7 +1175,7 @@
     },
     {
       "name": "Agir Roman 7",
-      "bpm": 181.51076698261346,
+      "bpm": 220,
       "steps": 18,
       "bars": [
         {
@@ -1190,7 +1190,7 @@
     },
     {
       "name": "Kopanitsa 1",
-      "bpm": 181.51076698261346,
+      "bpm": 320,
       "steps": 22,
       "bars": [
         {
@@ -1201,7 +1201,7 @@
     },
     {
       "name": "Kopanitsa 2",
-      "bpm": 181.51076698261346,
+      "bpm": 320,
       "steps": 22,
       "bars": [
         {
@@ -1212,7 +1212,7 @@
     },
     {
       "name": "Kopanitsa 3",
-      "bpm": 181.51076698261346,
+      "bpm": 320,
       "steps": 22,
       "bars": [
         {
@@ -1224,7 +1224,7 @@
     },
     {
       "name": "Kopanitsa 4",
-      "bpm": 181.51076698261346,
+      "bpm": 320,
       "steps": 22,
       "bars": [
         {
@@ -1237,7 +1237,7 @@
     },
     {
       "name": "Kopanitsa 5",
-      "bpm": 181.51076698261346,
+      "bpm": 320,
       "steps": 22,
       "bars": [
         {
@@ -1250,7 +1250,7 @@
     },
     {
       "name": "Kopanitsa 6",
-      "bpm": 181.51076698261346,
+      "bpm": 320,
       "steps": 22,
       "bars": [
         {
@@ -1262,7 +1262,7 @@
     },
     {
       "name": "Kopanitsa 7",
-      "bpm": 181.51076698261346,
+      "bpm": 320,
       "steps": 22,
       "bars": [
         {
@@ -1276,7 +1276,7 @@
     {
       "name": "Zeybek 1",
       "notes": "Yağcılar Zeybeği",
-      "bpm": 181.51076698261346,
+      "bpm": 130,
       "steps": 18,
       "bars": [
         {
@@ -1287,7 +1287,7 @@
     },
     {
       "name": "Zeybek 2",
-      "bpm": 181.51076698261346,
+      "bpm": 130,
       "steps": 18,
       "bars": [
         {
@@ -1300,7 +1300,7 @@
     },
     {
       "name": "Zeybek 3",
-      "bpm": 181.51076698261346,
+      "bpm": 130,
       "steps": 18,
       "bars": [
         {
@@ -1312,7 +1312,7 @@
     {
       "name": "Zeybek 4",
       "notes": "Syrto beginning is more Turkish.",
-      "bpm": 181.51076698261346,
+      "bpm": 130,
       "steps": 18,
       "bars": [
         {
@@ -1326,7 +1326,7 @@
     {
       "name": "Zeybek 5",
       "notes": "Syrto beginning is more Turkish.",
-      "bpm": 181.51076698261346,
+      "bpm": 130,
       "steps": 18,
       "bars": [
         {
@@ -1339,7 +1339,7 @@
     },
     {
       "name": "Curcuna 1",
-      "bpm": 181.51076698261346,
+      "bpm": 280,
       "steps": 20,
       "bars": [
         {
@@ -1350,7 +1350,7 @@
     },
     {
       "name": "Curcuna 2",
-      "bpm": 181.51076698261346,
+      "bpm": 280,
       "steps": 20,
       "bars": [
         {
@@ -1362,7 +1362,7 @@
     },
     {
       "name": "Curcuna 3",
-      "bpm": 181.51076698261346,
+      "bpm": 280,
       "steps": 20,
       "bars": [
         {
@@ -1374,7 +1374,7 @@
     },
     {
       "name": "Curcuna 4",
-      "bpm": 181.51076698261346,
+      "bpm": 280,
       "steps": 20,
       "bars": [
         {
@@ -1388,7 +1388,7 @@
     {
       "name": "Curcuna 5",
       "notes": "Running.",
-      "bpm": 181.51076698261346,
+      "bpm": 280,
       "steps": 20,
       "bars": [
         {
@@ -1401,7 +1401,7 @@
     },
     {
       "name": "Curcuna 6",
-      "bpm": 181.51076698261346,
+      "bpm": 280,
       "steps": 20,
       "bars": [
         {
@@ -1413,7 +1413,7 @@
     },
     {
       "name": "Semaii 1",
-      "bpm": 181.51076698261346,
+      "bpm": 260,
       "steps": 20,
       "bars": [
         {
@@ -1424,7 +1424,7 @@
     },
     {
       "name": "Semaii 2",
-      "bpm": 181.51076698261346,
+      "bpm": 260,
       "steps": 20,
       "bars": [
         {
@@ -1436,7 +1436,7 @@
     },
     {
       "name": "Semaii 3",
-      "bpm": 181.51076698261346,
+      "bpm": 260,
       "steps": 20,
       "bars": [
         {
@@ -1449,7 +1449,7 @@
     },
     {
       "name": "Semaii 4",
-      "bpm": 181.51076698261346,
+      "bpm": 260,
       "steps": 20,
       "bars": [
         {
@@ -1463,7 +1463,7 @@
     },
     {
       "name": "Semaii 5",
-      "bpm": 181.51076698261346,
+      "bpm": 260,
       "steps": 20,
       "bars": [
         {
