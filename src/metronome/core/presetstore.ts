@@ -1,5 +1,5 @@
 import type { Rhythm } from "./engine";
-import type { Beat } from "./types";
+import { type Beat, voice } from "./types";
 
 export type PresetStore = {
   // Grouped by Topic
@@ -9,10 +9,13 @@ export type PresetStore = {
 };
 
 const strong = (duration: number = 1): Beat => ({
-  voices: ["strong"],
+  voices: [voice("strong")],
   duration,
 });
-const weak = (duration: number = 1): Beat => ({ voices: ["weak"], duration });
+const weak = (duration: number = 1): Beat => ({
+  voices: [voice("weak")],
+  duration,
+});
 const off = (duration: number = 1): Beat => ({ voices: [], duration });
 
 export const defaultPresetStore: PresetStore = {

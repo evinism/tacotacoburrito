@@ -1,0 +1,339 @@
+.DrumPatterns {
+  /*
+    Every row's left edge. The BPM row sets it — .HorizontalGroup gives its
+    children an 8px margin — and the sections that aren't built out of
+    .HorizontalGroup pad themselves to match, so labels, the picker, the step
+    grid and the buttons all start on one line.
+  */
+  --content-inset: 8px;
+
+  z-index: 1;
+  max-width: 900px;
+  padding: 2rem;
+  background-color: #444444;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: auto;
+}
+
+.TitleLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: var(--content-inset);
+}
+
+/* The title block takes the slack so the icon actions stay hard right. */
+.TitleLine > :first-child {
+  flex-grow: 1;
+}
+
+.TitleAction {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.Title {
+  filter: saturate(0.5);
+}
+
+.SubTitle {
+  color: #666666;
+}
+
+.DrumPatterns hr {
+  margin: 1rem 0;
+  opacity: 1;
+  transition: 0.2s linear;
+}
+
+/* The divider under the title line fades out while the panel is open, so the
+   panel reads as the header's own drawer rather than a second section. */
+.DrumPatterns hr.Invisible {
+  opacity: 0;
+}
+
+/* Collapsible settings drawer: animating grid rows 0fr -> 1fr lets the panel
+   size itself to its content without hardcoding a height. */
+.SettingsGridWrapper {
+  position: relative;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.2s ease-out;
+  background-color: #444;
+  margin: 0 -2rem;
+  top: 1rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2) inset;
+}
+
+.SettingsGridWrapper.Open {
+  grid-template-rows: 1fr;
+}
+
+.Settings {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.SettingsInner {
+  padding: 1rem 2rem;
+}
+
+/* One settings column: label then control, the label never squeezed down to
+   an ellipsis by whatever sits next to it. */
+.SettingsField {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.SettingsField > label {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/*
+  Kinda Special group that replaces the annoyances of grid everywhere
+  Expects a margin-able thing beneath it.
+*/
+.HorizontalGroup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.HorizontalGroup > * {
+  margin: var(--content-inset);
+}
+
+/*
+  A text button carries 8px of its own padding, so the leading one in a row
+  drops the margin: its label lands on the inset, not its hit area.
+*/
+.HorizontalGroup > .LeadButton {
+  margin-left: 0;
+}
+
+.Spacer {
+  flex-grow: 1;
+}
+
+.BPMNumberInput {
+  max-width: 60px;
+}
+
+.ShortNumberInput {
+  max-width: 70px;
+}
+
+/* Tempo is the only thing left in this row; it starts at the same left edge
+   as the grid and the button row below it. */
+.TempoRow {
+  justify-content: flex-start;
+}
+
+.ControlCluster {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* The step grid: one row per voice, one button per step. */
+.Grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.5rem 0 0.5rem var(--content-inset);
+  overflow-x: auto;
+}
+
+.Row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.LabelRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.LabelCell {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+}
+
+.LabelCell.active {
+  color: #fff;
+}
+
+.RowLabel {
+  width: 4rem;
+  flex-shrink: 0;
+  color: #ccc;
+}
+
+.Cells {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.Cell {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.35rem;
+  border: 1px solid #777;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.05s, border-color 0.05s, transform 0.05s;
+}
+
+.Cell.on {
+  background-color: #aaa;
+  border-color: #ccc;
+}
+
+.Cell.active {
+  border-color: #fff;
+  transform: scale(1.1);
+}
+
+.Cell.on.active {
+  background-color: #fff;
+}
+
+/* Multi-bar chrome: slim header above each bar's grid. */
+.BarHeader {
+  display: flex;
+  align-items: center;
+  margin-top: 0.25rem;
+  padding-left: var(--content-inset);
+}
+
+.BarTitle {
+  color: #999;
+}
+
+/* Saved pattern list */
+.PatternsHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  padding-left: var(--content-inset);
+}
+
+.PatternsTitle {
+  filter: saturate(0.5);
+}
+
+.PatternsEmpty {
+  color: #999;
+  padding: 0.25rem 0 0.5rem var(--content-inset);
+}
+
+.PatternDate {
+  color: #999;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/*
+  A single row per list: the rhythm picker, then that rhythm's variants running
+  left-to-right. Only the chosen rhythm is on screen, which keeps both lists
+  one line tall so the step grid stays in view.
+*/
+.FamilyRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.3rem 0 0.3rem var(--content-inset);
+}
+
+.FamilySelect,
+.FamilyName {
+  color: #ddd;
+  /* Wide enough for the longest "X aka Y aka Z" name to sit on one line. */
+  width: 17rem;
+  flex-shrink: 0;
+}
+
+.Variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.VariantButton {
+  min-width: 2.2rem;
+  padding: 0 0.5rem;
+  gap: 0.4rem;
+}
+
+/*
+  Notes for whatever is loaded, sitting directly under the step grid: the
+  rhythm's notes on the left, the selected variant's on the right. Wraps to
+  stacked boxes when there isn't room for both.
+*/
+.PatternNotes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.25rem 0 0.5rem;
+  padding-left: var(--content-inset);
+}
+
+/* Built-in notes: annotation under the picker, closer to the credits' weight
+   than to an input's. */
+.ReadOnlyNote {
+  color: #bbb;
+  white-space: pre-wrap;
+}
+
+.NoteLabel {
+  color: #888;
+}
+
+.PatternNotes > * {
+  flex: 1 1 18rem;
+}
+
+/* Credit for the built-in library, sitting between it and the nav links. */
+.LibraryCredit {
+  text-align: center;
+  color: #999;
+  padding: 1.25rem 0;
+}
+
+.BackLink {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.Footer {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: flex;
+  filter: saturate(0.5);
+  justify-content: center;
+  width: 100%;
+}
+
+.Footer p {
+  display: block;
+  padding: 1rem 0.5rem;
+}

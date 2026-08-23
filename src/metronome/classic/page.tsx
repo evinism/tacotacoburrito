@@ -5,7 +5,13 @@ import { usePersistentState } from "@/hooks";
 import { useMetronome } from "@/metronome/shared/usemetronome";
 import { MetronomeSpec, Rhythm } from "@/metronome/core/engine";
 import { SoundPackId } from "@/metronome/core/soundpacks";
-import { Beat, BeatFillMethod, Measures, Voice } from "@/metronome/core/types";
+import {
+  Beat,
+  BeatFillMethod,
+  Measures,
+  SoundName,
+  voice,
+} from "@/metronome/core/types";
 import {
   migrateMeasures,
   migrateRhythm,
@@ -36,9 +42,9 @@ import SettingsPanel from "./components/settings";
 import MeasureInputSection from "./components/measureinputsection";
 import { useSnackbar } from "@/metronome/shared/snackbar";
 
-const toBeat = (voice: Voice | "off", duration: number = 1): Beat => {
+const toBeat = (sound: SoundName | "off", duration: number = 1): Beat => {
   return {
-    voices: voice === "off" ? [] : [voice],
+    voices: sound === "off" ? [] : [voice(sound)],
     duration,
   };
 };

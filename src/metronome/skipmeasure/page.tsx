@@ -8,7 +8,7 @@ import { useMetronome } from "@/metronome/shared/usemetronome";
 import { useTapTempo } from "@/metronome/shared/usetaptempo";
 import { MetronomeSpec } from "@/metronome/core/engine";
 import { scaleBPM, invScaleBPM, TEMPO_SLIDER_MAX } from "@/metronome/core/tempo";
-import { Beat, Measure, Measures } from "@/metronome/core/types";
+import { Beat, Measure, Measures, voice } from "@/metronome/core/types";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
 import styles from "./skipmeasure.module.css";
@@ -35,8 +35,8 @@ const ttConfig = {
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
-const strong: Beat = { voices: ["strong"], duration: 1 };
-const weak: Beat = { voices: ["weak"], duration: 1 };
+const strong: Beat = { voices: [voice("strong")], duration: 1 };
+const weak: Beat = { voices: [voice("weak")], duration: 1 };
 const off: Beat = { voices: [], duration: 1 };
 
 // One audible measure (accent on beat 1) followed by all-silent measures.

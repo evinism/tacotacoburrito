@@ -1,0 +1,1478 @@
+{
+  "familyNotes": {
+    "Kaba Roman": "4-3-2. Kiremit Bacalari / Nasti Usava.",
+    "Karsilama": "2-2-2-3. To Nerantzolemono.",
+    "Agir Roman": "4-4-3-3-4 (in eighths). Tulum.",
+    "Zeybek": "2-2-2-3, slow. Bozdogan zeybegi.",
+    "Curcuna": "3-2-2-3. Pronounced “djordjuna”. Saza niye gelmadin.",
+    "Semaii": "Hicaz Saz Semaisi.",
+    "Kopanitsa": "2-2-3-2-2.",
+    "Sofka": "3-2-2, fast.",
+    "Ruschenitsa (Mandilatos)": "2-2-3, fast.",
+    "Syrtos (Cocek, Malfoof)": "The Khelav / Yunan Kasap Havası / Gunel Hirsizi (also maksoum) / Hijaz Raks (also maksoum and others) / San Pas Sta Ksena.",
+    "Greek Chiftitelli (Duyek, Maksoum)": "Selanik Sirto / Hijaz Raks (also malfouf and others) / Gunel Hirsizi (also malfouf) / Jeni Jol (baladi) / Kanuni İstanbul (also Turkish chiftitelli).",
+    "Ayoub": "Genc Osman / Horepsete / Nerantziá (sta dio).",
+    "Turkish Ciftitelli": "Nikriz Sirto / Kanuni İstanbul (also maksoum).",
+    "Tsamiko": "Mouriki / Tsamiko Medley.",
+    "Kalamatiano": "Tora pou stisan to horo / Min Kles Smyrnia Mou / Kalamatiano."
+  },
+  "patterns": [
+    {
+      "name": "Syrtos (Cocek, Malfoof) 3",
+      "bpm": 340,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x...............",
+          "te1": "......x.....x...",
+          "te2": "........x.......",
+          "ka2": "....x.....x...x."
+        }
+      ]
+    },
+    {
+      "name": "Syrtos (Cocek, Malfoof) 1",
+      "bpm": 340,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x...............",
+          "te1": "......x.....x..."
+        }
+      ]
+    },
+    {
+      "name": "Syrtos (Cocek, Malfoof) 2",
+      "bpm": 340,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x...............",
+          "te1": "......x.....x...",
+          "ka2": "....x.....x...x."
+        }
+      ]
+    },
+    {
+      "name": "Syrtos (Cocek, Malfoof) 4",
+      "bpm": 340,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x...............",
+          "te1": "......x.....x...",
+          "te2": "........x.....x.",
+          "ka2": "....x.....x....x"
+        }
+      ]
+    },
+    {
+      "name": "Syrtos (Cocek, Malfoof) 5",
+      "bpm": 340,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x...............",
+          "te1": "......x.....x...",
+          "ka2": "..x.x...x.x...x."
+        }
+      ]
+    },
+    {
+      "name": "Syrtos (Cocek, Malfoof) 6",
+      "bpm": 340,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.....x.........",
+          "te1": "............x..."
+        }
+      ]
+    },
+    {
+      "name": "Syrtos (Cocek, Malfoof) 8",
+      "notes": "Running",
+      "bpm": 340,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x...........x...",
+          "te1": "......x........."
+        }
+      ]
+    },
+    {
+      "name": "Syrtos (Cocek, Malfoof) 7",
+      "bpm": 340,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x...........x...",
+          "te1": "......x........."
+        }
+      ]
+    },
+    {
+      "name": "Syrtos (Cocek, Malfoof) 9",
+      "bpm": 340,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x...............",
+          "te1": "......x.....x...",
+          "te2": "....x.....x.....",
+          "ka2": "..xx....xx....xx"
+        }
+      ]
+    },
+    {
+      "name": "Syrtos (Cocek, Malfoof) 10",
+      "bpm": 340,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x...............",
+          "te1": "......x.....x...",
+          "te2": "....x...x.......",
+          "ka2": "..xx......x...x."
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 1",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "..x...x.....x..."
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 2",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "..x...x.....x...",
+          "ka2": "....x.....x...x."
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 3",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "..x...x.....x...",
+          "ka2": "....xx....xx..xx"
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 4",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "..x...x.....x...",
+          "te2": "....x.....x...x.",
+          "ka2": ".....x.....x...x"
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 5",
+      "notes": "Baladi",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.x.....x.......",
+          "te1": "......x.....x..."
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 6",
+      "notes": "Saidi",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.....x.x.......",
+          "te1": "..x.........x..."
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 7",
+      "notes": "Running",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "..x...x.....x...",
+          "te2": "....x.....x...x.",
+          "ka2": ".x.x.x.x.x.x.x.x"
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 8",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "..x...x.....x...",
+          "te2": "....x.....x...x.",
+          "ka2": ".x...x...x.x...x"
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 9",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "..x...x.....x...",
+          "tk": "....x.....x...x."
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 10",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "..x...x.....x...",
+          "te2": "...xx....xx..xx.",
+          "ka2": "...x.x...x.x.x.x"
+        }
+      ]
+    },
+    {
+      "name": "Greek Chiftitelli (Duyek, Maksoum) 11",
+      "bpm": 210,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "..x...x.....x...",
+          "te2": "....x.....x...x.",
+          "ka2": ".....x.....x...x",
+          "kk": "...x.....x...x.."
+        }
+      ]
+    },
+    {
+      "name": "Ayoub 1",
+      "bpm": 420,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "......x.....x..."
+        }
+      ]
+    },
+    {
+      "name": "Ayoub 2",
+      "bpm": 420,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "............x...",
+          "ka1": "......x.........",
+          "te2": "....x..........."
+        }
+      ]
+    },
+    {
+      "name": "Ayoub 3",
+      "notes": "Running",
+      "bpm": 420,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "............x...",
+          "ka1": "......x.........",
+          "te2": "....x...........",
+          "ka2": "..x.......x...x."
+        }
+      ]
+    },
+    {
+      "name": "Ayoub 4",
+      "bpm": 420,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "............x...",
+          "ka1": "......x.........",
+          "te2": "..x.x...........",
+          "ka2": "...x............"
+        }
+      ]
+    },
+    {
+      "name": "Ayoub 5",
+      "notes": "Sta dhio",
+      "bpm": 420,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "....x.x.....x..."
+        }
+      ]
+    },
+    {
+      "name": "Ayoub 6",
+      "bpm": 420,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "..x...x.....x...",
+          "ka2": "....x.....x...x."
+        }
+      ]
+    },
+    {
+      "name": "Ayoub 7",
+      "bpm": 420,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.....x.x.......",
+          "te1": "............x...",
+          "ka1": "....x..........."
+        }
+      ]
+    },
+    {
+      "name": "Ayoub 8",
+      "bpm": 420,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "............x...",
+          "ka1": "......x.........",
+          "te2": "....x...........",
+          "ka2": "..xx......x...x."
+        }
+      ]
+    },
+    {
+      "name": "Turkish Ciftitelli 1",
+      "bpm": 220,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.x.....",
+          "te1": "...x..x.....x..."
+        }
+      ]
+    },
+    {
+      "name": "Turkish Ciftitelli 2",
+      "bpm": 220,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.x.....",
+          "te1": "...x..x.....x...",
+          "ka2": "..x..x........xx"
+        }
+      ]
+    },
+    {
+      "name": "Turkish Ciftitelli 3",
+      "bpm": 220,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.......",
+          "te1": "...x..x.....x..."
+        }
+      ]
+    },
+    {
+      "name": "Turkish Ciftitelli 4",
+      "notes": "Running",
+      "bpm": 220,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.x.....",
+          "te1": "......x.....x...",
+          "ka1": "...x............",
+          "te2": "..x.x.........x.",
+          "ka2": ".x...x.x.x.x.x.x"
+        }
+      ]
+    },
+    {
+      "name": "Turkish Ciftitelli 5",
+      "bpm": 220,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.x.....",
+          "te1": "...x..x.....x...",
+          "te2": "..x..x..........",
+          "tk": ".x..x..x.x.x..xx"
+        }
+      ]
+    },
+    {
+      "name": "Turkish Ciftitelli 6",
+      "bpm": 220,
+      "steps": 16,
+      "bars": [
+        {
+          "doum": "x.......x.x.....",
+          "te1": "...x..x.....x...",
+          "te2": "..x..x........x.",
+          "ka2": "...........x...x",
+          "kk": ".x..x..x.x......"
+        }
+      ]
+    },
+    {
+      "name": "Zonaradiko (Pravo) 1",
+      "bpm": 420,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x...........",
+          "te1": "......x.....",
+          "te2": "..........x.",
+          "ka2": "....x...x..."
+        }
+      ]
+    },
+    {
+      "name": "Zonaradiko (Pravo) 2",
+      "bpm": 420,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x...........",
+          "te1": "......x.....",
+          "te2": "........x...",
+          "ka2": "....x.....x."
+        }
+      ]
+    },
+    {
+      "name": "Zonaradiko (Pravo) 3",
+      "bpm": 420,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x...........",
+          "te1": "......x.....",
+          "te2": "....x...x...",
+          "ka2": "..........x."
+        }
+      ]
+    },
+    {
+      "name": "Zonaradiko (Pravo) 4",
+      "bpm": 420,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x...........",
+          "te1": "....x...x...",
+          "ka1": "......x.....",
+          "ka2": "..x.......x."
+        }
+      ]
+    },
+    {
+      "name": "Zonaradiko (Pravo) 5",
+      "bpm": 420,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x...........",
+          "te1": "....x...x...",
+          "ka1": "......x.....",
+          "ka2": "..xx......x."
+        }
+      ]
+    },
+    {
+      "name": "Tsamiko 1",
+      "bpm": 165,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x.......x...",
+          "te1": "....x.x...x."
+        }
+      ]
+    },
+    {
+      "name": "Tsamiko 2",
+      "bpm": 165,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x.......x...",
+          "te1": "....x.....x.",
+          "ka1": "......x.....",
+          "ka2": "...x........"
+        }
+      ]
+    },
+    {
+      "name": "Tsamiko 3",
+      "bpm": 165,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x.......x...",
+          "te1": "....x.x...x.",
+          "te2": "..x.........",
+          "ka2": "...x.x.x...x"
+        }
+      ]
+    },
+    {
+      "name": "Tsamiko 4",
+      "bpm": 165,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x.......x..x",
+          "te1": "....x.......",
+          "ka1": "......x...x.",
+          "ka2": "...x........"
+        }
+      ]
+    },
+    {
+      "name": "Tsamiko 6",
+      "bpm": 165,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x...........",
+          "te1": "....x.......",
+          "ka1": "......x.....",
+          "te2": "........x.x.",
+          "ka2": "...x.....x.x"
+        }
+      ]
+    },
+    {
+      "name": "Tsamiko 5",
+      "bpm": 165,
+      "steps": 12,
+      "bars": [
+        {
+          "doum": "x.......x...",
+          "te1": "...x......x.",
+          "ka1": "......x....."
+        }
+      ]
+    },
+    {
+      "name": "Kalamatiano 1",
+      "bpm": 180,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.....x.......",
+          "te1": "..........x...",
+          "ka2": "....x........."
+        }
+      ]
+    },
+    {
+      "name": "Kalamatiano 2",
+      "bpm": 180,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.....x.......",
+          "te1": "..........x...",
+          "te2": "....x.........",
+          "ka2": "..x.....x...x."
+        }
+      ]
+    },
+    {
+      "name": "Kalamatiano 3",
+      "bpm": 180,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.....x.......",
+          "te1": "....x.....x...",
+          "te2": "..x.....x...x.",
+          "ka2": "...x.....x...x"
+        }
+      ]
+    },
+    {
+      "name": "Kalamatiano 4",
+      "bpm": 180,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.....x.......",
+          "te1": "..........x...",
+          "te2": "..x.x.......x.",
+          "ka2": "...x.x..x....x"
+        }
+      ]
+    },
+    {
+      "name": "Kalamatiano 5",
+      "bpm": 180,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.....x.......",
+          "te1": "..x.....x.x..."
+        }
+      ]
+    },
+    {
+      "name": "Kalamatiano 6",
+      "bpm": 180,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "......x.......",
+          "te1": "x..x......x...",
+          "te2": "........x...x.",
+          "ka2": ".........x...x"
+        }
+      ]
+    },
+    {
+      "name": "Kalamatiano 7",
+      "bpm": 180,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "......x.......",
+          "te1": "x..x....x.x...",
+          "ka2": "..x..x........"
+        }
+      ]
+    },
+    {
+      "name": "Kalamatiano 8",
+      "bpm": 180,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.....x.......",
+          "te1": "....x.....x...",
+          "te2": "..x...........",
+          "ka2": "........xx..xx",
+          "kk": "...x.........."
+        }
+      ]
+    },
+    {
+      "name": "Sofka 1",
+      "notes": "Raiko",
+      "bpm": 380,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.............",
+          "te1": "......x...x..."
+        }
+      ]
+    },
+    {
+      "name": "Sofka 2",
+      "bpm": 380,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.....x.......",
+          "te1": "..........x..."
+        }
+      ]
+    },
+    {
+      "name": "Sofka 3",
+      "notes": "Tesko Lilino",
+      "bpm": 380,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.............",
+          "te1": "......x...x...",
+          "ka2": "..x.x...x...x."
+        }
+      ]
+    },
+    {
+      "name": "Sofka 4",
+      "bpm": 380,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.x...x...x..."
+        },
+        {
+          "doum": "x.............",
+          "te1": "......x.......",
+          "te2": "..........x...",
+          "ka2": "....x.......x."
+        }
+      ]
+    },
+    {
+      "name": "Sofka 5",
+      "notes": "Tesko Lilino",
+      "bpm": 380,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.............",
+          "te1": "......x...x..."
+        },
+        {
+          "doum": "......x.......",
+          "te1": "x.........x..."
+        }
+      ]
+    },
+    {
+      "name": "Sofka 6",
+      "bpm": 380,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.............",
+          "te1": "......x...x...",
+          "ka2": "....xx......xx"
+        }
+      ]
+    },
+    {
+      "name": "Ruschenitsa (Mandilatos) 1",
+      "bpm": 400,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.............",
+          "te1": "....x...x....."
+        }
+      ]
+    },
+    {
+      "name": "Ruschenitsa (Mandilatos) 2",
+      "bpm": 400,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.............",
+          "te1": "....x...x.....",
+          "ka2": "..x...x...x.x."
+        }
+      ]
+    },
+    {
+      "name": "Ruschenitsa (Mandilatos) 3",
+      "bpm": 400,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Ruschenitsa (Mandilatos) 4",
+      "bpm": 400,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x...x.........",
+          "te1": "........x....."
+        }
+      ]
+    },
+    {
+      "name": "Ruschenitsa (Mandilatos) 5",
+      "bpm": 400,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x...x.........",
+          "te1": "........x...x.",
+          "ka1": "..........x..."
+        },
+        {
+          "doum": "....x.........",
+          "te1": "x.......x.....",
+          "ka2": "..........x.x."
+        }
+      ]
+    },
+    {
+      "name": "Ruschenitsa (Mandilatos) 6",
+      "bpm": 400,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.............",
+          "te1": "......x.....x.",
+          "ka2": "....x.....x..."
+        },
+        {
+          "doum": "....x.........",
+          "te1": "........x.....",
+          "ka2": "..x..........."
+        }
+      ]
+    },
+    {
+      "name": "Ruschenitsa (Mandilatos) 7",
+      "bpm": 400,
+      "steps": 14,
+      "bars": [
+        {
+          "doum": "x.............",
+          "te1": "....x...x.....",
+          "ka2": "......xx..x.x."
+        }
+      ]
+    },
+    {
+      "name": "Kaba Roman 1",
+      "notes": "Kalite, kalite",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "te1": "......x.......x..."
+        }
+      ]
+    },
+    {
+      "name": "Kaba Roman 2",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "te1": "......x.......x...",
+          "ka2": "..x.x.....x.x...x."
+        }
+      ]
+    },
+    {
+      "name": "Kaba Roman 3",
+      "notes": "Illede Roman Olsun",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "ka1": "......x.......x...",
+          "te2": "..x.x.....x.x...x.",
+          "ka2": "...x.......x......"
+        }
+      ]
+    },
+    {
+      "name": "Kaba Roman 4",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "te1": "......x...x...x...",
+          "te2": "................x.",
+          "ka2": "..x.x............x"
+        }
+      ]
+    },
+    {
+      "name": "Kaba Roman 5",
+      "notes": "3-2-2-2 variation",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.................",
+          "te1": "......x...x...x...",
+          "ka2": "..x.x............."
+        }
+      ]
+    },
+    {
+      "name": "Kaba Roman 6",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "te1": "......x.......x...",
+          "te2": "....x.......x.....",
+          "ka2": "..xx......xx....xx"
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 1",
+      "notes": "Yüksek Yüksek Tepeler",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "te1": "....x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 2",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "te1": "....x.......x.....",
+          "ka2": "......x.......x...",
+          "te2": "................x."
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 3",
+      "notes": "Rompi",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "ka2": "...x..x...x...x...",
+          "te1": "....x.......x.....",
+          "te2": "................x."
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 4",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "te2": "..x.......x.....x.",
+          "ka2": "...x..x....x..x...",
+          "te1": "....x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 5",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "te2": "..x...x...x...x...",
+          "ka2": "...x...x...x...x..",
+          "te1": "....x.......x...x."
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 6",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x...x.....",
+          "te1": "....x.........x..."
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 7",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "te1": "....x.......x.x.x."
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 8",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "te1": "....x.......x...x."
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 9",
+      "notes": "Beginning is like syrto.",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x...x.....",
+          "te2": "..x.......x.......",
+          "te1": "...x..x.......x...",
+          "ka2": ".....x.....x......"
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 10",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "ka2": "..xx..x...xx..x...",
+          "te1": "....x.......x...x."
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 11",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x...x.....",
+          "ka2": "..xx..xx..xx....xx",
+          "te1": "....x.........x..."
+        }
+      ]
+    },
+    {
+      "name": "Karsilama 12",
+      "bpm": 270,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.......x.........",
+          "ka2": "..xx.x.x..xx......",
+          "te1": "....x.......x.x...",
+          "te2": "......x..........."
+        }
+      ]
+    },
+    {
+      "name": "Agir Roman 1",
+      "notes": "Arabim",
+      "bpm": 220,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x.............",
+          "te1": "........x..x..x..."
+        }
+      ]
+    },
+    {
+      "name": "Agir Roman 2",
+      "bpm": 220,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.x.x.............",
+          "te1": "........x..x..x..."
+        }
+      ]
+    },
+    {
+      "name": "Agir Roman 3",
+      "notes": "Şu Köyceğiz Yolları",
+      "bpm": 220,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x.............",
+          "ka1": "..x..x............",
+          "te2": "......x.........x.",
+          "ka2": ".......x..x..x...x",
+          "te1": "........x..x..x..."
+        }
+      ]
+    },
+    {
+      "name": "Agir Roman 4",
+      "bpm": 220,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x.............",
+          "te2": "..x...x.........x.",
+          "ka2": "...x...x.xx.xx...x",
+          "te1": "........x..x..x..."
+        }
+      ]
+    },
+    {
+      "name": "Agir Roman 5",
+      "notes": "Mastika",
+      "bpm": 220,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x.x...........",
+          "te2": "..x...............",
+          "ka2": "...x..............",
+          "te1": "........x..x..x..."
+        }
+      ]
+    },
+    {
+      "name": "Agir Roman 6",
+      "bpm": 220,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x.............",
+          "ka2": "......xx..x..x....",
+          "te1": "........x..x..x...",
+          "te2": "................x.",
+          "kk": ".................x"
+        }
+      ]
+    },
+    {
+      "name": "Agir Roman 7",
+      "bpm": 220,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x.............",
+          "te1": "..x.....x..x..x...",
+          "kk": "...x.....x..x..x..",
+          "ka1": ".....x............",
+          "te2": "......x...x..x..x.",
+          "ka2": ".......x.........x"
+        }
+      ]
+    },
+    {
+      "name": "Kopanitsa 1",
+      "bpm": 320,
+      "steps": 22,
+      "bars": [
+        {
+          "doum": "x.......x.............",
+          "te1": "....x.........x...x..."
+        }
+      ]
+    },
+    {
+      "name": "Kopanitsa 2",
+      "bpm": 320,
+      "steps": 22,
+      "bars": [
+        {
+          "doum": "x.............x.......",
+          "te1": "....x...x.........x..."
+        }
+      ]
+    },
+    {
+      "name": "Kopanitsa 3",
+      "bpm": 320,
+      "steps": 22,
+      "bars": [
+        {
+          "doum": "x.......x.............",
+          "te1": "....x.........x...x...",
+          "ka2": "......x.....x........."
+        }
+      ]
+    },
+    {
+      "name": "Kopanitsa 4",
+      "bpm": 320,
+      "steps": 22,
+      "bars": [
+        {
+          "doum": "x.............x.......",
+          "ka2": "..x...x...x.x...x...x.",
+          "te2": "....x.................",
+          "te1": "........x.........x..."
+        }
+      ]
+    },
+    {
+      "name": "Kopanitsa 5",
+      "bpm": 320,
+      "steps": 22,
+      "bars": [
+        {
+          "doum": "x.............x.......",
+          "te2": "..x.x.....x.x...x.....",
+          "ka2": "...x..x....x.....x..x.",
+          "te1": "........x.........x..."
+        }
+      ]
+    },
+    {
+      "name": "Kopanitsa 6",
+      "bpm": 320,
+      "steps": 22,
+      "bars": [
+        {
+          "doum": "x.............x.......",
+          "ka2": "..x...xx..x.x...x...xx",
+          "te1": "....x...x.........x..."
+        }
+      ]
+    },
+    {
+      "name": "Kopanitsa 7",
+      "bpm": 320,
+      "steps": 22,
+      "bars": [
+        {
+          "doum": "x.............x.......",
+          "ka2": "..xx..x...x.x...xx..x.",
+          "te2": "....x.................",
+          "te1": "........x.........x..."
+        }
+      ]
+    },
+    {
+      "name": "Zeybek 1",
+      "notes": "Yağcılar Zeybeği",
+      "bpm": 130,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x...x...x.....",
+          "te1": ".x.x..x..x.x..x.x."
+        }
+      ]
+    },
+    {
+      "name": "Zeybek 2",
+      "bpm": 130,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x...x...x.....",
+          "te1": ".x.x..x..x.x..x.x.",
+          "ka2": "..x..x....x.......",
+          "tk": ".......x.....x.x.."
+        }
+      ]
+    },
+    {
+      "name": "Zeybek 3",
+      "bpm": 130,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x...x...x.x...",
+          "te1": ".x.x..x..x.xx.x.x."
+        }
+      ]
+    },
+    {
+      "name": "Zeybek 4",
+      "notes": "Syrto beginning is more Turkish.",
+      "bpm": 130,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x...x...x.....",
+          "ka2": ".xx......xx....x..",
+          "te1": ".x.x..x..x.x..x.x.",
+          "tk": ".....x.x.....x...x"
+        }
+      ]
+    },
+    {
+      "name": "Zeybek 5",
+      "notes": "Syrto beginning is more Turkish.",
+      "bpm": 130,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x...x...x...x.....",
+          "ka2": ".x.....x.xx.......",
+          "te1": ".x.xx.x..x.xx.x.x.",
+          "te2": "..............x..."
+        }
+      ]
+    },
+    {
+      "name": "Curcuna 1",
+      "bpm": 280,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.........",
+          "te1": "......x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Curcuna 2",
+      "bpm": 280,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.........",
+          "ka2": "....x...........x.x.",
+          "te1": "......x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Curcuna 3",
+      "bpm": 280,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.........",
+          "ka2": "..x.x...x...x...x.x.",
+          "te1": "......x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Curcuna 4",
+      "bpm": 280,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.........",
+          "te2": "..x.x.......x...x.x.",
+          "ka2": "...x.x..x....x...x..",
+          "te1": "......x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Curcuna 5",
+      "notes": "Running.",
+      "bpm": 280,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.........",
+          "ka2": ".x.x.x.x.x.x.x.x.x.x",
+          "te2": "..x.x...x...x...x.x.",
+          "te1": "......x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Curcuna 6",
+      "bpm": 280,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.........",
+          "ka2": "....xx......xx....x.",
+          "te1": "......x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Semaii 1",
+      "bpm": 260,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.x.......",
+          "te1": "......x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Semaii 2",
+      "bpm": 260,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.x.......",
+          "ka2": "..x.x...x.......x.x.",
+          "te1": "......x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Semaii 3",
+      "bpm": 260,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.x.......",
+          "te2": "..x.x...x.......x.x.",
+          "ka2": "...x.x...x.......x.x",
+          "te1": "......x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Semaii 4",
+      "bpm": 260,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.x.......",
+          "tk": ".x.....x.......x....",
+          "te2": "..x.x...x.......x.x.",
+          "ka2": "...x.x...x.x.x...x.x",
+          "te1": "......x.......x....."
+        }
+      ]
+    },
+    {
+      "name": "Semaii 5",
+      "bpm": 260,
+      "steps": 20,
+      "bars": [
+        {
+          "doum": "x.........x.x.......",
+          "kk": ".x.....x.......x....",
+          "te2": "..x.x...x.......x.x.",
+          "ka2": "...x.x...x.x.x...x.x",
+          "te1": "......x.......x....."
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import {
   SoundPackId,
   SoundStatus,
-  soundPacks,
+  getSoundPack,
   soundPackStatus,
 } from "./soundpacks";
 import { multiLength, multiIndex } from "./util";
@@ -144,7 +144,7 @@ export class Metronome {
   // mid-schedule — which would risk a timing hitch on the audio path.
   _warmSoundPackCache = () => {
     const sound = resolveSound(this.spec);
-    const pack = soundPacks[sound.soundPack];
+    const pack = getSoundPack(sound.soundPack);
     for (const clickSound of Object.values(pack)) {
       // Each load settles by re-evaluating whole-pack status rather than tracking
       // "both done" here, so the sounds can finish loading in any order and a
@@ -164,7 +164,7 @@ export class Metronome {
 
   // The aggregate load status of every Sound in the current pack.
   soundpackStatus(): SoundStatus {
-    return soundPackStatus(soundPacks[resolveSound(this.spec).soundPack]);
+    return soundPackStatus(getSoundPack(resolveSound(this.spec).soundPack));
   }
 
   _notifySoundPackStatus = () => {
@@ -305,9 +305,9 @@ export class Metronome {
   scheduleBeat = (beat: Beat, time: number) => {
     // Empty voices = a silent beat; nothing to schedule.
     const sound = resolveSound(this.spec);
-    const pack = soundPacks[sound.soundPack];
-    for (const voice of beat.voices) {
-      const clickSound = pack[voice];
+    const pack = getSoundPack(sound.soundPack);
+    for (const { sound: voiceSound, offset: offsetSpec = 0 } of beat.voices) {
+      const clickSound = pack[voiceSound];
       // Missing (a rhythm naming a sound this pack doesn't have) or not ready
       // yet (a sample pack still decoding) — skip this click rather than
       // crash. Both are deliberately silent: cross-pack rhythms degrade
@@ -326,7 +326,13 @@ export class Metronome {
       source.buffer = buffer;
       source.playbackRate.value = sound.freqMultiplier;
       source.connect(this._gainNode);
-      source.start(time);
+      // Range offsets are sampled here, per schedule, rather than upstream in
+      // the spec — the spec is static, so sampling any earlier would freeze
+      // one draw and every repeat of the beat would land identically.
+      const offset = Array.isArray(offsetSpec)
+        ? offsetSpec[0] + Math.random() * (offsetSpec[1] - offsetSpec[0])
+        : offsetSpec;
+      source.start(time + offset);
 
       // Track the source so stop() can cancel it if it's still pending, and
       // release it once it finishes playing on its own.
@@ -388,6 +394,11 @@ export class Metronome {
 
   subscribeToSoundPackStatus(callback: Listener<SoundStatus>) {
     this._soundPackStatusNotifier.subscribe(callback);
+    // Replay the current status: a cached sample pack can finish loading in
+    // the gap between construction (render) and the subscriber's effect, and
+    // the transition-deduped notifier would otherwise never re-emit it —
+    // leaving the subscriber stuck on the status it read at render time.
+    callback(this.soundpackStatus());
   }
 
   unsubscribeFromSoundPackStatus(callback: Listener<SoundStatus>) {

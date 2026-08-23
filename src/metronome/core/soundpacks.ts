@@ -73,6 +73,10 @@ export class Sound {
   private buffer?: AudioBuffer;
   private loadedSampleRate?: number;
   private _status: SoundStatus = "unloaded";
+  // Callbacks waiting on the in-flight load to settle. A single Sound is a
+  // shared singleton, so multiple callers (e.g. a dead + a live Metronome
+  // across StrictMode's remount) can each be waiting on the same load.
+  private _pending: Array<() => void> = [];
 
   constructor(private readonly loader: SoundLoader) {}
 
@@ -95,23 +99,29 @@ export class Sound {
       return;
     }
     if (this._status === "loading") {
+      // A load is already in flight — possibly kicked off by a now-dead
+      // Metronome (StrictMode's mount→unmount→remount, Fast Refresh). Queue
+      // this caller so it's still notified when that load settles; dropping it
+      // would leave the live instance stuck showing "loading" forever.
+      if (cb) this._pending.push(cb);
       return;
     }
 
     const result = this.loader(sampleRate, audioCtx);
     if (result instanceof Promise) {
       this._status = "loading";
+      if (cb) this._pending.push(cb);
       result
         .then((buffer) => {
           this.buffer = buffer;
           this.loadedSampleRate = sampleRate;
           this._status = "loaded";
-          cb?.();
+          this._settle();
         })
         .catch((err) => {
           this._status = "error";
           console.error("Failed to load sound", err);
-          cb?.();
+          this._settle();
         });
     } else {
       this.buffer = result;
@@ -119,6 +129,13 @@ export class Sound {
       this._status = "loaded";
       cb?.();
     }
+  }
+
+  // Fire and clear every callback waiting on the just-settled load.
+  private _settle(): void {
+    const pending = this._pending;
+    this._pending = [];
+    for (const cb of pending) cb();
   }
 
   // Caller must check isLoaded() first — throws if the buffer isn't ready.
@@ -264,10 +281,15 @@ export const soundPacks: Record<string, SoundPack> = {
       return buffer;
     }),
   },
-  doumbek: {
-    strong: new Sound(fileLoader("/sounds/doumbek/hi.wav")),
-    weak: new Sound(fileLoader("/sounds/doumbek/low.wav")),
-  },
+  darbuka: (() => {
+    const doum = new Sound(fileLoader("/sounds/darbuka/doum.wav"));
+    const te1 = new Sound(fileLoader("/sounds/darbuka/te1.wav"));
+    const te2 = new Sound(fileLoader("/sounds/darbuka/te2.wav"));
+    const ka1 = new Sound(fileLoader("/sounds/darbuka/ka1.wav"));
+    const ka2 = new Sound(fileLoader("/sounds/darbuka/ka2.wav"));
+    // strong/weak alias the accented bass stroke and the soft off-hand stroke.
+    return { doum, te1, te2, ka1, ka2, strong: doum, weak: ka1 };
+  })(),
   drums: (() => {
     const kick = new Sound(makeKick());
     const snare = new Sound(makeSnare());
@@ -275,3 +297,14 @@ export const soundPacks: Record<string, SoundPack> = {
     return { kick, snare, hihat, strong: kick, weak: snare };
   })(),
 };
+
+// Packs that used to ship, mapped to what replaced them: a persisted or shared
+// setting naming one must still resolve to a real pack, since every lookup
+// below feeds straight into `Object.values(pack)` / `pack[voice]`.
+const RETIRED_PACKS: Record<string, SoundPackId> = { doumbek: "darbuka" };
+
+// The only supported way to go from a pack id to a pack. Never returns
+// undefined: an id from an older build (or a hand-edited localStorage value)
+// falls back rather than crashing the audio path.
+export const getSoundPack = (id: string): SoundPack =>
+  soundPacks[id] ?? soundPacks[RETIRED_PACKS[id] ?? "default"];

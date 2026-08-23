@@ -18,7 +18,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 The app is built to host **multiple swappable frontends** over one shared engine. Three layers under `src/metronome/`:
 - **`core/`** — the React-free kernel (audio engine, rhythm types, sound synthesis, inference). No DOM beyond Web Audio.
 - **`shared/`** — the React "kit" reused across frontends (engine↔React bridge, snackbar).
-- **`<frontend>/`** — one folder per frontend UI (`classic/`, `simple/`, `skipmeasure/`). A new frontend is a sibling folder + its own App Router route. **When you add one, also register it in `src/metronome/frontends.ts`** — that registry is the single source of truth for the `/metronomes` list page.
+- **`<frontend>/`** — one folder per frontend UI (`classic/`, `simple/`, `skipmeasure/`, `drumpatterns/`). A new frontend is a sibling folder + its own App Router route. **When you add one, also register it in `src/metronome/frontends.ts`** — that registry is the single source of truth for the `/metronomes` list page.
 
 Routing and the global shell live in `src/app/`; truly app-generic hooks live at `src/`.
 
@@ -33,7 +33,7 @@ Routing and the global shell live in `src/app/`; truly app-generic hooks live at
   - `engine.ts` — **core audio engine** (`Metronome` class). Web Audio `AudioContext` look-ahead scheduler: a `setInterval` loop (`handleScheduler`, every `_schedulerInterval` ≈ 5ms) schedules clicks up to `_schedulerHorizon` ≈ 50ms ahead, for precise timing decoupled from JS timer jitter. A single context is reused across play/stop: `play()` resumes it, `stop()` suspends it and cancels in-flight `_scheduledSources` so pending clicks don't sound; the context is only `close()`d in `cleanup()` (unmount). Emits "current beat" via `setTimeout` so the UI can highlight (suppressed at ≥10000 BPM, see `_shouldNotifyBeatHit`). Defines `Rhythm` and `MetronomeSpec`.
   - `emitter.ts` — tiny generic pub/sub `Emitter<T>` used for beat (`BeatNotifier`) and playing-state (`PlayingNotifier`) notifications.
   - `soundpacks.ts` — generates click `AudioBuffer`s from sine-frequency clusters (memoized per sampleRate+params). Packs: `default`, `inverted`, `dirac`. `freqMultiplier` shifts pitch.
-  - `types.ts` — `BeatStrength` (`strong`/`weak`/`off`), `Beat` (`{strength, duration}`), `Measure`/`Measures` (nested arrays), `BeatFillMethod`.
+  - `types.ts` — `Voice` (`{sound, offset?}`: one hit plus its per-hit settings, the place to add gain/rate later), the `voice()` shorthand, `SoundName`, `VoiceOffset`, `Beat` (`{voices, duration}`), `Measure`/`Measures` (nested arrays), `BeatFillMethod`.
   - `presetstore.ts` — built-in rhythm library (Greek/Balkan/Turkish/etc. odd meters).
   - `util.ts` — math/stats helpers + **multi-array** helpers (`multiLength`, `multiIndex`, `toSplitIndex`) that treat `Measures` (array-of-arrays) as one flat indexable beat sequence.
   - `smarttap/` — **rhythm inference** from tap timing. Every method is a `RhythmInferenceMethod`: taps in, `Result<{beats, tempo}>` out (i.e. `{value, confidence}` or `undefined`). `index.ts` holds the `methods` registry (so the bench can race them) plus the **default export — the one the app ships**; swapping methods is a one-line change there, and new methods must be registered to be benchable.

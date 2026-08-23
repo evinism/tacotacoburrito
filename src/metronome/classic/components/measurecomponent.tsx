@@ -8,7 +8,7 @@ import LongPressListener from "./longpresslistener";
 import styles from "@/metronome/classic/classic.module.css";
 
 import type { Beat as BeatT } from "@/metronome/core/types";
-import { BeatFillMethod, Measure, Measures } from "@/metronome/core/types";
+import { BeatFillMethod, Measure, Measures, voice } from "@/metronome/core/types";
 import BeatContextMenu from "./beatmodmenu";
 
 // Classic is single-voice: a beat's accent is its sole voice, or "off" for
@@ -35,7 +35,7 @@ const accentLabels: Record<Accent, string> = {
 };
 
 const accentOf = (beat: BeatT): Accent =>
-  (beat.voices[0] as Accent | undefined) ?? "off";
+  (beat.voices[0]?.sound as Accent | undefined) ?? "off";
 
 interface MeasureComponentProps {
   beats: Measures;
@@ -72,7 +72,7 @@ const MeasureComponent = ({
     const newMeasure: Measure = measure.map((beat, i) =>
       i === index
         ? {
-            voices: accent === "off" ? [] : [accent],
+            voices: accent === "off" ? [] : [voice(accent)],
             duration: beat.duration,
           }
         : beat

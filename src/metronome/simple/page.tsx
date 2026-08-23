@@ -8,7 +8,7 @@ import { useMetronome } from "@/metronome/shared/usemetronome";
 import { useTapTempo } from "@/metronome/shared/usetaptempo";
 import { MetronomeSpec } from "@/metronome/core/engine";
 import { scaleBPM, invScaleBPM, TEMPO_SLIDER_MAX } from "@/metronome/core/tempo";
-import { Measures } from "@/metronome/core/types";
+import { Measures, voice } from "@/metronome/core/types";
 import GlobalKeydownListener from "@/metronome/shared/globalkeydownlistener";
 
 import styles from "./simple.module.css";
@@ -29,7 +29,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
 // A tempo-only metronome: a single steady click repeating at the chosen BPM.
-const beats: Measures = [[{ voices: ["strong"], duration: 1 }]];
+const beats: Measures = [[{ voices: [voice("strong")], duration: 1 }]];
 
 const ttConfig = {
   enterDelay: 500,

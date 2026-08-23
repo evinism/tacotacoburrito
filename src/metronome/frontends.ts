@@ -31,9 +31,9 @@ export const frontends: FrontendInfo[] = [
       "Plays a few measures then goes silent for a few, for practicing internal timekeeping.",
   },
   {
-    name: "Sequencer",
-    path: "/sequencer",
+    name: "Drum Pattern Library",
+    path: "/drumpatterns",
     description:
-      "A 3-row drum step sequencer — kick, snare, and hihat, with a movable playhead.",
+      "A darbuka step sequencer with a library of Balkan, Greek and Turkish drum patterns — plus your own, saved or shared by link.",
   },
 ];
