@@ -7,11 +7,11 @@
     "Curcuna": "3-2-2-3. Pronounced “djordjuna”. Saza niye gelmadin.",
     "Semaii": "Hicaz Saz Semaisi.",
     "Kopanitsa": "2-2-3-2-2.",
-    "Seven": "3-2-2, fast. Sofka.",
+    "Sofka": "3-2-2, fast.",
     "Ruschenitsa (Mandilatos)": "2-2-3, fast.",
     "Syrtos aka Cocek aka Malfoof": "The Khelav / Yunan Kasap Havası / Gunel Hirsizi (also maksoum) / Hijaz Raks (also maksoum and others) / San Pas Sta Ksena.",
     "Greek Chiftitelli aka Duyek aka Maksoum": "Selanik Sirto / Hijaz Raks (also malfouf and others) / Gunel Hirsizi (also malfouf) / Jeni Jol (baladi) / Kanuni İstanbul (also Turkish chiftitelli).",
-    "2/4 aka Ayoub": "Genc Osman / Horepsete / Nerantziá (sta dio).",
+    "Ayoub": "Genc Osman / Horepsete / Nerantziá (sta dio).",
     "Turkish Ciftitelli": "Nikriz Sirto / Kanuni İstanbul (also maksoum).",
     "Tsamiko": "Mouriki / Tsamiko Medley.",
     "Kalamatiano": "Tora pou stisan to horo / Min Kles Smyrnia Mou / Kalamatiano."
@@ -278,7 +278,7 @@
       ]
     },
     {
-      "name": "2/4 aka Ayoub 1",
+      "name": "Ayoub 1",
       "bpm": 420,
       "steps": 16,
       "bars": [
@@ -289,7 +289,7 @@
       ]
     },
     {
-      "name": "2/4 aka Ayoub 2",
+      "name": "Ayoub 2",
       "bpm": 420,
       "steps": 16,
       "bars": [
@@ -302,7 +302,7 @@
       ]
     },
     {
-      "name": "2/4 aka Ayoub 3",
+      "name": "Ayoub 3",
       "notes": "Running",
       "bpm": 420,
       "steps": 16,
@@ -317,7 +317,7 @@
       ]
     },
     {
-      "name": "2/4 aka Ayoub 4",
+      "name": "Ayoub 4",
       "bpm": 420,
       "steps": 16,
       "bars": [
@@ -331,7 +331,7 @@
       ]
     },
     {
-      "name": "2/4 aka Ayoub 5",
+      "name": "Ayoub 5",
       "notes": "Sta dhio",
       "bpm": 420,
       "steps": 16,
@@ -343,7 +343,7 @@
       ]
     },
     {
-      "name": "2/4 aka Ayoub 6",
+      "name": "Ayoub 6",
       "bpm": 420,
       "steps": 16,
       "bars": [
@@ -355,7 +355,7 @@
       ]
     },
     {
-      "name": "2/4 aka Ayoub 7",
+      "name": "Ayoub 7",
       "bpm": 420,
       "steps": 16,
       "bars": [
@@ -367,7 +367,7 @@
       ]
     },
     {
-      "name": "2/4 aka Ayoub 8",
+      "name": "Ayoub 8",
       "bpm": 420,
       "steps": 16,
       "bars": [
@@ -699,7 +699,7 @@
       ]
     },
     {
-      "name": "Seven 1",
+      "name": "Sofka 1",
       "notes": "Raiko",
       "bpm": 380,
       "steps": 14,
@@ -711,7 +711,7 @@
       ]
     },
     {
-      "name": "Seven 2",
+      "name": "Sofka 2",
       "bpm": 380,
       "steps": 14,
       "bars": [
@@ -722,7 +722,7 @@
       ]
     },
     {
-      "name": "Seven 3",
+      "name": "Sofka 3",
       "notes": "Tesko Lilino",
       "bpm": 380,
       "steps": 14,
@@ -735,7 +735,7 @@
       ]
     },
     {
-      "name": "Seven 4",
+      "name": "Sofka 4",
       "bpm": 380,
       "steps": 14,
       "bars": [
@@ -751,7 +751,7 @@
       ]
     },
     {
-      "name": "Seven 5",
+      "name": "Sofka 5",
       "notes": "Tesko Lilino",
       "bpm": 380,
       "steps": 14,
@@ -767,7 +767,7 @@
       ]
     },
     {
-      "name": "Seven 6",
+      "name": "Sofka 6",
       "bpm": 380,
       "steps": 14,
       "bars": [
