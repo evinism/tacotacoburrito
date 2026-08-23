@@ -3,6 +3,7 @@
     "Kaba Roman": "4-3-2. Songs: Kiremit Bacalari / Nasti Usava / Kalite, kalite / Illede Roman Olsun.",
     "Karsilama": "2-2-2-3. Songs: To Nerantzolemono / Yüksek Yüksek Tepeler / Rompi.",
     "Agir Roman": "4-4-3-3-4 (in eighths). Songs: Tulum / Arabim / Şu Köyceğiz Yolları / Mastika.",
+    "Aptaliko": "3-2-2-2. Songs: Apo Ta Glyka.",
     "Zeybek": "2-2-2-3, slow. Songs: Bozdogan zeybegi / Yağcılar Zeybeği.",
     "Curcuna": "3-2-2-3. Pronounced “djordjuna”. Songs: Saza niye gelmadin.",
     "Semaii": "Songs: Hicaz Saz Semaisi.",
@@ -1185,6 +1186,42 @@
           "ka1": ".....x............",
           "te2": "......x...x..x..x.",
           "ka2": ".......x.........x"
+        }
+      ]
+    },
+    {
+      "name": "Aptaliko 1",
+      "notes": "Apo Ta Glyka.",
+      "bpm": 220,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.....x...x...x...",
+          "te1": "..x.x..x.x..x..x.x"
+        }
+      ]
+    },
+    {
+      "name": "Aptaliko 2",
+      "bpm": 220,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.....x...x...x...",
+          "te1": "..x.x..x.x..x..x.x",
+          "tk": ".x.x.x............"
+        }
+      ]
+    },
+    {
+      "name": "Aptaliko 3",
+      "bpm": 220,
+      "steps": 18,
+      "bars": [
+        {
+          "doum": "x.....x...x...x...",
+          "te1": "..x.x..x.x..x..x.x",
+          "tk": ".x.x.x..x..x.x..x."
         }
       ]
     },
